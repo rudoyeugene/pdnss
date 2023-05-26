@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/automatic"
+        android:shortcutId="auto"
+        android:shortcutLongLabel="@string/shortcut_long_auto"
+        android:shortcutShortLabel="@string/shortcut_short_auto">
+        <intent
+            android:action="com.rudyii.pdnss.AUTO"
+            android:targetClass="com.rudyii.pdnss.PrivateDNSSwitcherAction"
+            android:targetPackage="com.rudyii.pdnss" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/enabled"
+        android:shortcutId="enable"
+        android:shortcutLongLabel="@string/shortcut_long_on"
+        android:shortcutShortLabel="@string/shortcut_short_on">
+        <intent
+            android:action="com.rudyii.pdnss.ENABLE"
+            android:targetClass="com.rudyii.pdnss.PrivateDNSSwitcherAction"
+            android:targetPackage="com.rudyii.pdnss" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/disabled"
+        android:shortcutId="disable"
+        android:shortcutLongLabel="@string/shortcut_long_off"
+        android:shortcutShortLabel="@string/shortcut_short_off">
+        <intent
+            android:action="com.rudyii.pdnss.DISABLE"
+            android:targetClass="com.rudyii.pdnss.PrivateDNSSwitcherAction"
+            android:targetPackage="com.rudyii.pdnss" />
+    </shortcut>
+</shortcuts>

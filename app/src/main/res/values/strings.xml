@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">Private DNS Switcher</string>
+
+    <string name="before_all">Make sure you granted permissions:</string>
+    <string name="pm_grant_write_security_settings">pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS</string>
+
+    <string name="private_dns_state_text">Private DNS State:</string>
+    <string name="private_dns_state_string">Private DNS is %1$s with host: %2$s</string>
+
+    <string name="private_dns_state_unknown">unknown</string>
+    <string name="private_dns_state_on">ON</string>
+    <string name="private_dns_state_off">OFF</string>
+    <string name="private_dns_state_auto">AUTO</string>
+
+    <string name="shortcut_short_on">ON</string>
+    <string name="shortcut_long_on">Private DNS</string>
+    <string name="shortcut_short_off">OFF</string>
+    <string name="shortcut_long_off">Default DNS</string>
+    <string name="shortcut_short_auto">AUTO</string>
+    <string name="shortcut_long_auto">Google DNS</string>
+
+</resources>
