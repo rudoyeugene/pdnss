@@ -40,24 +40,21 @@ public class PrivateDNSSwitcherAction extends AppCompatActivity {
             switch (intent.getAction()) {
                 case "com.rudyii.pdnss.AUTO":
                     try {
-                        Settings.Global.putString(getApplicationContext().getContentResolver(), SETTINGS_PRIVATE_DNS_MODE,
-                                getPrivateDnsModeAsString(PRIVATE_DNS_MODE_OPPORTUNISTIC));
+                        updateSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
                     } catch (Exception e) {
                         showWarning();
                     }
                     break;
                 case "com.rudyii.pdnss.ENABLE":
                     try {
-                        Settings.Global.putString(getApplicationContext().getContentResolver(), SETTINGS_PRIVATE_DNS_MODE,
-                                getPrivateDnsModeAsString(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME));
+                        updateSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     } catch (Exception e) {
                         showWarning();
                     }
                     break;
                 case "com.rudyii.pdnss.DISABLE":
                     try {
-                        Settings.Global.putString(getApplicationContext().getContentResolver(), SETTINGS_PRIVATE_DNS_MODE,
-                                getPrivateDnsModeAsString(PRIVATE_DNS_MODE_OFF));
+                        updateSettings(PRIVATE_DNS_MODE_OFF);
                     } catch (Exception e) {
                         showWarning();
                     }
@@ -67,6 +64,11 @@ public class PrivateDNSSwitcherAction extends AppCompatActivity {
             }
         }
         this.finish();
+    }
+
+    private void updateSettings(int privateDnsModeOpportunistic) {
+        Settings.Global.putString(getApplicationContext().getContentResolver(), SETTINGS_PRIVATE_DNS_MODE,
+                getPrivateDnsModeAsString(privateDnsModeOpportunistic));
     }
 
     private void showWarning() {
