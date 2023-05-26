@@ -18,7 +18,7 @@
         android:shortcutLongLabel="@string/shortcut_long_on"
         android:shortcutShortLabel="@string/shortcut_short_on">
         <intent
-            android:action="com.rudyii.pdnss.ENABLE"
+            android:action="com.rudyii.pdnss.ON"
             android:targetClass="com.rudyii.pdnss.PrivateDNSSwitcherAction"
             android:targetPackage="com.rudyii.pdnss" />
     </shortcut>
@@ -29,7 +29,7 @@
         android:shortcutLongLabel="@string/shortcut_long_off"
         android:shortcutShortLabel="@string/shortcut_short_off">
         <intent
-            android:action="com.rudyii.pdnss.DISABLE"
+            android:action="com.rudyii.pdnss.OFF"
             android:targetClass="com.rudyii.pdnss.PrivateDNSSwitcherAction"
             android:targetPackage="com.rudyii.pdnss" />
     </shortcut>
