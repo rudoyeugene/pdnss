@@ -34,24 +34,13 @@
                 <action android:name="com.rudyii.pdnss.AUTO" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.rudyii.pdnss.ENABLE" />
+                <action android:name="com.rudyii.pdnss.ON" />
             </intent-filter>
             <intent-filter>
-                <action android:name="com.rudyii.pdnss.DISABLE" />
+                <action android:name="com.rudyii.pdnss.OFF" />
             </intent-filter>
         </activity>
 
-        <receiver
-            android:name=".PrivateDNSSwitcherAdminReceiver"
-            android:exported="true"
-            android:permission="android.permission.BIND_DEVICE_ADMIN">
-            <meta-data
-                android:name="android.app.device_admin"
-                android:resource="@xml/device_admin" />
-            <intent-filter>
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
-            </intent-filter>
-        </receiver>
     </application>
 
 

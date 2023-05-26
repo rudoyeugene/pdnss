@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Private DNS Switcher</string>
 
-    <string name="before_all">Make sure you granted permissions:</string>
-    <string name="pm_grant_write_security_settings">pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS</string>
+    <string name="before_all">Make sure WRITE_SECURE_SETTINGS permission granted:</string>
+    <string name="pm_grant_write_security_settings">adb shell pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS</string>
 
     <string name="private_dns_state_text">Private DNS State:</string>
     <string name="private_dns_state_string">Private DNS is %1$s with host: %2$s</string>
@@ -12,11 +12,16 @@
     <string name="private_dns_state_off">OFF</string>
     <string name="private_dns_state_auto">AUTO</string>
 
-    <string name="shortcut_short_on">ON</string>
-    <string name="shortcut_long_on">Private DNS</string>
-    <string name="shortcut_short_off">OFF</string>
-    <string name="shortcut_long_off">Default DNS</string>
-    <string name="shortcut_short_auto">AUTO</string>
-    <string name="shortcut_long_auto">Google DNS</string>
+    <string name="none">none</string>
+    <string name="missing_permissions_warning">Missing permissions, please use ADB to grant permissions</string>
+    <string name="error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
+    <string name="copyrights">&#169; 2023 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.</string>
+
+    <string name="shortcut_short_on">PDNS ON</string>
+    <string name="shortcut_long_on">Private DNS ON</string>
+    <string name="shortcut_short_off">PDNS OFF</string>
+    <string name="shortcut_long_off">Private DNS OFF</string>
+    <string name="shortcut_short_auto">PDNS AUTO</string>
+    <string name="shortcut_long_auto">Private DNS AUTO</string>
 
 </resources>

@@ -7,6 +7,22 @@
     tools:context=".PrivateDNSSwitcherMainActivity">
 
     <TextView
+        android:id="@+id/label"
+        android:layout_width="0dp"
+        android:layout_height="36sp"
+        android:alpha="@dimen/material_emphasis_medium"
+        android:background="@color/material_dynamic_neutral90"
+        android:text="@string/app_name"
+        android:textAlignment="center"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:typeface="normal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
         android:id="@+id/beforeUseText"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -21,7 +37,9 @@
         android:id="@+id/beforeUseCommand"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="placeholder"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/pm_grant_write_security_settings"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -33,11 +51,24 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="@+id/before_uninstall"
+        android:text="@string/private_dns_state_string"
         android:textAlignment="center"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/beforeUseCommand" />
+
+    <TextView
+        android:id="@+id/copyrights"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/copyrights"
+        android:textAlignment="center"
+        android:textColor="@color/material_dynamic_neutral30"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

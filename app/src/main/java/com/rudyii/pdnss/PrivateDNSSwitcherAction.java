@@ -3,6 +3,9 @@ package com.rudyii.pdnss;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
+import static com.rudyii.pdnss.Constants.PDNSS_AUTO;
+import static com.rudyii.pdnss.Constants.PDNSS_OFF;
+import static com.rudyii.pdnss.Constants.PDNSS_ON;
 import static com.rudyii.pdnss.Constants.SETTINGS_PRIVATE_DNS_MODE;
 import static com.rudyii.pdnss.Constants.VALUE_PRIVATE_DNS_MODE_OFF_STRING;
 import static com.rudyii.pdnss.Constants.VALUE_PRIVATE_DNS_MODE_OPPORTUNISTIC_STRING;
@@ -18,7 +21,7 @@ import androidx.appcompat.app.AppCompatActivity;
 public class PrivateDNSSwitcherAction extends AppCompatActivity {
 
 
-    public static String getPrivateDnsModeAsString(int mode) {
+    public String getPrivateDnsModeAsString(int mode) {
         switch (mode) {
             case PRIVATE_DNS_MODE_OFF:
                 return VALUE_PRIVATE_DNS_MODE_OFF_STRING;
@@ -27,7 +30,7 @@ public class PrivateDNSSwitcherAction extends AppCompatActivity {
             case PRIVATE_DNS_MODE_PROVIDER_HOSTNAME:
                 return VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING;
             default:
-                throw new IllegalArgumentException("Invalid private dns mode: " + mode);
+                throw new IllegalArgumentException(getString(R.string.error_unknown_pdns_mode, mode));
         }
     }
 
@@ -38,21 +41,21 @@ public class PrivateDNSSwitcherAction extends AppCompatActivity {
 
         if (intent != null && intent.getAction() != null) {
             switch (intent.getAction()) {
-                case "com.rudyii.pdnss.AUTO":
+                case PDNSS_AUTO:
                     try {
                         updateSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
                     } catch (Exception e) {
                         showWarning();
                     }
                     break;
-                case "com.rudyii.pdnss.ENABLE":
+                case PDNSS_ON:
                     try {
                         updateSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     } catch (Exception e) {
                         showWarning();
                     }
                     break;
-                case "com.rudyii.pdnss.DISABLE":
+                case PDNSS_OFF:
                     try {
                         updateSettings(PRIVATE_DNS_MODE_OFF);
                     } catch (Exception e) {
@@ -72,7 +75,7 @@ public class PrivateDNSSwitcherAction extends AppCompatActivity {
     }
 
     private void showWarning() {
-        Toast.makeText(getApplicationContext(), "Missing permissions, please use ADB to grant permissions",
+        Toast.makeText(getApplicationContext(), getString(R.string.missing_permissions_warning),
                 Toast.LENGTH_LONG).show();
     }
 }

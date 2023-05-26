@@ -20,6 +20,7 @@ public class PrivateDNSSwitcherMainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTitle(R.string.app_name);
         setContentView(R.layout.activity_main);
         initProps();
         setText();
@@ -28,6 +29,7 @@ public class PrivateDNSSwitcherMainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        setTitle(R.string.app_name);
         initProps();
         setText();
     }
@@ -35,7 +37,12 @@ public class PrivateDNSSwitcherMainActivity extends AppCompatActivity {
     public void setText() {
         beforeUseText.setText(R.string.before_all);
         beforeUseCommandText.setText(R.string.pm_grant_write_security_settings);
-        dnsStateText.setText(getString(R.string.private_dns_state_string, getPDNSState(), Settings.Global.getString(getApplicationContext().getContentResolver(), SETTINGS_PRIVATE_DNS_SPECIFIER)));
+        dnsStateText.setText(getString(R.string.private_dns_state_string, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
+    }
+
+    private String getSettingsValue(String name) {
+        String result = Settings.Global.getString(getApplicationContext().getContentResolver(), name);
+        return result == null ? getString(R.string.none) : result;
     }
 
     private void initProps() {
@@ -51,7 +58,7 @@ public class PrivateDNSSwitcherMainActivity extends AppCompatActivity {
     }
 
     private String getPDNSState() {
-        String PDNSState = Settings.Global.getString(getApplicationContext().getContentResolver(), SETTINGS_PRIVATE_DNS_MODE);
+        String PDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
         if (PDNSState == null) {
             return getString(R.string.private_dns_state_unknown);
         } else {
