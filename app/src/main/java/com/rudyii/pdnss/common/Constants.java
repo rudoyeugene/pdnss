@@ -1,4 +1,4 @@
-package com.rudyii.pdnss;
+package com.rudyii.pdnss.common;
 
 public class Constants {
     public static final String SETTINGS_PRIVATE_DNS_MODE = "private_dns_mode";

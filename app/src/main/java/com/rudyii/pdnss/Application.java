@@ -1,12 +1,11 @@
 package com.rudyii.pdnss;
 
-import android.app.Application;
 import android.content.Context;
 
-public class PrivateDNSSwitcherApplication extends Application {
-    private static PrivateDNSSwitcherApplication instance;
+public class Application extends android.app.Application {
+    private static Application instance;
 
-    public static PrivateDNSSwitcherApplication getInstance() {
+    public static Application getInstance() {
         return instance;
     }
 
