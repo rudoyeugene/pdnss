@@ -9,5 +9,5 @@ public class Constants {
     public static final String PDNSS_AUTO = "com.rudyii.pdnss.AUTO";
     public static final String PDNSS_ON = "com.rudyii.pdnss.ON";
     public static final String PDNSS_OFF = "com.rudyii.pdnss.OFF";
-
+    public static final String PDNS_STATE_CHANGED = "com.rudyii.pdnss.PDNS_STATE_CHANGED";
 }

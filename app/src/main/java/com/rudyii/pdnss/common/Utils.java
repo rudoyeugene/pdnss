@@ -17,8 +17,12 @@ import com.rudyii.pdnss.R;
 
 public class Utils {
     public static void updatePdnsModeSettings(int mode) {
-        Settings.Global.putString(getContext().getContentResolver(), SETTINGS_PRIVATE_DNS_MODE,
-                getPrivateDnsModeAsString(mode));
+        try {
+            Settings.Global.putString(getContext().getContentResolver(), SETTINGS_PRIVATE_DNS_MODE,
+                    getPrivateDnsModeAsString(mode));
+        } catch (SecurityException e) {
+            showWarning(getContext().getString(R.string.missing_permissions_warning));
+        }
     }
 
     public static void updatePdnsUrl(String pDnsUrl) {
@@ -36,6 +40,29 @@ public class Utils {
                 return VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING;
             default:
                 throw new IllegalArgumentException(getContext().getString(R.string.error_unknown_pdns_mode, mode));
+        }
+    }
+
+    public static String getSettingsValue(String name) {
+        String result = Settings.Global.getString(getContext().getContentResolver(), name);
+        return result == null ? getContext().getString(R.string.none) : result;
+    }
+
+    public static String getPDNSState() {
+        String pDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
+        if (pDNSState == null) {
+            return getContext().getString(R.string.dns_state_unknown);
+        } else {
+            switch (pDNSState) {
+                case VALUE_PRIVATE_DNS_MODE_OFF_STRING:
+                    return getContext().getString(R.string.dns_state_off);
+                case VALUE_PRIVATE_DNS_MODE_OPPORTUNISTIC_STRING:
+                    return getContext().getString(R.string.dns_state_auto);
+                case VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING:
+                    return getContext().getString(R.string.dns_state_on);
+                default:
+                    return getContext().getString(R.string.dns_state_unknown);
+            }
         }
     }
 

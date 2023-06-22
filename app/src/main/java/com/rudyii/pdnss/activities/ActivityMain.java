@@ -3,19 +3,19 @@ package com.rudyii.pdnss.activities;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
-import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_MODE;
+import static com.rudyii.pdnss.common.Constants.PDNS_STATE_CHANGED;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
-import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_OFF_STRING;
-import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_OPPORTUNISTIC_STRING;
-import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING;
+import static com.rudyii.pdnss.common.Utils.getPDNSState;
+import static com.rudyii.pdnss.common.Utils.getSettingsValue;
 import static com.rudyii.pdnss.common.Utils.showWarning;
 import static com.rudyii.pdnss.common.Utils.updatePdnsModeSettings;
 import static com.rudyii.pdnss.common.Utils.updatePdnsUrl;
+import static com.rudyii.pdnss.services.QuickTileService.refreshTile;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -24,8 +24,10 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.rudyii.pdnss.R;
+import com.rudyii.pdnss.common.DnsStateBroadcastReceiver;
 
 public class ActivityMain extends AppCompatActivity {
+    private DnsStateBroadcastReceiver dnsStateBroadcastReceiver;
     private TextView dnsStateText;
     private Button on;
     private Button off;
@@ -51,13 +53,21 @@ public class ActivityMain extends AppCompatActivity {
         setText();
     }
 
-    public void setText() {
-        dnsStateText.setText(getString(R.string.private_dns_state_string, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
+    @Override
+    protected void onStart() {
+        super.onStart();
+        IntentFilter filter = new IntentFilter(PDNS_STATE_CHANGED);
+        registerReceiver(dnsStateBroadcastReceiver, filter);
     }
 
-    private String getSettingsValue(String name) {
-        String result = Settings.Global.getString(getApplicationContext().getContentResolver(), name);
-        return result == null ? getString(R.string.none) : result;
+    @Override
+    protected void onStop() {
+        super.onStop();
+        unregisterReceiver(dnsStateBroadcastReceiver);
+    }
+
+    public void setText() {
+        dnsStateText.setText(getString(R.string.dns_state_details, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
     }
 
     private void initProps() {
@@ -69,6 +79,7 @@ public class ActivityMain extends AppCompatActivity {
             on.setOnClickListener(v -> {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                 setText();
+                refreshTile();
             });
         }
         if (off == null) {
@@ -76,6 +87,7 @@ public class ActivityMain extends AppCompatActivity {
             off.setOnClickListener(v -> {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                 setText();
+                refreshTile();
             });
         }
         if (auto == null) {
@@ -83,6 +95,7 @@ public class ActivityMain extends AppCompatActivity {
             auto.setOnClickListener(v -> {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
                 setText();
+                refreshTile();
             });
         }
         if (set == null) {
@@ -92,7 +105,7 @@ public class ActivityMain extends AppCompatActivity {
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 String dnsUrl = dnsHost.getText().toString();
                 updatePdnsUrl(dnsUrl);
-                showWarning(String.format("Updated PDNS URL to %s", dnsUrl));
+                showWarning(getString(R.string.dns_set_host_notification, dnsUrl));
                 setText();
                 dnsHost.clearFocus();
                 dnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
@@ -102,8 +115,8 @@ public class ActivityMain extends AppCompatActivity {
             instructions = this.findViewById(R.id.instructions);
             instructions.setOnClickListener(v -> {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setTitle("Permissions granting instructions");
-                alert.setMessage(R.string.pm_grant_write_security_settings);
+                alert.setTitle(getString(R.string.instructions_title));
+                alert.setMessage(R.string.instructions);
                 alert.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
                 alert.show();
             });
@@ -112,23 +125,9 @@ public class ActivityMain extends AppCompatActivity {
             dnsHost = this.findViewById(R.id.dsnHost);
             dnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
         }
-    }
-
-    private String getPDNSState() {
-        String PDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
-        if (PDNSState == null) {
-            return getString(R.string.private_dns_state_unknown);
-        } else {
-            switch (PDNSState) {
-                case VALUE_PRIVATE_DNS_MODE_OFF_STRING:
-                    return getString(R.string.private_dns_state_off);
-                case VALUE_PRIVATE_DNS_MODE_OPPORTUNISTIC_STRING:
-                    return getString(R.string.private_dns_state_auto);
-                case VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING:
-                    return getString(R.string.private_dns_state_on);
-                default:
-                    return getString(R.string.private_dns_state_unknown);
-            }
+        if (dnsStateBroadcastReceiver == null) {
+            dnsStateBroadcastReceiver = new DnsStateBroadcastReceiver(dnsStateText);
         }
     }
+
 }

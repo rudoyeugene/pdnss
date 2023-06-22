@@ -18,7 +18,6 @@ import com.rudyii.pdnss.R;
 
 public class ActivityShortcuts extends AppCompatActivity {
 
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

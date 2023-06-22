@@ -1,19 +1,20 @@
 <resources>
     <string name="app_name">Private DNS Switcher</string>
 
-    <string name="before_all">Make sure WRITE_SECURE_SETTINGS permission granted:</string>
-    <string name="pm_grant_write_security_settings">1. Enable Developer Options\n2. Enable USB debussing\n3. Open shell\n4. Run command:\nadb shell pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS</string>
+    <string name="instructions_title">How to grant required permissions</string>
+    <string name="instructions">1. Enable Developer Options\n2. Enable USB debussing\n3. Open shell\n4. Run command:\nadb shell pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS</string>
 
-    <string name="private_dns_state_text">Private DNS State:</string>
-    <string name="private_dns_state_string">Private DNS is %1$s with host: %2$s</string>
+    <string name="dns_state_title">Private DNS State:</string>
+    <string name="dns_state_details">Private DNS is %1$s with host: %2$s</string>
+    <string name="dns_set_host_notification">Updated PDNS URL to %1$s</string>
 
-    <string name="private_dns_state_unknown">unknown</string>
-    <string name="private_dns_state_on">ON</string>
-    <string name="private_dns_state_off">OFF</string>
-    <string name="private_dns_state_auto">AUTO</string>
+    <string name="dns_state_unknown">unknown</string>
+    <string name="dns_state_on">ON</string>
+    <string name="dns_state_off">OFF</string>
+    <string name="dns_state_auto">AUTO</string>
 
     <string name="none">none</string>
-    <string name="missing_permissions_warning">Missing permissions, please use ADB to grant permissions</string>
+    <string name="missing_permissions_warning">Missing permissions, please see INSTRUCTIONS to resolve</string>
     <string name="error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
     <string name="copyrights">&#169; 2023 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.</string>
 
