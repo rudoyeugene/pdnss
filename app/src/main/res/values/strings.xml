@@ -25,4 +25,6 @@
     <string name="shortcut_short_auto">PDNS AUTO</string>
     <string name="shortcut_long_auto">Private DNS AUTO</string>
 
+    <string name="dummy_pdns_url">one.one.one.one</string>
+
 </resources>
