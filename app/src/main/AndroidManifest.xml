@@ -33,6 +33,7 @@
         <activity
             android:name="com.rudyii.pdnss.activities.ActivityShortcuts"
             android:exported="false"
+            android:excludeFromRecents="true"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="com.rudyii.pdnss.AUTO" />

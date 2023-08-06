@@ -22,6 +22,7 @@ public class ActivityShortcuts extends Activity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
+        setFinishOnTouchOutside(true);
 
         if (intent != null && intent.getAction() != null) {
             switch (intent.getAction()) {

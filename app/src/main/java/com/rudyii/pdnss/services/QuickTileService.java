@@ -66,10 +66,10 @@ public class QuickTileService extends TileService {
     }
 
     private void updateTile() {
-        String PDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
+        String pDnsState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
         tile = getQsTile();
 
-        if (PDNSState.equals(VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING)) {
+        if (VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING.equals(pDnsState)) {
             tile.setState(STATE_ACTIVE);
         } else {
             tile.setState(STATE_INACTIVE);
