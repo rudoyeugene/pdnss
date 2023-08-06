@@ -43,7 +43,7 @@ public class QuickTileService extends TileService {
             updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
             tile.setState(STATE_ACTIVE);
         }
-        tile.updateTile();
+        updateTile();
     }
 
     @Override
@@ -55,6 +55,7 @@ public class QuickTileService extends TileService {
     @Override
     public void onStopListening() {
         super.onStopListening();
+        updateTile();
         sendBroadcast(new Intent(PDNS_STATE_CHANGED));
     }
 
