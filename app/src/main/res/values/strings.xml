@@ -12,6 +12,7 @@
     <string name="dns_state_on">ON</string>
     <string name="dns_state_off">OFF</string>
     <string name="dns_state_auto">AUTO</string>
+    <string name="disable_on_vpn">Turn OFF private DNS on VPN</string>
 
     <string name="none">none</string>
     <string name="missing_permissions_warning">Missing permissions, please see INSTRUCTIONS to resolve</string>
@@ -26,5 +27,9 @@
     <string name="shortcut_long_auto">Private DNS AUTO</string>
 
     <string name="dummy_pdns_url">one.one.one.one</string>
+
+    <string name="settings_name">com.rudyii.pdnss.SETTINGS</string>
+    <string name="settings_name_disable_while_vpn">disable_while_vpn</string>
+    <string name="settings_name_last_pdns_state">last_pdns_state</string>
 
 </resources>

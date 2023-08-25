@@ -8,6 +8,7 @@ import static com.rudyii.pdnss.common.Constants.PDNS_STATE_CHANGED;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_MODE;
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING;
 import static com.rudyii.pdnss.common.Utils.getSettingsValue;
+import static com.rudyii.pdnss.common.Utils.updateLastPdnsState;
 import static com.rudyii.pdnss.common.Utils.updatePdnsModeSettings;
 
 import android.content.Intent;
@@ -17,7 +18,7 @@ import android.service.quicksettings.TileService;
 public class QuickTileService extends TileService {
     private static Tile tile;
 
-    public static void refreshTile() {
+    public static void refreshQsTile() {
         if (tile != null) {
             String PDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
 
@@ -38,9 +39,11 @@ public class QuickTileService extends TileService {
 
         if (VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING.equals(pDNSState)) {
             updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
+            updateLastPdnsState(false);
             tile.setState(STATE_INACTIVE);
         } else {
             updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+            updateLastPdnsState(true);
             tile.setState(STATE_ACTIVE);
         }
         updateTile();

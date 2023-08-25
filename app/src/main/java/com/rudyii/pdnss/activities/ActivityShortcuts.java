@@ -8,7 +8,7 @@ import static com.rudyii.pdnss.common.Constants.PDNSS_OFF;
 import static com.rudyii.pdnss.common.Constants.PDNSS_ON;
 import static com.rudyii.pdnss.common.Utils.showWarning;
 import static com.rudyii.pdnss.common.Utils.updatePdnsModeSettings;
-import static com.rudyii.pdnss.services.QuickTileService.refreshTile;
+import static com.rudyii.pdnss.services.QuickTileService.refreshQsTile;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -29,7 +29,7 @@ public class ActivityShortcuts extends Activity {
                 case PDNSS_AUTO:
                     try {
                         updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
-                        refreshTile();
+                        refreshQsTile();
                     } catch (Exception e) {
                         showWarning(getString(R.string.missing_permissions_warning));
                     }
@@ -37,7 +37,7 @@ public class ActivityShortcuts extends Activity {
                 case PDNSS_ON:
                     try {
                         updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
-                        refreshTile();
+                        refreshQsTile();
                     } catch (Exception e) {
                         showWarning(getString(R.string.missing_permissions_warning));
                     }
@@ -45,7 +45,7 @@ public class ActivityShortcuts extends Activity {
                 case PDNSS_OFF:
                     try {
                         updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
-                        refreshTile();
+                        refreshQsTile();
                     } catch (Exception e) {
                         showWarning(getString(R.string.missing_permissions_warning));
                     }

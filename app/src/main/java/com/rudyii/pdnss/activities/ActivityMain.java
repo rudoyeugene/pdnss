@@ -8,16 +8,19 @@ import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.common.Utils.getPDNSState;
 import static com.rudyii.pdnss.common.Utils.getSettingsValue;
 import static com.rudyii.pdnss.common.Utils.showWarning;
+import static com.rudyii.pdnss.common.Utils.updateLastPdnsState;
 import static com.rudyii.pdnss.common.Utils.updatePdnsModeSettings;
 import static com.rudyii.pdnss.common.Utils.updatePdnsUrl;
-import static com.rudyii.pdnss.services.QuickTileService.refreshTile;
+import static com.rudyii.pdnss.services.QuickTileService.refreshQsTile;
 
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -33,29 +36,30 @@ public class ActivityMain extends AppCompatActivity {
     private Button off;
     private Button auto;
     private Button set;
+    private CheckBox disableForVpn;
     private Button instructions;
     private EditText dnsHost;
+    private boolean activityInitInProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_name);
         setContentView(R.layout.activity_main);
-        initProps();
-        setText();
+        initAll();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         setTitle(R.string.app_name);
-        initProps();
-        setText();
+        initAll();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        initAll();
         IntentFilter filter = new IntentFilter(PDNS_STATE_CHANGED);
         registerReceiver(dnsStateBroadcastReceiver, filter);
     }
@@ -63,11 +67,33 @@ public class ActivityMain extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        unregisterReceiver(dnsStateBroadcastReceiver);
+        releaseResources();
     }
 
-    public void setText() {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        releaseResources();
+    }
+
+    private void initAll() {
+        activityInitializationStarted();
+
+        initProps();
+        updateTexts();
+        initCheckboxes();
+
+        activityInitializationCompleted();
+    }
+
+    public void updateTexts() {
         dnsStateText.setText(getString(R.string.dns_state_details, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
+    }
+
+    private void initCheckboxes() {
+        SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
+                getString(R.string.settings_name), Context.MODE_PRIVATE);
+        disableForVpn.setChecked(sharedPref.getBoolean(getString(R.string.settings_name_disable_while_vpn), false));
     }
 
     private void initProps() {
@@ -78,24 +104,27 @@ public class ActivityMain extends AppCompatActivity {
             on = this.findViewById(R.id.on);
             on.setOnClickListener(v -> {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
-                setText();
-                refreshTile();
+                updateLastPdnsState(true);
+                updateTexts();
+                refreshQsTile();
             });
         }
         if (off == null) {
             off = this.findViewById(R.id.off);
             off.setOnClickListener(v -> {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
-                setText();
-                refreshTile();
+                updateLastPdnsState(false);
+                updateTexts();
+                refreshQsTile();
             });
         }
         if (auto == null) {
             auto = this.findViewById(R.id.auto);
             auto.setOnClickListener(v -> {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
-                setText();
-                refreshTile();
+                updateLastPdnsState(false);
+                updateTexts();
+                refreshQsTile();
             });
         }
         if (set == null) {
@@ -106,7 +135,7 @@ public class ActivityMain extends AppCompatActivity {
                 String dnsUrl = dnsHost.getText().toString();
                 updatePdnsUrl(dnsUrl);
                 showWarning(getString(R.string.dns_set_host_notification, dnsUrl));
-                setText();
+                updateTexts();
                 dnsHost.clearFocus();
                 dnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
             });
@@ -121,6 +150,18 @@ public class ActivityMain extends AppCompatActivity {
                 alert.show();
             });
         }
+        if (disableForVpn == null) {
+            disableForVpn = this.findViewById(R.id.disableForVpn);
+            disableForVpn.setOnCheckedChangeListener((compoundButton, checked) -> {
+                if (!activityInitInProgress) {
+                    SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
+                            getString(R.string.settings_name), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putBoolean(getString(R.string.settings_name_disable_while_vpn), checked);
+                    editor.apply();
+                }
+            });
+        }
         if (dnsHost == null) {
             dnsHost = this.findViewById(R.id.dsnHost);
             dnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
@@ -130,4 +171,26 @@ public class ActivityMain extends AppCompatActivity {
         }
     }
 
+    private void activityInitializationStarted() {
+        activityInitInProgress = true;
+    }
+
+    private void activityInitializationCompleted() {
+        activityInitInProgress = false;
+    }
+
+    private void releaseResources() {
+        if (dnsStateBroadcastReceiver != null) {
+            unregisterReceiver(dnsStateBroadcastReceiver);
+        }
+        dnsStateBroadcastReceiver = null;
+        disableForVpn = null;
+        dnsStateText = null;
+        instructions = null;
+        dnsHost = null;
+        auto = null;
+        off = null;
+        set = null;
+        on = null;
+    }
 }

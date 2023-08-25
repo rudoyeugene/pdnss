@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
+    <!--    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>-->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>-->
+    <!--    <uses-permission android:name="android.permission.INTERNET"/>-->
 
     <application
         android:name=".Application"
@@ -25,6 +29,7 @@
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE_PREFERENCES" />
             </intent-filter>
+
             <meta-data
                 android:name="android.app.shortcuts"
                 android:resource="@xml/shortcuts" />
@@ -32,8 +37,8 @@
 
         <activity
             android:name="com.rudyii.pdnss.activities.ActivityShortcuts"
-            android:exported="false"
             android:excludeFromRecents="true"
+            android:exported="false"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="com.rudyii.pdnss.AUTO" />
@@ -55,6 +60,10 @@
             <meta-data
                 android:name="android.service.quicksettings.ACTIVE_TILE"
                 android:value="true" />
+            <meta-data
+                android:name="android.service.quicksettings.TOGGLEABLE_TILE"
+                android:value="true" />
+
             <intent-filter>
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>

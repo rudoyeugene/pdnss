@@ -1,6 +1,9 @@
 package com.rudyii.pdnss;
 
 import android.content.Context;
+import android.content.IntentFilter;
+
+import com.rudyii.pdnss.services.ConnectionStateMonitor;
 
 public class Application extends android.app.Application {
     private static Application instance;
@@ -17,5 +20,8 @@ public class Application extends android.app.Application {
     public void onCreate() {
         instance = this;
         super.onCreate();
+        IntentFilter filter = new IntentFilter();
+        filter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
+        registerReceiver(new ConnectionStateMonitor(), filter);
     }
 }

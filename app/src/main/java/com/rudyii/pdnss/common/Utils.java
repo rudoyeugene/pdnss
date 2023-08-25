@@ -10,6 +10,8 @@ import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_OFF_STRIN
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_OPPORTUNISTIC_STRING;
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.provider.Settings;
 import android.widget.Toast;
 
@@ -23,6 +25,14 @@ public class Utils {
         } catch (SecurityException e) {
             showWarning(getContext().getString(R.string.missing_permissions_warning));
         }
+    }
+
+    public static void updateLastPdnsState(boolean active) {
+        SharedPreferences sharedPref = getContext().getSharedPreferences(
+                getContext().getString(R.string.settings_name), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putBoolean(getContext().getString(R.string.settings_name_last_pdns_state), active);
+        editor.apply();
     }
 
     public static void updatePdnsUrl(String pDnsUrl) {
