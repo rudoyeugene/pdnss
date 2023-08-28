@@ -32,6 +32,7 @@ import com.rudyii.pdnss.common.DnsStateBroadcastReceiver;
 public class ActivityMain extends AppCompatActivity {
     private DnsStateBroadcastReceiver dnsStateBroadcastReceiver;
     private TextView dnsStateText;
+    private TextView copyrights;
     private Button on;
     private Button off;
     private Button auto;
@@ -86,6 +87,12 @@ public class ActivityMain extends AppCompatActivity {
 
     public void updateTexts() {
         dnsStateText.setText(getString(R.string.dns_state_details, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
+
+        try {
+            copyrights.setText(getString(R.string.copyrights,
+                    getPackageManager().getPackageInfo(getPackageName(), 0).versionName));
+        } catch (Exception ignored) {
+        }
     }
 
     private void initCheckboxes() {
@@ -97,6 +104,9 @@ public class ActivityMain extends AppCompatActivity {
     private void initProps() {
         if (dnsStateText == null) {
             dnsStateText = this.findViewById(R.id.dnsStateText);
+        }
+        if (copyrights == null) {
+            copyrights = this.findViewById(R.id.copyrights);
         }
         if (on == null) {
             on = this.findViewById(R.id.on);

@@ -5,7 +5,7 @@
     <string name="instructions">1. Enable Developer Options\n2. Enable USB debussing\n3. Open shell\n4. Run command:\nadb shell pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS</string>
 
     <string name="dns_state_title">Private DNS State:</string>
-    <string name="dns_state_quicktile">PDNS %s</string>
+    <string name="dns_state_quicktile">Private DNS</string>
     <string name="dns_state_details">Private DNS is %1$s with host: %2$s</string>
     <string name="dns_set_host_notification">Updated PDNS URL to %1$s</string>
 
@@ -18,7 +18,7 @@
     <string name="none">none</string>
     <string name="missing_permissions_warning">Missing permissions, please see INSTRUCTIONS to resolve</string>
     <string name="error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
-    <string name="copyrights">&#169; 2023 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.</string>
+    <string name="copyrights">&#169; 2023 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nVersion: %s</string>
 
     <string name="shortcut_short_on">PDNS ON</string>
     <string name="shortcut_long_on">Private DNS ON</string>

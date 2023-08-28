@@ -2,7 +2,7 @@
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
         android:enabled="true"
-        android:icon="@drawable/auto"
+        android:icon="@mipmap/auto"
         android:shortcutId="auto"
         android:shortcutLongLabel="@string/shortcut_long_auto"
         android:shortcutShortLabel="@string/shortcut_short_auto">
@@ -13,7 +13,7 @@
     </shortcut>
     <shortcut
         android:enabled="true"
-        android:icon="@drawable/on"
+        android:icon="@mipmap/on"
         android:shortcutId="enable"
         android:shortcutLongLabel="@string/shortcut_long_on"
         android:shortcutShortLabel="@string/shortcut_short_on">
@@ -24,7 +24,7 @@
     </shortcut>
     <shortcut
         android:enabled="true"
-        android:icon="@drawable/off"
+        android:icon="@mipmap/off"
         android:shortcutId="disable"
         android:shortcutLongLabel="@string/shortcut_long_off"
         android:shortcutShortLabel="@string/shortcut_short_off">

@@ -4,6 +4,7 @@ import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
 import static android.service.quicksettings.Tile.STATE_ACTIVE;
 import static android.service.quicksettings.Tile.STATE_INACTIVE;
+import static com.rudyii.pdnss.PrivateDnsSwitcherApplication.getContext;
 import static com.rudyii.pdnss.common.Constants.PDNS_STATE_CHANGED;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_MODE;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
@@ -24,6 +25,8 @@ public class QuickTileService extends TileService {
     public static void refreshQsTile() {
         if (tile != null) {
             String PDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
+            tile.setLabel(getContext().getString(R.string.dns_state_quicktile));
+            tile.setSubtitle(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
 
             if (PDNSState.equals(VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING)) {
                 tile.setState(STATE_ACTIVE);
@@ -38,7 +41,6 @@ public class QuickTileService extends TileService {
     public void onClick() {
         super.onClick();
         String pDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
-        Tile tile = getQsTile();
 
         if (VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING.equals(pDNSState)) {
             updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
@@ -78,13 +80,12 @@ public class QuickTileService extends TileService {
     private void updateTile() {
         String pDnsState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
         tile = getQsTile();
+        tile.setLabel(getString(R.string.dns_state_quicktile));
         tile.setSubtitle(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
 
         if (VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING.equals(pDnsState)) {
-            tile.setLabel(getString(R.string.dns_state_quicktile, getString(R.string.dns_state_on)));
             tile.setState(STATE_ACTIVE);
         } else {
-            tile.setLabel(getString(R.string.dns_state_quicktile, getString(R.string.dns_state_off)));
             tile.setState(STATE_INACTIVE);
         }
         tile.updateTile();
