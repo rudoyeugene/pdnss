@@ -46,19 +46,11 @@ public class ActivityMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.app_name);
         setContentView(R.layout.activity_main);
-        initAll();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        setTitle(R.string.app_name);
-        initAll();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
         initAll();
         IntentFilter filter = new IntentFilter(PDNS_STATE_CHANGED);
         registerReceiver(dnsStateBroadcastReceiver, filter);
@@ -67,13 +59,19 @@ public class ActivityMain extends AppCompatActivity {
     @Override
     protected void onStop() {
         super.onStop();
-        releaseResources();
+        finish();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         releaseResources();
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        finish();
     }
 
     private void initAll() {
@@ -183,14 +181,5 @@ public class ActivityMain extends AppCompatActivity {
         if (dnsStateBroadcastReceiver != null) {
             unregisterReceiver(dnsStateBroadcastReceiver);
         }
-        dnsStateBroadcastReceiver = null;
-        disableForVpn = null;
-        dnsStateText = null;
-        instructions = null;
-        dnsHost = null;
-        auto = null;
-        off = null;
-        set = null;
-        on = null;
     }
 }

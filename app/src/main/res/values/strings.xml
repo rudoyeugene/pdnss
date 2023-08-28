@@ -5,6 +5,7 @@
     <string name="instructions">1. Enable Developer Options\n2. Enable USB debussing\n3. Open shell\n4. Run command:\nadb shell pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS</string>
 
     <string name="dns_state_title">Private DNS State:</string>
+    <string name="dns_state_quicktile">PDNS %s</string>
     <string name="dns_state_details">Private DNS is %1$s with host: %2$s</string>
     <string name="dns_set_host_notification">Updated PDNS URL to %1$s</string>
 
@@ -26,6 +27,7 @@
     <string name="shortcut_short_auto">PDNS AUTO</string>
     <string name="shortcut_long_auto">Private DNS AUTO</string>
 
+    <string name="intent_auto">com.rudyii.pdnss.AUTO</string>
     <string name="dummy_pdns_url">one.one.one.one</string>
 
     <string name="settings_name">com.rudyii.pdnss.SETTINGS</string>

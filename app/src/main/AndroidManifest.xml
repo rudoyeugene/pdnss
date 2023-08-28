@@ -2,14 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
-    <!--    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>-->
+    <uses-permission
+        android:name="android.permission.WRITE_SECURE_SETTINGS"
+        tools:ignore="ProtectedPermissions" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <!--    <uses-permission android:name="android.permission.WRITE_SETTINGS"/>-->
-    <!--    <uses-permission android:name="android.permission.INTERNET"/>-->
 
     <application
-        android:name=".Application"
+        android:name=".PrivateDnsSwitcherApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -21,6 +20,7 @@
         tools:targetApi="31">
         <activity
             android:name=".activities.ActivityMain"
+            android:launchMode="singleInstance"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,8 +38,9 @@
         <activity
             android:name="com.rudyii.pdnss.activities.ActivityShortcuts"
             android:excludeFromRecents="true"
-            android:exported="false"
-            android:theme="@android:style/Theme.NoDisplay">
+            android:exported="true"
+            android:launchMode="singleInstance"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar">
             <intent-filter>
                 <action android:name="com.rudyii.pdnss.AUTO" />
             </intent-filter>

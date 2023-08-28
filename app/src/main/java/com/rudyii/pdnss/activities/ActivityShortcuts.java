@@ -20,6 +20,7 @@ public class ActivityShortcuts extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setVisible(false);
         super.onCreate(savedInstanceState);
         Intent intent = getIntent();
         setFinishOnTouchOutside(true);
@@ -50,8 +51,6 @@ public class ActivityShortcuts extends Activity {
                         showWarning(getString(R.string.missing_permissions_warning));
                     }
                     break;
-                default:
-                    this.finish();
             }
         }
         this.finish();

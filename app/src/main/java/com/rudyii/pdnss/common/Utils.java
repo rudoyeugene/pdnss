@@ -3,15 +3,19 @@ package com.rudyii.pdnss.common;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
-import static com.rudyii.pdnss.Application.getContext;
+import static com.rudyii.pdnss.PrivateDnsSwitcherApplication.getContext;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_MODE;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_OFF_STRING;
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_OPPORTUNISTIC_STRING;
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING;
+import static com.rudyii.pdnss.services.QuickTileService.refreshQsTile;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.net.ConnectivityManager;
+import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.provider.Settings;
 import android.widget.Toast;
 
@@ -81,4 +85,27 @@ public class Utils {
                 Toast.LENGTH_LONG).show();
     }
 
+    public static void updatePdnsSettingsOnNetworkChange(Network network) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        if (capabilities != null) {
+            SharedPreferences sharedPref = getContext().getSharedPreferences(
+                    getContext().getString(R.string.settings_name), Context.MODE_PRIVATE);
+            boolean wasActive = sharedPref.getBoolean(getContext().getString(R.string.settings_name_last_pdns_state), false);
+
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                boolean pDnsStateOn = VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING.equals(getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
+                boolean disableWhileVnp = sharedPref.getBoolean(getContext().getString(R.string.settings_name_disable_while_vpn), false);
+                if (disableWhileVnp && pDnsStateOn) {
+                    updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
+                    refreshQsTile();
+                }
+            } else {
+                if (wasActive) {
+                    updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+                    refreshQsTile();
+                }
+            }
+        }
+    }
 }

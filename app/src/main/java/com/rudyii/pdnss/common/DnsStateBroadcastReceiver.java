@@ -1,6 +1,6 @@
 package com.rudyii.pdnss.common;
 
-import static com.rudyii.pdnss.Application.getContext;
+import static com.rudyii.pdnss.PrivateDnsSwitcherApplication.getContext;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.common.Utils.getPDNSState;
 import static com.rudyii.pdnss.common.Utils.getSettingsValue;
