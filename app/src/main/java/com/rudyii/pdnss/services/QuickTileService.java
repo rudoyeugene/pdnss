@@ -43,11 +43,9 @@ public class QuickTileService extends TileService {
         if (VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING.equals(pDNSState)) {
             updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
             updateLastPdnsState(false);
-            tile.setState(STATE_INACTIVE);
         } else {
             updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
             updateLastPdnsState(true);
-            tile.setState(STATE_ACTIVE);
         }
         updateTile();
     }

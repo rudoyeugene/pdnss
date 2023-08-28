@@ -31,11 +31,11 @@ public class Utils {
         }
     }
 
-    public static void updateLastPdnsState(boolean active) {
+    public static void updateLastPdnsState(boolean wasActive) {
         SharedPreferences sharedPref = getContext().getSharedPreferences(
                 getContext().getString(R.string.settings_name), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
-        editor.putBoolean(getContext().getString(R.string.settings_name_last_pdns_state), active);
+        editor.putBoolean(getContext().getString(R.string.settings_name_last_pdns_state), wasActive);
         editor.apply();
     }
 
