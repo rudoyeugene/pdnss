@@ -17,6 +17,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -54,7 +55,11 @@ public class ActivityMain extends AppCompatActivity {
         super.onResume();
         initAll();
         IntentFilter filter = new IntentFilter(PDNS_STATE_CHANGED);
-        registerReceiver(dnsStateBroadcastReceiver, filter);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            registerReceiver(dnsStateBroadcastReceiver, filter, RECEIVER_NOT_EXPORTED);
+        } else {
+            registerReceiver(dnsStateBroadcastReceiver, filter);
+        }
     }
 
     @Override
