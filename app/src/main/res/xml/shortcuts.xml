@@ -2,12 +2,12 @@
 <shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
     <shortcut
         android:enabled="true"
-        android:icon="@mipmap/auto"
-        android:shortcutId="auto"
-        android:shortcutLongLabel="@string/shortcut_long_auto"
-        android:shortcutShortLabel="@string/shortcut_short_auto">
+        android:icon="@mipmap/google"
+        android:shortcutId="google"
+        android:shortcutLongLabel="@string/shortcut_long_google"
+        android:shortcutShortLabel="@string/shortcut_short_google">
         <intent
-            android:action="com.rudyii.pdnss.AUTO"
+            android:action="com.rudyii.pdnss.GOOGLE"
             android:targetClass="com.rudyii.pdnss.activities.ActivityShortcuts"
             android:targetPackage="com.rudyii.pdnss" />
     </shortcut>

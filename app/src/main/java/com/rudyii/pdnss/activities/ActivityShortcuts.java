@@ -3,7 +3,7 @@ package com.rudyii.pdnss.activities;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
-import static com.rudyii.pdnss.common.Constants.PDNSS_AUTO;
+import static com.rudyii.pdnss.common.Constants.PDNSS_GOOGLE;
 import static com.rudyii.pdnss.common.Constants.PDNSS_OFF;
 import static com.rudyii.pdnss.common.Constants.PDNSS_ON;
 import static com.rudyii.pdnss.common.Utils.showWarning;
@@ -27,7 +27,7 @@ public class ActivityShortcuts extends Activity {
 
         if (intent != null && intent.getAction() != null) {
             switch (intent.getAction()) {
-                case PDNSS_AUTO:
+                case PDNSS_GOOGLE:
                     try {
                         updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
                         refreshQsTile();

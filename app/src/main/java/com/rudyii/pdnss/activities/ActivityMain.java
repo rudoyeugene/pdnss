@@ -3,11 +3,18 @@ package com.rudyii.pdnss.activities;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
+import static com.rudyii.pdnss.PrivateDnsSwitcherApplication.getContext;
 import static com.rudyii.pdnss.common.Constants.PDNS_STATE_CHANGED;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
+import static com.rudyii.pdnss.common.PdnsModeType.GOOGLE;
+import static com.rudyii.pdnss.common.PdnsModeType.OFF;
+import static com.rudyii.pdnss.common.PdnsModeType.ON;
 import static com.rudyii.pdnss.common.Utils.getPDNSState;
 import static com.rudyii.pdnss.common.Utils.getSettingsValue;
+import static com.rudyii.pdnss.common.Utils.getWifiSsidColorCode;
+import static com.rudyii.pdnss.common.Utils.getWifiSsidName;
 import static com.rudyii.pdnss.common.Utils.showWarning;
+import static com.rudyii.pdnss.common.Utils.trustUntrustSsidName;
 import static com.rudyii.pdnss.common.Utils.updateLastPdnsState;
 import static com.rudyii.pdnss.common.Utils.updatePdnsModeSettings;
 import static com.rudyii.pdnss.common.Utils.updatePdnsUrl;
@@ -17,6 +24,7 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.inputmethod.InputMethodManager;
@@ -26,21 +34,25 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.common.DnsStateBroadcastReceiver;
 
 public class ActivityMain extends AppCompatActivity {
     private DnsStateBroadcastReceiver dnsStateBroadcastReceiver;
-    private TextView dnsStateText;
-    private TextView copyrights;
-    private Button on;
-    private Button off;
-    private Button auto;
-    private Button set;
-    private CheckBox disableForVpn;
-    private Button instructions;
-    private EditText dnsHost;
+    private TextView txtDnsState;
+    private TextView txtCopyrights;
+    private TextView txtSsidName;
+    private Button btnOn;
+    private Button btnOff;
+    private Button btnGoogle;
+    private Button btnSet;
+    private Button btnTrustWiFi;
+    private CheckBox cbDisableForVpn;
+    private CheckBox cbTrustWiFi;
+    private Button btnInstructions;
+    private EditText editTxtDnsHost;
     private boolean activityInitInProgress;
 
     @Override
@@ -60,6 +72,8 @@ public class ActivityMain extends AppCompatActivity {
         } else {
             registerReceiver(dnsStateBroadcastReceiver, filter);
         }
+        LocalBroadcastManager.getInstance(this).registerReceiver(
+                dnsStateBroadcastReceiver, filter);
     }
 
     @Override
@@ -91,10 +105,10 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     public void updateTexts() {
-        dnsStateText.setText(getString(R.string.dns_state_details, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
+        txtDnsState.setText(getString(R.string.dns_state_details, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
 
         try {
-            copyrights.setText(getString(R.string.copyrights,
+            txtCopyrights.setText(getString(R.string.copyrights,
                     getPackageManager().getPackageInfo(getPackageName(), 0).versionName));
         } catch (Exception ignored) {
         }
@@ -103,59 +117,59 @@ public class ActivityMain extends AppCompatActivity {
     private void initCheckboxes() {
         SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
                 getString(R.string.settings_name), Context.MODE_PRIVATE);
-        disableForVpn.setChecked(sharedPref.getBoolean(getString(R.string.settings_name_disable_while_vpn), false));
+        cbDisableForVpn.setChecked(sharedPref.getBoolean(getString(R.string.settings_name_disable_while_vpn), false));
     }
 
     private void initProps() {
-        if (dnsStateText == null) {
-            dnsStateText = this.findViewById(R.id.dnsStateText);
+        if (txtDnsState == null) {
+            txtDnsState = this.findViewById(R.id.txtDnsState);
         }
-        if (copyrights == null) {
-            copyrights = this.findViewById(R.id.copyrights);
+        if (txtCopyrights == null) {
+            txtCopyrights = this.findViewById(R.id.txtCopyrights);
         }
-        if (on == null) {
-            on = this.findViewById(R.id.on);
-            on.setOnClickListener(v -> {
+        if (btnOn == null) {
+            btnOn = this.findViewById(R.id.btnOn);
+            btnOn.setOnClickListener(v -> {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
-                updateLastPdnsState(true);
+                updateLastPdnsState(ON);
                 updateTexts();
                 refreshQsTile();
             });
         }
-        if (off == null) {
-            off = this.findViewById(R.id.off);
-            off.setOnClickListener(v -> {
+        if (btnOff == null) {
+            btnOff = this.findViewById(R.id.btnOff);
+            btnOff.setOnClickListener(v -> {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
-                updateLastPdnsState(false);
+                updateLastPdnsState(OFF);
                 updateTexts();
                 refreshQsTile();
             });
         }
-        if (auto == null) {
-            auto = this.findViewById(R.id.auto);
-            auto.setOnClickListener(v -> {
+        if (btnGoogle == null) {
+            btnGoogle = this.findViewById(R.id.btnGoogle);
+            btnGoogle.setOnClickListener(v -> {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
-                updateLastPdnsState(false);
+                updateLastPdnsState(GOOGLE);
                 updateTexts();
                 refreshQsTile();
             });
         }
-        if (set == null) {
-            set = this.findViewById(R.id.set);
-            set.setOnClickListener(v -> {
+        if (btnSet == null) {
+            btnSet = this.findViewById(R.id.btnSet);
+            btnSet.setOnClickListener(v -> {
                 InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                String dnsUrl = dnsHost.getText().toString();
+                String dnsUrl = editTxtDnsHost.getText().toString();
                 updatePdnsUrl(dnsUrl);
                 showWarning(getString(R.string.dns_set_host_notification, dnsUrl));
                 updateTexts();
-                dnsHost.clearFocus();
-                dnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+                editTxtDnsHost.clearFocus();
+                editTxtDnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
             });
         }
-        if (instructions == null) {
-            instructions = this.findViewById(R.id.instructions);
-            instructions.setOnClickListener(v -> {
+        if (btnInstructions == null) {
+            btnInstructions = this.findViewById(R.id.btnInstructions);
+            btnInstructions.setOnClickListener(v -> {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle(getString(R.string.instructions_title));
                 alert.setMessage(R.string.instructions);
@@ -163,9 +177,26 @@ public class ActivityMain extends AppCompatActivity {
                 alert.show();
             });
         }
-        if (disableForVpn == null) {
-            disableForVpn = this.findViewById(R.id.disableForVpn);
-            disableForVpn.setOnCheckedChangeListener((compoundButton, checked) -> {
+        if (btnTrustWiFi == null) {
+            btnTrustWiFi = this.findViewById(R.id.btnTrustWiFi);
+            SharedPreferences sharedPrefForInit = getApplicationContext().getSharedPreferences(
+                    getString(R.string.settings_name), Context.MODE_PRIVATE);
+            btnTrustWiFi.setEnabled(sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
+            btnTrustWiFi.setText(getWifiSsidColorCode(getWifiSsidName()) == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
+            btnTrustWiFi.setOnClickListener(v -> {
+                String ssidName = getWifiSsidName();
+                SharedPreferences sharedPref = getContext().getSharedPreferences(
+                        getContext().getString(R.string.settings_name), Context.MODE_PRIVATE);
+                btnTrustWiFi.setEnabled(sharedPref.getBoolean(getContext().getString(R.string.settings_name_trust_wifi), false));
+                int colorCode = trustUntrustSsidName(ssidName);
+                btnTrustWiFi.setText(colorCode == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
+                txtSsidName.setTextColor(colorCode);
+                showWarning(getContext().getString(R.string.reconnect_wifi_after_trust));
+            });
+        }
+        if (cbDisableForVpn == null) {
+            cbDisableForVpn = this.findViewById(R.id.cbDisableForVpn);
+            cbDisableForVpn.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
                     SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
                             getString(R.string.settings_name), Context.MODE_PRIVATE);
@@ -175,12 +206,34 @@ public class ActivityMain extends AppCompatActivity {
                 }
             });
         }
-        if (dnsHost == null) {
-            dnsHost = this.findViewById(R.id.dsnHost);
-            dnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+        if (cbTrustWiFi == null) {
+            cbTrustWiFi = this.findViewById(R.id.cbTrustWiFi);
+            SharedPreferences sharedPrefForInit = getApplicationContext().getSharedPreferences(
+                    getString(R.string.settings_name), Context.MODE_PRIVATE);
+            cbTrustWiFi.setChecked(sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
+            cbTrustWiFi.setOnCheckedChangeListener((compoundButton, checked) -> {
+                if (!activityInitInProgress) {
+                    SharedPreferences sharedPref = getApplicationContext().getSharedPreferences(
+                            getString(R.string.settings_name), Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putBoolean(getString(R.string.settings_name_trust_wifi), checked);
+                    editor.apply();
+                    btnTrustWiFi.setEnabled(checked);
+                }
+            });
+        }
+        if (editTxtDnsHost == null) {
+            editTxtDnsHost = this.findViewById(R.id.editTxtDsnHost);
+            editTxtDnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+        }
+        if (txtSsidName == null) {
+            txtSsidName = this.findViewById(R.id.txtSsidName);
+            String ssidName = getWifiSsidName();
+            txtSsidName.setText(ssidName);
+            txtSsidName.setTextColor(getWifiSsidColorCode(ssidName));
         }
         if (dnsStateBroadcastReceiver == null) {
-            dnsStateBroadcastReceiver = new DnsStateBroadcastReceiver(dnsStateText);
+            dnsStateBroadcastReceiver = new DnsStateBroadcastReceiver(txtDnsState);
         }
     }
 
@@ -195,6 +248,8 @@ public class ActivityMain extends AppCompatActivity {
     private void releaseResources() {
         if (dnsStateBroadcastReceiver != null) {
             unregisterReceiver(dnsStateBroadcastReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(dnsStateBroadcastReceiver);
+
         }
     }
 }

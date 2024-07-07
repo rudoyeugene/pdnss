@@ -8,7 +8,7 @@ import static com.rudyii.pdnss.PrivateDnsSwitcherApplication.getContext;
 import static com.rudyii.pdnss.common.Constants.PDNS_STATE_CHANGED;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_MODE;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
-import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING;
+import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_ON_STRING;
 import static com.rudyii.pdnss.common.Utils.getSettingsValue;
 import static com.rudyii.pdnss.common.Utils.updateLastPdnsState;
 import static com.rudyii.pdnss.common.Utils.updatePdnsModeSettings;
@@ -18,6 +18,7 @@ import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 
 import com.rudyii.pdnss.R;
+import com.rudyii.pdnss.common.PdnsModeType;
 
 public class QuickTileService extends TileService {
     private static Tile tile;
@@ -28,7 +29,7 @@ public class QuickTileService extends TileService {
             tile.setLabel(getContext().getString(R.string.dns_state_quicktile));
             tile.setSubtitle(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
 
-            if (PDNSState.equals(VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING)) {
+            if (PDNSState.equals(VALUE_PRIVATE_DNS_MODE_ON_STRING)) {
                 tile.setState(STATE_ACTIVE);
             } else {
                 tile.setState(STATE_INACTIVE);
@@ -42,12 +43,12 @@ public class QuickTileService extends TileService {
         super.onClick();
         String pDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
 
-        if (VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING.equals(pDNSState)) {
+        if (VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(pDNSState)) {
             updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
-            updateLastPdnsState(false);
+            updateLastPdnsState(PdnsModeType.OFF);
         } else {
             updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
-            updateLastPdnsState(true);
+            updateLastPdnsState(PdnsModeType.ON);
         }
         updateTile();
     }
@@ -83,7 +84,7 @@ public class QuickTileService extends TileService {
         tile.setLabel(getString(R.string.dns_state_quicktile));
         tile.setSubtitle(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
 
-        if (VALUE_PRIVATE_DNS_MODE_PROVIDER_HOSTNAME_STRING.equals(pDnsState)) {
+        if (VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(pDnsState)) {
             tile.setState(STATE_ACTIVE);
         } else {
             tile.setState(STATE_INACTIVE);

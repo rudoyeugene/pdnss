@@ -12,26 +12,33 @@
     <string name="dns_state_unknown">unknown</string>
     <string name="dns_state_on">ON</string>
     <string name="dns_state_off">OFF</string>
-    <string name="dns_state_auto">AUTO</string>
+    <string name="dns_state_google">GOOGLE</string>
     <string name="disable_on_vpn">Turn OFF private DNS on VPN</string>
+    <string name="trust_wifi">Enable \'Trusted WiFi\' Mode</string>
 
     <string name="none">none</string>
     <string name="missing_permissions_warning">Missing permissions, please see INSTRUCTIONS to resolve</string>
+    <string name="reconnect_wifi_after_trust">Please reconnect WiFi after Trust mode changed</string>
     <string name="error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
-    <string name="copyrights">&#169; 2023 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nVersion: %s</string>
+    <string name="copyrights">&#169; 2024 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nVersion: %s</string>
 
     <string name="shortcut_short_on">PDNS ON</string>
     <string name="shortcut_long_on">Private DNS ON</string>
     <string name="shortcut_short_off">PDNS OFF</string>
     <string name="shortcut_long_off">Private DNS OFF</string>
-    <string name="shortcut_short_auto">PDNS AUTO</string>
-    <string name="shortcut_long_auto">Private DNS AUTO</string>
+    <string name="shortcut_short_google">PDNS GOOGLE</string>
+    <string name="shortcut_long_google">Private DNS GOOGLE</string>
 
-    <string name="intent_auto">com.rudyii.pdnss.AUTO</string>
+    <string name="intent_google">com.rudyii.pdnss.GOOGLE</string>
     <string name="dummy_pdns_url">one.one.one.one</string>
 
     <string name="settings_name">com.rudyii.pdnss.SETTINGS</string>
     <string name="settings_name_disable_while_vpn">disable_while_vpn</string>
+    <string name="settings_name_trust_wifi">trust_wifi</string>
+    <string name="settings_name_trust_wifi_ssid_set">trust_wifi_ssid_set</string>
     <string name="settings_name_last_pdns_state">last_pdns_state</string>
+
+    <string name="btn_trust_ssid">TRUST</string>
+    <string name="btn_untrust_ssid">UNTRUST</string>
 
 </resources>

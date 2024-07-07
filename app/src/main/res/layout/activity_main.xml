@@ -6,8 +6,18 @@
     android:layout_height="match_parent"
     tools:context=".activities.ActivityMain">
 
+    <CheckBox
+        android:id="@+id/cbTrustWiFi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="@string/trust_wifi"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cbDisableForVpn" />
+
     <TextView
-        android:id="@+id/label"
+        android:id="@+id/txtLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:alpha="@dimen/material_emphasis_medium"
@@ -25,7 +35,7 @@
 
 
     <TextView
-        android:id="@+id/dnsStateText"
+        android:id="@+id/txtDnsState"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
@@ -37,10 +47,10 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dsnHost" />
+        app:layout_constraintTop_toBottomOf="@+id/editTxtDsnHost" />
 
     <TextView
-        android:id="@+id/copyrights"
+        android:id="@+id/txtCopyrights"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"
@@ -53,7 +63,7 @@
         app:layout_constraintStart_toStartOf="parent" />
 
     <Button
-        android:id="@+id/on"
+        android:id="@+id/btnOn"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -61,32 +71,32 @@
         android:layout_marginTop="24dp"
         android:text="ON"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/label" />
+        app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
 
     <Button
-        android:id="@+id/off"
+        android:id="@+id/btnOff"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="OFF"
-        app:layout_constraintEnd_toStartOf="@+id/auto"
-        app:layout_constraintStart_toEndOf="@+id/on"
-        app:layout_constraintTop_toBottomOf="@+id/label" />
+        app:layout_constraintEnd_toStartOf="@+id/btnGoogle"
+        app:layout_constraintStart_toEndOf="@+id/btnOn"
+        app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
 
     <Button
-        android:id="@+id/auto"
+        android:id="@+id/btnGoogle"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:layout_marginEnd="24dp"
-        android:text="AUTO"
+        android:text="GOOGLE"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/label" />
+        app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
 
     <EditText
-        android:id="@+id/dsnHost"
+        android:id="@+id/editTxtDsnHost"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -98,12 +108,12 @@
         android:text="@string/dummy_pdns_url"
         android:textAlignment="textStart"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/set"
+        app:layout_constraintEnd_toStartOf="@+id/btnSet"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/off" />
+        app:layout_constraintTop_toBottomOf="@+id/btnOff" />
 
     <Button
-        android:id="@+id/set"
+        android:id="@+id/btnSet"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -111,10 +121,10 @@
         android:layout_marginEnd="24dp"
         android:text="SET"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/auto" />
+        app:layout_constraintTop_toBottomOf="@+id/btnGoogle" />
 
     <Button
-        android:id="@+id/instructions"
+        android:id="@+id/btnInstructions"
         style="@style/Widget.AppCompat.Button.Colored"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -122,16 +132,38 @@
         android:text="INSTRUCTIONS"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dnsStateText" />
+        app:layout_constraintTop_toBottomOf="@+id/txtDnsState" />
 
     <CheckBox
-        android:id="@+id/disableForVpn"
+        android:id="@+id/cbDisableForVpn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
         android:text="@string/disable_on_vpn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/instructions" />
+        app:layout_constraintTop_toBottomOf="@+id/btnInstructions" />
+
+    <TextView
+        android:id="@+id/txtSsidName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="SSID name"
+        app:layout_constraintBottom_toBottomOf="@+id/btnTrustWiFi"
+        app:layout_constraintEnd_toStartOf="@+id/btnTrustWiFi"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cbTrustWiFi" />
+
+    <Button
+        android:id="@+id/btnTrustWiFi"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="TRUST"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/txtSsidName"
+        app:layout_constraintTop_toBottomOf="@+id/cbTrustWiFi" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
