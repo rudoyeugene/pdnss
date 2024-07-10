@@ -2,7 +2,13 @@
     <string name="app_name">Private DNS Switcher</string>
 
     <string name="instructions_title">How to grant required permissions</string>
-    <string name="instructions">1. Enable Developer Options\n2. Enable USB debussing\n3. Open shell\n4. Run command:\nadb shell pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS</string>
+    <string name="instructions">
+        1. Enable Developer Options\n
+        2. Enable USB debugging\n
+        3. Open shell\n
+        4. Run command:\n
+        adb shell pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS
+    </string>
 
     <string name="dns_state_title">Private DNS State:</string>
     <string name="dns_state_quicktile">Private DNS</string>
@@ -13,8 +19,8 @@
     <string name="dns_state_on">ON</string>
     <string name="dns_state_off">OFF</string>
     <string name="dns_state_google">GOOGLE</string>
-    <string name="disable_on_vpn">Turn OFF private DNS on VPN</string>
-    <string name="trust_wifi">Enable \'Trusted WiFi\' Mode</string>
+    <string name="disable_on_vpn">Turn OFF Private DNS on VPN</string>
+    <string name="trust_wifi">Enable \'Trusted WiFi SSID\' Mode</string>
 
     <string name="none">none</string>
     <string name="missing_permissions_warning">Missing permissions, please see INSTRUCTIONS to resolve</string>
@@ -22,12 +28,12 @@
     <string name="error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
     <string name="copyrights">&#169; 2024 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nVersion: %s</string>
 
-    <string name="shortcut_short_on">PDNS ON</string>
-    <string name="shortcut_long_on">Private DNS ON</string>
-    <string name="shortcut_short_off">PDNS OFF</string>
-    <string name="shortcut_long_off">Private DNS OFF</string>
-    <string name="shortcut_short_google">PDNS GOOGLE</string>
-    <string name="shortcut_long_google">Private DNS GOOGLE</string>
+    <string name="shortcut_short_on">ON</string>
+    <string name="shortcut_long_on">Enable</string>
+    <string name="shortcut_short_off">OFF</string>
+    <string name="shortcut_long_off">Disable</string>
+    <string name="shortcut_short_google">GOOGLE</string>
+    <string name="shortcut_long_google">Use Google</string>
 
     <string name="intent_google">com.rudyii.pdnss.GOOGLE</string>
     <string name="dummy_pdns_url">one.one.one.one</string>
@@ -37,6 +43,20 @@
     <string name="settings_name_trust_wifi">trust_wifi</string>
     <string name="settings_name_trust_wifi_ssid_set">trust_wifi_ssid_set</string>
     <string name="settings_name_last_pdns_state">last_pdns_state</string>
+
+    <string name="settings_location_disclosure_shown">location_disclosure_agreement_shown</string>
+    <string name="settings_location_disclosure_agreed">location_disclosure_agreement_agreed</string>
+    <string name="location_disclosure_agreement_title">Location Permissions Disclosure</string>
+    <string name="location_disclosure_agreement_text">
+        Starting from Android 8 to get the WiFi SSID Name the Location Permissions required.\n
+        Private DNS Switcher allows you to enable or disable Private DNS using Trusted WiFi SSID Mode.
+        The enabling or disabling of the Private DNS using Trusted WiFi SSID happens in background service.
+        Because of that we need such a wide Location Permissions.\n
+        Your Location will never be shared anywhere.\n
+        You can Agree or Decline the Location Permissions.\n\n
+        If You <b>Agree</b> the Disclosure we\'ll note that and once you enable the Location Permissions Private DNS Switcher will start doing what it should.\n
+        If You <b>Decline</b> the Disclosure we\'ll never disturb You again. But If You would like to enable the Trusted WiFi SSID Mode You\' have to reinstall the Private DNS Switcher.
+    </string>
 
     <string name="btn_trust_ssid">TRUST</string>
     <string name="btn_untrust_ssid">UNTRUST</string>

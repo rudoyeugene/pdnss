@@ -11,8 +11,8 @@ android {
         applicationId "com.rudyii.pdnss"
         minSdk 29
         targetSdk 34
-        versionCode 140
-        versionName "1.4.0"
+        versionCode 142
+        versionName "1.4.2"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -30,7 +30,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'com.google.android.material:material:1.12.0'
     testImplementation 'junit:junit:4.13.2'

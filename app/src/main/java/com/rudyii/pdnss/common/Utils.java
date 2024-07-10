@@ -16,9 +16,11 @@ import static com.rudyii.pdnss.common.PdnsModeType.OFF_WHILE_VPN;
 import static com.rudyii.pdnss.common.PdnsModeType.ON;
 import static com.rudyii.pdnss.services.QuickTileService.refreshQsTile;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -38,8 +40,7 @@ import java.util.Set;
 
 public class Utils {
     public static PdnsModeType getLastKnownState() {
-        return PdnsModeType.valueOf(getContext().getSharedPreferences(
-                getContext().getString(R.string.settings_name), Context.MODE_PRIVATE).getString(getContext().getString(R.string.settings_name_last_pdns_state), OFF.name()));
+        return PdnsModeType.valueOf(getSharedPrefs().getString(getContext().getString(R.string.settings_name_last_pdns_state), OFF.name()));
     }
 
     public static void updatePdnsModeSettings(int mode) {
@@ -52,9 +53,7 @@ public class Utils {
     }
 
     public static void updateLastPdnsState(PdnsModeType lastState) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(
-                getContext().getString(R.string.settings_name), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
+        SharedPreferences.Editor editor = getSharedPrefsEditor();
         editor.putString(getContext().getString(R.string.settings_name_last_pdns_state), lastState.name());
         editor.apply();
     }
@@ -109,23 +108,20 @@ public class Utils {
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
         if (capabilities != null) {
-            SharedPreferences sharedPref = getContext().getSharedPreferences(
-                    getContext().getString(R.string.settings_name), Context.MODE_PRIVATE);
-
             boolean isVpn = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
             boolean isWiFi = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
 
             if (isVpn) {
                 boolean pDnsStateOn = VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
-                boolean disableWhileVnp = sharedPref.getBoolean(getContext().getString(R.string.settings_name_disable_while_vpn), false);
+                boolean disableWhileVnp = getSharedPrefs().getBoolean(getContext().getString(R.string.settings_name_disable_while_vpn), false);
                 if (disableWhileVnp && pDnsStateOn) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_VPN);
                     refreshQsTile();
                 }
-            } else if (isWiFi) {
+            } else if (isWiFi && isAllNeededLocationPermissionsGranted()) {
                 String ssidName = getWifiSsidName();
-                if (getWifiTrusted(ssidName) && sharedPref.getBoolean(getContext().getString(R.string.settings_name_trust_wifi), false)) {
+                if (getWifiTrusted(ssidName) && getSharedPrefs().getBoolean(getContext().getString(R.string.settings_name_trust_wifi), false)) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_TRUSTED_WIFI);
                     refreshQsTile();
@@ -146,37 +142,32 @@ public class Utils {
 
     public static String getWifiSsidName() {
         WifiManager mWifiManager = (WifiManager) getContext().getSystemService(Context.WIFI_SERVICE);
-        if (mWifiManager != null) {
+        if (isAllNeededLocationPermissionsGranted() && mWifiManager != null) {
             WifiInfo info = mWifiManager.getConnectionInfo();
             return info.getSSID();
         } else {
-            return "unknown";
+            return "unsupported";
         }
     }
 
     public static int getWifiSsidColorCode(String ssidName) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(
-                getContext().getString(R.string.settings_name), Context.MODE_PRIVATE);
-
-        Set<String> trustedSsids = sharedPref.getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), Collections.emptySet());
+        Set<String> trustedSsids = getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), Collections.emptySet());
 
         return trustedSsids.contains(ssidName) ? Color.GREEN : Color.RED;
     }
 
     public static boolean getWifiTrusted(String ssidName) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(
-                getContext().getString(R.string.settings_name), Context.MODE_PRIVATE);
+        if (isAllNeededLocationPermissionsGranted()) {
+            Set<String> trustedSsids = getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), Collections.emptySet());
 
-        Set<String> trustedSsids = sharedPref.getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), Collections.emptySet());
-
-        return trustedSsids.contains(ssidName);
+            return trustedSsids.contains(ssidName);
+        } else {
+            return false;
+        }
     }
 
     public static int trustUntrustSsidName(String ssidName) {
-        SharedPreferences sharedPref = getContext().getSharedPreferences(
-                getContext().getString(R.string.settings_name), Context.MODE_PRIVATE);
-
-        Set<String> trustedSsids = sharedPref.getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), Collections.emptySet());
+        Set<String> trustedSsids = getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), Collections.emptySet());
         Set<String> trustedSsidsLocalCopy = new HashSet<>(trustedSsids);
 
         int code;
@@ -188,10 +179,35 @@ public class Utils {
             code = Color.GREEN;
         }
 
-        SharedPreferences.Editor editor = sharedPref.edit();
+        SharedPreferences.Editor editor = getSharedPrefsEditor();
         editor.putStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), trustedSsidsLocalCopy);
         editor.apply();
 
         return code;
+    }
+
+    public static SharedPreferences getSharedPrefs() {
+        return getContext().getSharedPreferences(
+                getContext().getString(R.string.settings_name), Context.MODE_PRIVATE);
+    }
+
+    public static SharedPreferences.Editor getSharedPrefsEditor() {
+        return getContext().getSharedPreferences(
+                getContext().getString(R.string.settings_name), Context.MODE_PRIVATE).edit();
+    }
+
+    public static boolean isLocationDisclosureWasShown() {
+        return getSharedPrefs().getBoolean(getContext().getString(R.string.settings_location_disclosure_shown), false);
+    }
+
+    public static boolean isLocationPermissionsAgreed() {
+        return getSharedPrefs().getBoolean(getContext().getString(R.string.settings_location_disclosure_agreed), false);
+    }
+
+    public static boolean isAllNeededLocationPermissionsGranted() {
+        return isLocationPermissionsAgreed()
+                && PackageManager.PERMISSION_GRANTED == getContext().checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
+                && PackageManager.PERMISSION_GRANTED == getContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
+                && PackageManager.PERMISSION_GRANTED == getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
     }
 }

@@ -130,7 +130,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="INSTRUCTIONS"
-        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btnPermissions"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtDnsState" />
 
@@ -165,5 +166,16 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/txtSsidName"
         app:layout_constraintTop_toBottomOf="@+id/cbTrustWiFi" />
+
+    <Button
+        android:id="@+id/btnPermissions"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:text="PERMISSIONS"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnInstructions"
+        app:layout_constraintTop_toBottomOf="@+id/txtDnsState" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
