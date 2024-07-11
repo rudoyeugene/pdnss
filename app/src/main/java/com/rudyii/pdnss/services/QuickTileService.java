@@ -26,7 +26,7 @@ public class QuickTileService extends TileService {
     public static void refreshQsTile() {
         if (tile != null) {
             String PDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
-            tile.setLabel(getContext().getString(R.string.dns_state_quicktile));
+            tile.setLabel(getContext().getString(R.string.txt_dns_state_quicktile));
             tile.setSubtitle(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
 
             if (PDNSState.equals(VALUE_PRIVATE_DNS_MODE_ON_STRING)) {
@@ -81,7 +81,7 @@ public class QuickTileService extends TileService {
     private void updateTile() {
         String pDnsState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
         tile = getQsTile();
-        tile.setLabel(getString(R.string.dns_state_quicktile));
+        tile.setLabel(getString(R.string.txt_dns_state_quicktile));
         tile.setSubtitle(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
 
         if (VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(pDnsState)) {

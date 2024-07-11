@@ -32,7 +32,7 @@ public class ActivityShortcuts extends Activity {
                         updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
                         refreshQsTile();
                     } catch (Exception e) {
-                        showWarning(getString(R.string.missing_permissions_warning));
+                        showWarning(getString(R.string.txt_missing_permissions_warning));
                     }
                     break;
                 case PDNSS_ON:
@@ -40,7 +40,7 @@ public class ActivityShortcuts extends Activity {
                         updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                         refreshQsTile();
                     } catch (Exception e) {
-                        showWarning(getString(R.string.missing_permissions_warning));
+                        showWarning(getString(R.string.txt_missing_permissions_warning));
                     }
                     break;
                 case PDNSS_OFF:
@@ -48,7 +48,7 @@ public class ActivityShortcuts extends Activity {
                         updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                         refreshQsTile();
                     } catch (Exception e) {
-                        showWarning(getString(R.string.missing_permissions_warning));
+                        showWarning(getString(R.string.txt_missing_permissions_warning));
                     }
                     break;
             }

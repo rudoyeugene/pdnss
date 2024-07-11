@@ -1,64 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
-    <string name="app_name">Private DNS Switcher</string>
+    <string name="btn_trust_ssid">TRUST</string>
+    <string name="btn_trust_wifi">Enable \'Trusted WiFi SSID\' Mode</string>
+    <string name="btn_untrust_ssid">UNTRUST</string>
 
-    <string name="instructions_title">How to grant required permissions</string>
-    <string name="instructions">
+    <string name="chkb_disable_on_vpn">Disable Private DNS on VPN</string>
+
+    <string name="settings_location_permissions_granted">location_permissions_granted</string>
+    <string name="settings_name">com.rudyii.pdnss.SETTINGS</string>
+    <string name="settings_name_disable_while_vpn">disable_while_vpn</string>
+    <string name="settings_name_last_pdns_state">last_pdns_state</string>
+    <string name="settings_name_trust_wifi">trust_wifi</string>
+    <string name="settings_name_trust_wifi_ssid_set">trust_wifi_ssid_set</string>
+
+    <string name="shortcut_long_google">Use Google</string>
+    <string name="shortcut_long_off">Disable</string>
+    <string name="shortcut_long_on">Enable</string>
+    <string name="shortcut_short_google">GOOGLE</string>
+    <string name="shortcut_short_off">OFF</string>
+    <string name="shortcut_short_on">ON</string>
+
+    <string name="txt_app_name">Private DNS Switcher</string>
+    <string name="txt_copyrights">© 2024 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nVersion: %s</string>
+    <string name="txt_dns_set_host_notification">Updated PDNS URL to %1$s</string>
+    <string name="txt_dns_state_details_text">Private DNS is %1$s with host: %2$s</string>
+    <string name="txt_dns_state_google">GOOGLE</string>
+    <string name="txt_dns_state_off">OFF</string>
+    <string name="txt_dns_state_on">ON</string>
+    <string name="txt_dns_state_quicktile">Private DNS</string>
+    <string name="txt_dns_state_unknown">unknown</string>
+    <string name="txt_dummy_pdns_url">one.one.one.one</string>
+    <string name="txt_error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
+    <string name="txt_instructions">
         1. Enable Developer Options\n
         2. Enable USB debugging\n
         3. Open shell\n
         4. Run command:\n
         adb shell pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS
     </string>
-
-    <string name="dns_state_title">Private DNS State:</string>
-    <string name="dns_state_quicktile">Private DNS</string>
-    <string name="dns_state_details">Private DNS is %1$s with host: %2$s</string>
-    <string name="dns_set_host_notification">Updated PDNS URL to %1$s</string>
-
-    <string name="dns_state_unknown">unknown</string>
-    <string name="dns_state_on">ON</string>
-    <string name="dns_state_off">OFF</string>
-    <string name="dns_state_google">GOOGLE</string>
-    <string name="disable_on_vpn">Turn OFF Private DNS on VPN</string>
-    <string name="trust_wifi">Enable \'Trusted WiFi SSID\' Mode</string>
-
-    <string name="none">none</string>
-    <string name="missing_permissions_warning">Missing permissions, please see INSTRUCTIONS to resolve</string>
-    <string name="reconnect_wifi_after_trust">Please reconnect WiFi after Trust mode changed</string>
-    <string name="error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
-    <string name="copyrights">&#169; 2024 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nVersion: %s</string>
-
-    <string name="shortcut_short_on">ON</string>
-    <string name="shortcut_long_on">Enable</string>
-    <string name="shortcut_short_off">OFF</string>
-    <string name="shortcut_long_off">Disable</string>
-    <string name="shortcut_short_google">GOOGLE</string>
-    <string name="shortcut_long_google">Use Google</string>
-
-    <string name="intent_google">com.rudyii.pdnss.GOOGLE</string>
-    <string name="dummy_pdns_url">one.one.one.one</string>
-
-    <string name="settings_name">com.rudyii.pdnss.SETTINGS</string>
-    <string name="settings_name_disable_while_vpn">disable_while_vpn</string>
-    <string name="settings_name_trust_wifi">trust_wifi</string>
-    <string name="settings_name_trust_wifi_ssid_set">trust_wifi_ssid_set</string>
-    <string name="settings_name_last_pdns_state">last_pdns_state</string>
-
-    <string name="settings_location_disclosure_shown">location_disclosure_agreement_shown</string>
-    <string name="settings_location_disclosure_agreed">location_disclosure_agreement_agreed</string>
-    <string name="location_disclosure_agreement_title">Location Permissions Disclosure</string>
-    <string name="location_disclosure_agreement_text">
-        Starting from Android 8 to get the WiFi SSID Name the Location Permissions required.\n
-        Private DNS Switcher allows you to enable or disable Private DNS using Trusted WiFi SSID Mode.
-        The enabling or disabling of the Private DNS using Trusted WiFi SSID happens in background service.
-        Because of that we need such a wide Location Permissions.\n
-        Your Location will never be shared anywhere.\n
-        You can Agree or Decline the Location Permissions.\n\n
-        If You <b>Agree</b> the Disclosure we\'ll note that and once you enable the Location Permissions Private DNS Switcher will start doing what it should.\n
-        If You <b>Decline</b> the Disclosure we\'ll never disturb You again. But If You would like to enable the Trusted WiFi SSID Mode You\' have to reinstall the Private DNS Switcher.
+    <string name="txt_instructions_title">How to grant required permissions</string>
+    <string name="txt_location_disclosure_agreement">
+                        If want to be able to change state of Private DNS based on Trusted WiFi SSID you have to allow the Location Permissions.
+        This is the Android requirement.
+        \n\n
+        If You choose 
+        
+        <b>Grant permissions</b>
+                 the Trusted WiFi SSID functionality will become active. Once you grant all the necessary Location Permissions You\'ll be able to TRUST or UNTRUST currently connected WiFi AP.\n
+        If You choose 
+        
+        <b>Cancel</b>
+                 the Trusted WiFi SSID functionality will disappear. You can return here later at any point of time.
+    
+    
     </string>
-
-    <string name="btn_trust_ssid">TRUST</string>
-    <string name="btn_untrust_ssid">UNTRUST</string>
-
+    <string name="txt_location_disclosure_agreement_title">Location Permissions Disclosure</string>
+    <string name="txt_missing_permissions_warning">Missing permissions, please see INSTRUCTIONS to resolve</string>
+    <string name="txt_none">none</string>
+    <string name="txt_reconnect_wifi_after_trust">Please reconnect WiFi after Trust mode changed</string>
 </resources>

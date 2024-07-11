@@ -39,6 +39,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 public class Utils {
+
     public static PdnsModeType getLastKnownState() {
         return PdnsModeType.valueOf(getSharedPrefs().getString(getContext().getString(R.string.settings_name_last_pdns_state), OFF.name()));
     }
@@ -48,7 +49,7 @@ public class Utils {
             Settings.Global.putString(getContext().getContentResolver(), SETTINGS_PRIVATE_DNS_MODE,
                     getPrivateDnsModeAsString(mode));
         } catch (SecurityException e) {
-            showWarning(getContext().getString(R.string.missing_permissions_warning));
+            showWarning(getContext().getString(R.string.txt_missing_permissions_warning));
         }
     }
 
@@ -72,29 +73,29 @@ public class Utils {
             case PRIVATE_DNS_MODE_PROVIDER_HOSTNAME:
                 return VALUE_PRIVATE_DNS_MODE_ON_STRING;
             default:
-                throw new IllegalArgumentException(getContext().getString(R.string.error_unknown_pdns_mode, mode));
+                throw new IllegalArgumentException(getContext().getString(R.string.txt_error_unknown_pdns_mode, mode));
         }
     }
 
     public static String getSettingsValue(String name) {
         String result = Settings.Global.getString(getContext().getContentResolver(), name);
-        return result == null ? getContext().getString(R.string.none) : result;
+        return result == null ? getContext().getString(R.string.txt_none) : result;
     }
 
     public static String getPDNSState() {
         String pDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
         if (pDNSState == null) {
-            return getContext().getString(R.string.dns_state_unknown);
+            return getContext().getString(R.string.txt_dns_state_unknown);
         } else {
             switch (pDNSState) {
                 case VALUE_PRIVATE_DNS_MODE_OFF_STRING:
-                    return getContext().getString(R.string.dns_state_off);
+                    return getContext().getString(R.string.txt_dns_state_off);
                 case VALUE_PRIVATE_DNS_MODE_GOOGLE_STRING:
-                    return getContext().getString(R.string.dns_state_google);
+                    return getContext().getString(R.string.txt_dns_state_google);
                 case VALUE_PRIVATE_DNS_MODE_ON_STRING:
-                    return getContext().getString(R.string.dns_state_on);
+                    return getContext().getString(R.string.txt_dns_state_on);
                 default:
-                    return getContext().getString(R.string.dns_state_unknown);
+                    return getContext().getString(R.string.txt_dns_state_unknown);
             }
         }
     }
@@ -196,16 +197,12 @@ public class Utils {
                 getContext().getString(R.string.settings_name), Context.MODE_PRIVATE).edit();
     }
 
-    public static boolean isLocationDisclosureWasShown() {
-        return getSharedPrefs().getBoolean(getContext().getString(R.string.settings_location_disclosure_shown), false);
-    }
-
-    public static boolean isLocationPermissionsAgreed() {
-        return getSharedPrefs().getBoolean(getContext().getString(R.string.settings_location_disclosure_agreed), false);
+    public static boolean isLocationPermissionsGranted() {
+        return getSharedPrefs().getBoolean(getContext().getString(R.string.settings_location_permissions_granted), false);
     }
 
     public static boolean isAllNeededLocationPermissionsGranted() {
-        return isLocationPermissionsAgreed()
+        return isLocationPermissionsGranted()
                 && PackageManager.PERMISSION_GRANTED == getContext().checkSelfPermission(Manifest.permission.ACCESS_BACKGROUND_LOCATION)
                 && PackageManager.PERMISSION_GRANTED == getContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
                 && PackageManager.PERMISSION_GRANTED == getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);

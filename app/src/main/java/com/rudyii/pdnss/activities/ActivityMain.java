@@ -16,8 +16,7 @@ import static com.rudyii.pdnss.common.Utils.getSharedPrefsEditor;
 import static com.rudyii.pdnss.common.Utils.getWifiSsidColorCode;
 import static com.rudyii.pdnss.common.Utils.getWifiSsidName;
 import static com.rudyii.pdnss.common.Utils.isAllNeededLocationPermissionsGranted;
-import static com.rudyii.pdnss.common.Utils.isLocationDisclosureWasShown;
-import static com.rudyii.pdnss.common.Utils.isLocationPermissionsAgreed;
+import static com.rudyii.pdnss.common.Utils.isLocationPermissionsGranted;
 import static com.rudyii.pdnss.common.Utils.showWarning;
 import static com.rudyii.pdnss.common.Utils.trustUntrustSsidName;
 import static com.rudyii.pdnss.common.Utils.updateLastPdnsState;
@@ -25,10 +24,12 @@ import static com.rudyii.pdnss.common.Utils.updatePdnsModeSettings;
 import static com.rudyii.pdnss.common.Utils.updatePdnsUrl;
 import static com.rudyii.pdnss.services.QuickTileService.refreshQsTile;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,13 +40,18 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.common.DnsStateBroadcastReceiver;
 
 public class ActivityMain extends AppCompatActivity {
+    public static final int LOCATION_PERMISSION_REQUEST_CODE = 1122;
+    public static final int BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE = 1133;
     private DnsStateBroadcastReceiver dnsStateBroadcastReceiver;
     private TextView txtDnsState;
     private TextView txtCopyrights;
@@ -65,9 +71,8 @@ public class ActivityMain extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.app_name);
+        setTitle(R.string.txt_app_name);
         setContentView(R.layout.activity_main);
-        explainLocationPermissions();
     }
 
     @Override
@@ -97,36 +102,19 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     @Override
-    public void onBackPressed() {
-        super.onBackPressed();
-        finish();
-    }
-
-    private void explainLocationPermissions() {
-        if (!isLocationDisclosureWasShown()) {
-            getLocationPermissionsDialog(getSharedPrefsEditor()).show();
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (LOCATION_PERMISSION_REQUEST_CODE == requestCode) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                handlePermissionsGranted(true);
+                checkBackgroundLocation();
+            } else {
+                handlePermissionsGranted(false);
+            }
         }
-    }
-
-    private AlertDialog.Builder getLocationPermissionsDialog(SharedPreferences.Editor editor) {
-        AlertDialog.Builder alert = new AlertDialog.Builder(this);
-        alert.setTitle(R.string.location_disclosure_agreement_title);
-        alert.setMessage(R.string.location_disclosure_agreement_text);
-        alert.setCancelable(false);
-
-        alert.setPositiveButton("Agree", (dialog, which) -> {
-            editor.putBoolean(getString(R.string.settings_location_disclosure_shown), true);
-            editor.putBoolean(getString(R.string.settings_location_disclosure_agreed), true);
-            editor.apply();
-            dialog.dismiss();
-        });
-        alert.setNegativeButton("Decline", (dialog, which) -> {
-            editor.putBoolean(getString(R.string.settings_location_disclosure_shown), true);
-            editor.putBoolean(getString(R.string.settings_location_disclosure_agreed), false);
-            editor.apply();
-            dialog.dismiss();
-        });
-        return alert;
+        if (BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE == requestCode) {
+            handlePermissionsGranted(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
+        }
     }
 
     private void initAll() {
@@ -137,6 +125,7 @@ public class ActivityMain extends AppCompatActivity {
         initTexts();
         updateTexts();
         initCheckboxes();
+        initSensitiveControls();
 
         activityInitializationCompleted();
     }
@@ -155,10 +144,10 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private void updateTexts() {
-        txtDnsState.setText(getString(R.string.dns_state_details, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
+        txtDnsState.setText(getString(R.string.txt_dns_state_details_text, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
 
         try {
-            txtCopyrights.setText(getString(R.string.copyrights,
+            txtCopyrights.setText(getString(R.string.txt_copyrights,
                     getPackageManager().getPackageInfo(getPackageName(), 0).versionName));
         } catch (Exception ignored) {
         }
@@ -219,7 +208,7 @@ public class ActivityMain extends AppCompatActivity {
                 imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                 String dnsUrl = editTxtDnsHost.getText().toString();
                 updatePdnsUrl(dnsUrl);
-                showWarning(getString(R.string.dns_set_host_notification, dnsUrl));
+                showWarning(getString(R.string.txt_dns_set_host_notification, dnsUrl));
                 updateTexts();
                 editTxtDnsHost.clearFocus();
                 editTxtDnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
@@ -230,8 +219,8 @@ public class ActivityMain extends AppCompatActivity {
 
             btnInstructions.setOnClickListener(v -> {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
-                alert.setTitle(getString(R.string.instructions_title));
-                alert.setMessage(R.string.instructions);
+                alert.setTitle(getString(R.string.txt_instructions_title));
+                alert.setMessage(R.string.txt_instructions);
                 alert.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
                 alert.show();
             });
@@ -240,19 +229,17 @@ public class ActivityMain extends AppCompatActivity {
             btnPermissions = this.findViewById(R.id.btnPermissions);
 
             btnPermissions.setOnClickListener(v -> {
-                getLocationPermissionsDialog(getSharedPrefsEditor()).show();
+                checkPermissions();
             });
         }
-
-        initSensitiveControls();
     }
 
     public void initSensitiveControls() {
-        // Permission has already been granted
         if (btnTrustWiFi == null) {
             btnTrustWiFi = this.findViewById(R.id.btnTrustWiFi);
 
-            if (isLocationPermissionsAgreed()) {
+            if (isLocationPermissionsGranted()) {
+                btnTrustWiFi.setVisibility(View.VISIBLE);
                 SharedPreferences sharedPrefForInit = getSharedPrefs();
                 btnTrustWiFi.setEnabled(sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
                 btnTrustWiFi.setText(getWifiSsidColorCode(getWifiSsidName()) == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
@@ -262,7 +249,7 @@ public class ActivityMain extends AppCompatActivity {
                     int colorCode = trustUntrustSsidName(ssidName);
                     btnTrustWiFi.setText(colorCode == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
                     txtSsidName.setTextColor(colorCode);
-                    showWarning(getContext().getString(R.string.reconnect_wifi_after_trust));
+                    showWarning(getContext().getString(R.string.txt_reconnect_wifi_after_trust));
                 });
             } else {
                 btnTrustWiFi.setVisibility(View.INVISIBLE);
@@ -271,7 +258,8 @@ public class ActivityMain extends AppCompatActivity {
         if (cbTrustWiFi == null) {
             cbTrustWiFi = this.findViewById(R.id.cbTrustWiFi);
 
-            if (isLocationPermissionsAgreed()) {
+            if (isLocationPermissionsGranted()) {
+                cbTrustWiFi.setVisibility(View.VISIBLE);
                 cbTrustWiFi.setEnabled(isAllNeededLocationPermissionsGranted());
                 cbTrustWiFi.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_trust_wifi), false));
 
@@ -290,7 +278,8 @@ public class ActivityMain extends AppCompatActivity {
         if (txtSsidName == null) {
             txtSsidName = this.findViewById(R.id.txtSsidName);
 
-            if (isLocationPermissionsAgreed()) {
+            if (isLocationPermissionsGranted()) {
+                txtSsidName.setVisibility(View.VISIBLE);
                 String ssidName = getWifiSsidName();
                 txtSsidName.setText(ssidName);
                 txtSsidName.setTextColor(getWifiSsidColorCode(ssidName));
@@ -320,5 +309,58 @@ public class ActivityMain extends AppCompatActivity {
             unregisterReceiver(dnsStateBroadcastReceiver);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(dnsStateBroadcastReceiver);
         }
+    }
+
+    private void checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        ) {
+            // Location permission already granted
+            checkBackgroundLocation();
+        } else {
+            // Location permission not granted, request it
+            showLocationPermissionDialog();
+        }
+    }
+
+    private void showLocationPermissionDialog() {
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder
+                .setCancelable(false)
+                .setTitle(R.string.txt_location_disclosure_agreement_title)
+                .setMessage(R.string.txt_location_disclosure_agreement)
+                .setPositiveButton("Grant Permissions", (dialog, which) -> requestLocationPermission())
+                .setNegativeButton("Cancel", (dialog, which) -> {
+                    handlePermissionsGranted(false);
+                    dialog.dismiss();
+                })
+                .show();
+    }
+
+    private void requestLocationPermission() {
+        ActivityCompat.requestPermissions(
+                this,
+                new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                LOCATION_PERMISSION_REQUEST_CODE
+        );
+    }
+
+    private void checkBackgroundLocation() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            requestBackgroundLocationPermission();
+        } else {
+            handlePermissionsGranted(true);
+        }
+    }
+
+    private void requestBackgroundLocationPermission() {
+        ActivityCompat.requestPermissions(
+                this,
+                new String[]{Manifest.permission.ACCESS_BACKGROUND_LOCATION},
+                BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE
+        );
+    }
+
+    private void handlePermissionsGranted(boolean granted) {
+        getSharedPrefsEditor().putBoolean(getString(R.string.settings_location_permissions_granted), granted).apply();
     }
 }
