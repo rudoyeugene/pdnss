@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -128,12 +127,12 @@ public class Utils {
                     refreshQsTile();
                 }
             } else if (isWiFi && isAllNeededLocationPermissionsGranted()) {
-                String ssidName = getWifiSsidName();
-                if (itTrustedWiFiSsid(ssidName) && trustedWiFiModeOn()) {
+                String apName = getWifiApName();
+                if (itTrustedWiFiAp(apName) && trustedWiFiModeOn()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_TRUSTED_WIFI);
                     refreshQsTile();
-                } else if (!itTrustedWiFiSsid(ssidName) && trustedWiFiModeOn()) {
+                } else if (!itTrustedWiFiAp(apName) && trustedWiFiModeOn()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     updateLastPdnsState(ON);
                     refreshQsTile();
@@ -182,12 +181,12 @@ public class Utils {
         return connectionType;
     }
 
-    public static String getWifiSsidName() {
+    public static String getWifiApName() {
         if (ConnectionType.WIFI.equals(getConnectionType())) {
             WifiManager mWifiManager = (WifiManager) getContext().getSystemService(Context.WIFI_SERVICE);
             if (isAllNeededLocationPermissionsGranted() && mWifiManager != null) {
                 WifiInfo info = mWifiManager.getConnectionInfo();
-                return info.getSSID();
+                return info.getSSID().replace("\"", "");
             } else {
                 return "missing permissions";
             }
@@ -196,40 +195,34 @@ public class Utils {
         }
     }
 
-    public static int getWifiSsidColorCode(String ssidName) {
-        Set<String> trustedSsids = getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), Collections.emptySet());
-
-        return trustedSsids.contains(ssidName) ? Color.GREEN : Color.RED;
-    }
-
-    public static boolean itTrustedWiFiSsid(String ssidName) {
+    public static boolean itTrustedWiFiAp(String apName) {
         if (isAllNeededLocationPermissionsGranted()) {
-            Set<String> trustedSsids = getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), Collections.emptySet());
+            Set<String> trustedAps = getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), Collections.emptySet());
 
-            return trustedSsids.contains(ssidName);
+            return trustedAps.contains(apName);
         } else {
             return false;
         }
     }
 
-    public static int trustUntrustSsidName(String ssidName) {
-        Set<String> trustedSsids = getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), Collections.emptySet());
-        Set<String> trustedSsidsLocalCopy = new HashSet<>(trustedSsids);
+    public static boolean trustUntrustApByName(String apName) {
+        Set<String> trustedAps = getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), Collections.emptySet());
+        Set<String> trustedApsLocalCopy = new HashSet<>(trustedAps);
 
-        int code;
-        if (trustedSsids.contains(ssidName)) {
-            trustedSsidsLocalCopy.remove(ssidName);
-            code = Color.RED;
+        boolean result;
+        if (trustedAps.contains(apName)) {
+            trustedApsLocalCopy.remove(apName);
+            result = false;
         } else {
-            trustedSsidsLocalCopy.add(ssidName);
-            code = Color.GREEN;
+            trustedApsLocalCopy.add(apName);
+            result = true;
         }
 
         SharedPreferences.Editor editor = getSharedPrefsEditor();
-        editor.putStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), trustedSsidsLocalCopy);
+        editor.putStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), trustedApsLocalCopy);
         editor.apply();
 
-        return code;
+        return result;
     }
 
     public static SharedPreferences getSharedPrefs() {
