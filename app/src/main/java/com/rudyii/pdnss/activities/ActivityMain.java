@@ -41,7 +41,6 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -51,14 +50,14 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.common.ConnectionType;
-import com.rudyii.pdnss.common.DnsStateBroadcastReceiver;
 
 public class ActivityMain extends AppCompatActivity {
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1122;
     public static final int BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE = 1133;
-    private DnsStateBroadcastReceiver dnsStateBroadcastReceiver;
+    private BroadcastReceiver broadcastReceiver;
     private TextView txtDnsState;
     private TextView txtCopyrights;
     private TextView txtSsidName;
@@ -69,9 +68,9 @@ public class ActivityMain extends AppCompatActivity {
     private Button btnTrustWiFi;
     private Button btnInstructions;
     private Button btnPermissions;
-    private CheckBox cbDisableForVpn;
-    private CheckBox cbEnableForCellular;
-    private CheckBox cbTrustWiFi;
+    private MaterialSwitch cbDisableForVpn;
+    private MaterialSwitch cbEnableForCellular;
+    private MaterialSwitch cbTrustWiFi;
     private EditText editTxtDnsHost;
     private boolean activityInitInProgress;
 
@@ -80,6 +79,24 @@ public class ActivityMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.txt_app_name);
         setContentView(R.layout.activity_main);
+        broadcastReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                if (txtDnsState != null) {
+                    txtDnsState.setText(getContext().getString(R.string.txt_dns_state_details_text, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
+                }
+                if (btnTrustWiFi != null && txtSsidName != null) {
+                    String ssidName = getWifiSsidName();
+                    btnTrustWiFi.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && trustedWiFiModeOn());
+                    int colorCode = getWifiSsidColorCode(ssidName);
+                    if (ConnectionType.WIFI.equals(getConnectionType())) {
+                        btnTrustWiFi.setText(colorCode == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
+                        txtSsidName.setText(ssidName);
+                        txtSsidName.setTextColor(colorCode);
+                    }
+                }
+            }
+        };
     }
 
     @Override
@@ -87,64 +104,13 @@ public class ActivityMain extends AppCompatActivity {
         super.onResume();
         initAll();
         IntentFilter filter = new IntentFilter(PDNS_STATE_CHANGED);
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (txtDnsState != null) {
-                        txtDnsState.setText(getContext().getString(R.string.txt_dns_state_details_text, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
-                    }
-                    if (btnTrustWiFi != null && txtSsidName != null) {
-                        String ssidName = getWifiSsidName();
-                        btnTrustWiFi.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && trustedWiFiModeOn());
-                        int colorCode = getWifiSsidColorCode(ssidName);
-                        if (ConnectionType.WIFI.equals(getConnectionType())) {
-                            btnTrustWiFi.setText(colorCode == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
-                            txtSsidName.setText(ssidName);
-                            txtSsidName.setTextColor(colorCode);
-                        }
-                    }
-                }
-            }, filter, RECEIVER_NOT_EXPORTED);
+            registerReceiver(broadcastReceiver, filter, RECEIVER_NOT_EXPORTED);
         } else {
-            registerReceiver(new BroadcastReceiver() {
-                @Override
-                public void onReceive(Context context, Intent intent) {
-                    if (txtDnsState != null) {
-                        txtDnsState.setText(getContext().getString(R.string.txt_dns_state_details_text, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
-                    }
-                    if (btnTrustWiFi != null && txtSsidName != null) {
-                        String ssidName = getWifiSsidName();
-                        btnTrustWiFi.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && trustedWiFiModeOn());
-                        int colorCode = getWifiSsidColorCode(ssidName);
-                        if (ConnectionType.WIFI.equals(getConnectionType())) {
-                            btnTrustWiFi.setText(colorCode == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
-                            txtSsidName.setText(ssidName);
-                            txtSsidName.setTextColor(colorCode);
-                        }
-                    }
-                }
-            }, filter);
+            registerReceiver(broadcastReceiver, filter);
         }
-        LocalBroadcastManager.getInstance(this).registerReceiver(
-                new BroadcastReceiver() {
-                    @Override
-                    public void onReceive(Context context, Intent intent) {
-                        if (txtDnsState != null) {
-                            txtDnsState.setText(getContext().getString(R.string.txt_dns_state_details_text, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
-                        }
-                        if (btnTrustWiFi != null && txtSsidName != null) {
-                            String ssidName = getWifiSsidName();
-                            btnTrustWiFi.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && trustedWiFiModeOn());
-                            int colorCode = getWifiSsidColorCode(ssidName);
-                            if (ConnectionType.WIFI.equals(getConnectionType())) {
-                                btnTrustWiFi.setText(colorCode == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
-                                txtSsidName.setText(ssidName);
-                                txtSsidName.setTextColor(colorCode);
-                            }
-                        }
-                    }
-                }, filter);
+        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, filter);
     }
 
     @Override
@@ -178,7 +144,7 @@ public class ActivityMain extends AppCompatActivity {
     private void initAll() {
         activityInitializationStarted();
 
-        initReceivers();
+//        initReceivers();
         initButtons();
         initTexts();
         updateTexts();
@@ -362,12 +328,6 @@ public class ActivityMain extends AppCompatActivity {
 
     }
 
-    private void initReceivers() {
-        if (dnsStateBroadcastReceiver == null) {
-            dnsStateBroadcastReceiver = new DnsStateBroadcastReceiver(txtDnsState);
-        }
-    }
-
     private void activityInitializationStarted() {
         activityInitInProgress = true;
     }
@@ -377,9 +337,9 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private void releaseResources() {
-        if (dnsStateBroadcastReceiver != null) {
-            unregisterReceiver(dnsStateBroadcastReceiver);
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(dnsStateBroadcastReceiver);
+        if (broadcastReceiver != null) {
+            unregisterReceiver(broadcastReceiver);
+            LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         }
     }
 
