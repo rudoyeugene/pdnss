@@ -9,6 +9,7 @@ import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.common.PdnsModeType.GOOGLE;
 import static com.rudyii.pdnss.common.PdnsModeType.OFF;
 import static com.rudyii.pdnss.common.PdnsModeType.ON;
+import static com.rudyii.pdnss.common.Utils.getConnectionType;
 import static com.rudyii.pdnss.common.Utils.getPDNSState;
 import static com.rudyii.pdnss.common.Utils.getSettingsValue;
 import static com.rudyii.pdnss.common.Utils.getSharedPrefs;
@@ -19,14 +20,18 @@ import static com.rudyii.pdnss.common.Utils.isAllNeededLocationPermissionsGrante
 import static com.rudyii.pdnss.common.Utils.isLocationPermissionsGranted;
 import static com.rudyii.pdnss.common.Utils.showWarning;
 import static com.rudyii.pdnss.common.Utils.trustUntrustSsidName;
+import static com.rudyii.pdnss.common.Utils.trustedWiFiModeOn;
 import static com.rudyii.pdnss.common.Utils.updateLastPdnsState;
 import static com.rudyii.pdnss.common.Utils.updatePdnsModeSettings;
+import static com.rudyii.pdnss.common.Utils.updatePdnsSettingsOnNetworkChange;
 import static com.rudyii.pdnss.common.Utils.updatePdnsUrl;
 import static com.rudyii.pdnss.services.QuickTileService.refreshQsTile;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -47,6 +52,7 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.rudyii.pdnss.R;
+import com.rudyii.pdnss.common.ConnectionType;
 import com.rudyii.pdnss.common.DnsStateBroadcastReceiver;
 
 public class ActivityMain extends AppCompatActivity {
@@ -64,6 +70,7 @@ public class ActivityMain extends AppCompatActivity {
     private Button btnInstructions;
     private Button btnPermissions;
     private CheckBox cbDisableForVpn;
+    private CheckBox cbEnableForCellular;
     private CheckBox cbTrustWiFi;
     private EditText editTxtDnsHost;
     private boolean activityInitInProgress;
@@ -81,12 +88,63 @@ public class ActivityMain extends AppCompatActivity {
         initAll();
         IntentFilter filter = new IntentFilter(PDNS_STATE_CHANGED);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(dnsStateBroadcastReceiver, filter, RECEIVER_NOT_EXPORTED);
+            registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (txtDnsState != null) {
+                        txtDnsState.setText(getContext().getString(R.string.txt_dns_state_details_text, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
+                    }
+                    if (btnTrustWiFi != null && txtSsidName != null) {
+                        String ssidName = getWifiSsidName();
+                        btnTrustWiFi.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && trustedWiFiModeOn());
+                        int colorCode = getWifiSsidColorCode(ssidName);
+                        if (ConnectionType.WIFI.equals(getConnectionType())) {
+                            btnTrustWiFi.setText(colorCode == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
+                            txtSsidName.setText(ssidName);
+                            txtSsidName.setTextColor(colorCode);
+                        }
+                    }
+                }
+            }, filter, RECEIVER_NOT_EXPORTED);
         } else {
-            registerReceiver(dnsStateBroadcastReceiver, filter);
+            registerReceiver(new BroadcastReceiver() {
+                @Override
+                public void onReceive(Context context, Intent intent) {
+                    if (txtDnsState != null) {
+                        txtDnsState.setText(getContext().getString(R.string.txt_dns_state_details_text, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
+                    }
+                    if (btnTrustWiFi != null && txtSsidName != null) {
+                        String ssidName = getWifiSsidName();
+                        btnTrustWiFi.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && trustedWiFiModeOn());
+                        int colorCode = getWifiSsidColorCode(ssidName);
+                        if (ConnectionType.WIFI.equals(getConnectionType())) {
+                            btnTrustWiFi.setText(colorCode == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
+                            txtSsidName.setText(ssidName);
+                            txtSsidName.setTextColor(colorCode);
+                        }
+                    }
+                }
+            }, filter);
         }
         LocalBroadcastManager.getInstance(this).registerReceiver(
-                dnsStateBroadcastReceiver, filter);
+                new BroadcastReceiver() {
+                    @Override
+                    public void onReceive(Context context, Intent intent) {
+                        if (txtDnsState != null) {
+                            txtDnsState.setText(getContext().getString(R.string.txt_dns_state_details_text, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
+                        }
+                        if (btnTrustWiFi != null && txtSsidName != null) {
+                            String ssidName = getWifiSsidName();
+                            btnTrustWiFi.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && trustedWiFiModeOn());
+                            int colorCode = getWifiSsidColorCode(ssidName);
+                            if (ConnectionType.WIFI.equals(getConnectionType())) {
+                                btnTrustWiFi.setText(colorCode == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
+                                txtSsidName.setText(ssidName);
+                                txtSsidName.setTextColor(colorCode);
+                            }
+                        }
+                    }
+                }, filter);
     }
 
     @Override
@@ -167,6 +225,19 @@ public class ActivityMain extends AppCompatActivity {
                 }
             });
         }
+        if (cbEnableForCellular == null) {
+            cbEnableForCellular = this.findViewById(R.id.cbEnableForCellular);
+
+            cbEnableForCellular.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_enable_while_cellular), false));
+            cbEnableForCellular = this.findViewById(R.id.cbEnableForCellular);
+            cbEnableForCellular.setOnCheckedChangeListener((compoundButton, checked) -> {
+                if (!activityInitInProgress) {
+                    SharedPreferences.Editor editor = getSharedPrefsEditor();
+                    editor.putBoolean(getString(R.string.settings_name_enable_while_cellular), checked);
+                    editor.apply();
+                }
+            });
+        }
     }
 
     private void initButtons() {
@@ -240,16 +311,17 @@ public class ActivityMain extends AppCompatActivity {
 
             if (isLocationPermissionsGranted()) {
                 btnTrustWiFi.setVisibility(View.VISIBLE);
+                btnTrustWiFi.setActivated(ConnectionType.WIFI.equals(getConnectionType()));
+
                 SharedPreferences sharedPrefForInit = getSharedPrefs();
-                btnTrustWiFi.setEnabled(sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
+                btnTrustWiFi.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
                 btnTrustWiFi.setText(getWifiSsidColorCode(getWifiSsidName()) == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
                 btnTrustWiFi.setOnClickListener(v -> {
                     String ssidName = getWifiSsidName();
-                    btnTrustWiFi.setEnabled(getSharedPrefs().getBoolean(getContext().getString(R.string.settings_name_trust_wifi), false));
                     int colorCode = trustUntrustSsidName(ssidName);
                     btnTrustWiFi.setText(colorCode == Color.RED ? getContext().getString(R.string.btn_trust_ssid) : getContext().getString(R.string.btn_untrust_ssid));
                     txtSsidName.setTextColor(colorCode);
-                    showWarning(getContext().getString(R.string.txt_reconnect_wifi_after_trust));
+                    updatePdnsSettingsOnNetworkChange(null);
                 });
             } else {
                 btnTrustWiFi.setVisibility(View.INVISIBLE);
@@ -268,7 +340,7 @@ public class ActivityMain extends AppCompatActivity {
                         SharedPreferences.Editor editor = getSharedPrefsEditor();
                         editor.putBoolean(getString(R.string.settings_name_trust_wifi), checked);
                         editor.apply();
-                        btnTrustWiFi.setEnabled(checked);
+                        btnTrustWiFi.setEnabled(checked && ConnectionType.WIFI.equals(getConnectionType()));
                     }
                 });
             } else {

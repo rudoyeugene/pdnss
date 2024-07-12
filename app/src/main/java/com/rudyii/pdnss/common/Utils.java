@@ -14,6 +14,7 @@ import static com.rudyii.pdnss.common.PdnsModeType.OFF;
 import static com.rudyii.pdnss.common.PdnsModeType.OFF_WHILE_TRUSTED_WIFI;
 import static com.rudyii.pdnss.common.PdnsModeType.OFF_WHILE_VPN;
 import static com.rudyii.pdnss.common.PdnsModeType.ON;
+import static com.rudyii.pdnss.common.PdnsModeType.ON_WHILE_CELLULAR;
 import static com.rudyii.pdnss.services.QuickTileService.refreshQsTile;
 
 import android.Manifest;
@@ -106,11 +107,17 @@ public class Utils {
     }
 
     public static void updatePdnsSettingsOnNetworkChange(Network network) {
+        if (network == null) {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            network = connectivityManager.getActiveNetwork();
+        }
+
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
         if (capabilities != null) {
             boolean isVpn = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
             boolean isWiFi = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);
+            boolean isCellular = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
 
             if (isVpn) {
                 boolean pDnsStateOn = VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
@@ -122,9 +129,21 @@ public class Utils {
                 }
             } else if (isWiFi && isAllNeededLocationPermissionsGranted()) {
                 String ssidName = getWifiSsidName();
-                if (getWifiTrusted(ssidName) && getSharedPrefs().getBoolean(getContext().getString(R.string.settings_name_trust_wifi), false)) {
+                if (itTrustedWiFiSsid(ssidName) && trustedWiFiModeOn()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_TRUSTED_WIFI);
+                    refreshQsTile();
+                } else if (!itTrustedWiFiSsid(ssidName) && trustedWiFiModeOn()) {
+                    updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+                    updateLastPdnsState(ON);
+                    refreshQsTile();
+                }
+            } else if (isCellular) {
+                boolean pDnsStateOff = VALUE_PRIVATE_DNS_MODE_OFF_STRING.equals(getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
+                boolean enableWhileCellular = getSharedPrefs().getBoolean(getContext().getString(R.string.settings_name_enable_while_cellular), false);
+                if (enableWhileCellular && pDnsStateOff) {
+                    updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+                    updateLastPdnsState(ON_WHILE_CELLULAR);
                     refreshQsTile();
                 }
             } else {
@@ -134,20 +153,46 @@ public class Utils {
                         updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                         updateLastPdnsState(ON);
                         refreshQsTile();
-
                 }
             }
         }
         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(PDNS_STATE_CHANGED));
     }
 
+    public static boolean trustedWiFiModeOn() {
+        return getSharedPrefs().getBoolean(getContext().getString(R.string.settings_name_trust_wifi), false);
+    }
+
+    public static ConnectionType getConnectionType() {
+        ConnectionType connectionType = ConnectionType.UNKNOWN;
+        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        Network network = connectivityManager.getActiveNetwork();
+        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+
+        if (capabilities != null) {
+            if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                return ConnectionType.VPN;
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                return ConnectionType.WIFI;
+            } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                return ConnectionType.CELLULAR;
+            }
+        }
+
+        return connectionType;
+    }
+
     public static String getWifiSsidName() {
-        WifiManager mWifiManager = (WifiManager) getContext().getSystemService(Context.WIFI_SERVICE);
-        if (isAllNeededLocationPermissionsGranted() && mWifiManager != null) {
-            WifiInfo info = mWifiManager.getConnectionInfo();
-            return info.getSSID();
+        if (ConnectionType.WIFI.equals(getConnectionType())) {
+            WifiManager mWifiManager = (WifiManager) getContext().getSystemService(Context.WIFI_SERVICE);
+            if (isAllNeededLocationPermissionsGranted() && mWifiManager != null) {
+                WifiInfo info = mWifiManager.getConnectionInfo();
+                return info.getSSID();
+            } else {
+                return "missing permissions";
+            }
         } else {
-            return "unsupported";
+            return "cellular";
         }
     }
 
@@ -157,7 +202,7 @@ public class Utils {
         return trustedSsids.contains(ssidName) ? Color.GREEN : Color.RED;
     }
 
-    public static boolean getWifiTrusted(String ssidName) {
+    public static boolean itTrustedWiFiSsid(String ssidName) {
         if (isAllNeededLocationPermissionsGranted()) {
             Set<String> trustedSsids = getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ssid_set), Collections.emptySet());
 

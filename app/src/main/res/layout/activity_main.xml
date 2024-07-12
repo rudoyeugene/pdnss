@@ -6,16 +6,6 @@
     android:layout_height="match_parent"
     tools:context=".activities.ActivityMain">
 
-    <CheckBox
-        android:id="@+id/cbTrustWiFi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/btn_trust_wifi"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cbDisableForVpn" />
-
     <TextView
         android:id="@+id/txtLabel"
         android:layout_width="0dp"
@@ -32,7 +22,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
-
 
     <TextView
         android:id="@+id/txtDnsState"
@@ -61,6 +50,17 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/txtSsidName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="SSID name"
+        app:layout_constraintBottom_toBottomOf="@+id/btnTrustWiFi"
+        app:layout_constraintEnd_toStartOf="@+id/btnTrustWiFi"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cbTrustWiFi" />
 
     <Button
         android:id="@+id/btnOn"
@@ -95,23 +95,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
 
-    <EditText
-        android:id="@+id/editTxtDsnHost"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:importantForAutofill="auto"
-        android:inputType="text"
-        android:text="@string/txt_dummy_pdns_url"
-        android:textAlignment="textStart"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/btnSet"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnOff" />
-
     <Button
         android:id="@+id/btnSet"
         style="@style/Widget.AppCompat.Button.Colored"
@@ -135,27 +118,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtDnsState" />
 
-    <CheckBox
-        android:id="@+id/cbDisableForVpn"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
-        android:text="@string/chkb_disable_on_vpn"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnInstructions" />
-
-    <TextView
-        android:id="@+id/txtSsidName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="SSID name"
-        app:layout_constraintBottom_toBottomOf="@+id/btnTrustWiFi"
-        app:layout_constraintEnd_toStartOf="@+id/btnTrustWiFi"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cbTrustWiFi" />
-
     <Button
         android:id="@+id/btnTrustWiFi"
         style="@style/Widget.AppCompat.Button.Colored"
@@ -173,9 +135,57 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
-        android:text="ENABLE WIFI SSID NAME"
+        android:text="ALLOW TRUSTED WIFI MODE"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/btnInstructions"
         app:layout_constraintTop_toBottomOf="@+id/txtDnsState" />
+
+    <CheckBox
+        android:id="@+id/cbTrustWiFi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/btn_trust_wifi"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cbEnableForCellular" />
+
+
+    <CheckBox
+        android:id="@+id/cbDisableForVpn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="@string/chkb_disable_on_vpn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnInstructions" />
+
+    <CheckBox
+        android:id="@+id/cbEnableForCellular"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="@string/chkb_enable_on_cellular"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cbDisableForVpn" />
+
+    <EditText
+        android:id="@+id/editTxtDsnHost"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:importantForAutofill="auto"
+        android:inputType="text"
+        android:text="@string/txt_dummy_pdns_url"
+        android:textAlignment="textStart"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/btnSet"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/btnOff" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
