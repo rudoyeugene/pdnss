@@ -25,7 +25,7 @@ import static com.rudyii.pdnss.common.Utils.updateLastPdnsState;
 import static com.rudyii.pdnss.common.Utils.updatePdnsModeSettings;
 import static com.rudyii.pdnss.common.Utils.updatePdnsSettingsOnNetworkChange;
 import static com.rudyii.pdnss.common.Utils.updatePdnsUrl;
-import static com.rudyii.pdnss.services.QuickTileService.refreshQsTile;
+import static com.rudyii.pdnss.services.QuickTile.refreshQsTile;
 
 import android.Manifest;
 import android.app.AlertDialog;
@@ -310,7 +310,7 @@ public class ActivityMain extends AppCompatActivity {
                     boolean trustResult = trustUntrustApByName(apName);
                     swchTrustAp.setChecked(trustResult);
                     showWarning(trustResult ? getString(R.string.txt_connected_ap_trusted, apName) : getString(R.string.txt_connected_ap_untrusted, apName));
-                    updatePdnsSettingsOnNetworkChange(null);
+                    updatePdnsSettingsOnNetworkChange();
                 });
             } else {
                 swchTrustAp.setVisibility(View.INVISIBLE);
@@ -334,7 +334,7 @@ public class ActivityMain extends AppCompatActivity {
                         SharedPreferences.Editor editor = getSharedPrefsEditor();
                         editor.putStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), apsCopy);
                         editor.apply();
-                        updatePdnsSettingsOnNetworkChange(null);
+                        updatePdnsSettingsOnNetworkChange();
                     });
                     AlertDialog dialog = builder.create();
                     dialog.show();

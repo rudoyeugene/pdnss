@@ -25,8 +25,8 @@
         tools:targetApi="31">
         <activity
             android:name=".activities.ActivityMain"
-            android:launchMode="singleInstance"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -41,7 +41,7 @@
         </activity>
 
         <activity
-            android:name="com.rudyii.pdnss.activities.ActivityShortcuts"
+            android:name=".activities.ActivityShortcuts"
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleInstance"
@@ -58,7 +58,8 @@
         </activity>
 
         <service
-            android:name="com.rudyii.pdnss.services.QuickTileService"
+            android:name=".services.QuickTile"
+            android:enabled="true"
             android:exported="true"
             android:icon="@drawable/quick_tile"
             android:label="Private DNS"
@@ -74,5 +75,19 @@
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".services.NetworkMonitor"
+            android:enabled="true"
+            android:exported="true"></service>
+
+        <receiver
+            android:name=".receivers.OnBoot"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
     </application>
 </manifest>

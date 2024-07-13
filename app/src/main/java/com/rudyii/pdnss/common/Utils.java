@@ -15,7 +15,7 @@ import static com.rudyii.pdnss.common.PdnsModeType.OFF_WHILE_TRUSTED_WIFI;
 import static com.rudyii.pdnss.common.PdnsModeType.OFF_WHILE_VPN;
 import static com.rudyii.pdnss.common.PdnsModeType.ON;
 import static com.rudyii.pdnss.common.PdnsModeType.ON_WHILE_CELLULAR;
-import static com.rudyii.pdnss.services.QuickTileService.refreshQsTile;
+import static com.rudyii.pdnss.services.QuickTile.refreshQsTile;
 
 import android.Manifest;
 import android.content.Context;
@@ -105,14 +105,12 @@ public class Utils {
                 Toast.LENGTH_LONG).show();
     }
 
-    public static void updatePdnsSettingsOnNetworkChange(Network network) {
-        if (network == null) {
-            ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-            network = connectivityManager.getActiveNetwork();
-        }
-
+    public static void updatePdnsSettingsOnNetworkChange() {
         ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        Network network = connectivityManager.getActiveNetwork();
+
         NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+
         if (capabilities != null) {
             boolean isVpn = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
             boolean isWiFi = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI);

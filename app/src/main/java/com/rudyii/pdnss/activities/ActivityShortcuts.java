@@ -8,7 +8,7 @@ import static com.rudyii.pdnss.common.Constants.PDNSS_OFF;
 import static com.rudyii.pdnss.common.Constants.PDNSS_ON;
 import static com.rudyii.pdnss.common.Utils.showWarning;
 import static com.rudyii.pdnss.common.Utils.updatePdnsModeSettings;
-import static com.rudyii.pdnss.services.QuickTileService.refreshQsTile;
+import static com.rudyii.pdnss.services.QuickTile.refreshQsTile;
 
 import android.app.Activity;
 import android.content.Intent;

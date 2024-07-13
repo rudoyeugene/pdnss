@@ -20,7 +20,7 @@ import android.service.quicksettings.TileService;
 import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.common.PdnsModeType;
 
-public class QuickTileService extends TileService {
+public class QuickTile extends TileService {
     private static Tile tile;
 
     public static void refreshQsTile() {
