@@ -37,6 +37,8 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.PowerManager;
+import android.provider.Settings;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -199,6 +201,11 @@ public class ActivityMain extends AppCompatActivity {
             swchEnableForCellular = this.findViewById(R.id.cbEnableForCellular);
             swchEnableForCellular.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
+                    PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                    if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
+                        showWarning(getString(R.string.txt_battery_optimization_enabled));
+                    }
+
                     SharedPreferences.Editor editor = getSharedPrefsEditor();
                     editor.putBoolean(getString(R.string.settings_name_enable_while_cellular), checked);
                     editor.apply();
@@ -259,7 +266,13 @@ public class ActivityMain extends AppCompatActivity {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle(getString(R.string.txt_instructions_title));
                 alert.setMessage(R.string.txt_instructions);
-                alert.setPositiveButton("OK", (dialog, which) -> dialog.dismiss());
+                alert.setPositiveButton(getString(R.string.txt_ok), (dialog, which) -> dialog.dismiss());
+                alert.setNeutralButton(getString(R.string.txt_disable_battery_optimizations), (dialog, which) -> {
+                    PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                    if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
+                        startActivity(new Intent().setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
+                    }
+                });
                 alert.show();
             });
         }
@@ -283,6 +296,11 @@ public class ActivityMain extends AppCompatActivity {
 
                 swchTrustWiFi.setOnCheckedChangeListener((compoundButton, checked) -> {
                     if (!activityInitInProgress) {
+                        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                        if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
+                            showWarning(getString(R.string.txt_battery_optimization_enabled));
+                        }
+
                         SharedPreferences.Editor editor = getSharedPrefsEditor();
                         editor.putBoolean(getString(R.string.settings_name_trust_wifi), checked);
                         editor.apply();
@@ -306,6 +324,11 @@ public class ActivityMain extends AppCompatActivity {
                 swchTrustAp.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
                 swchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
                 swchTrustAp.setOnClickListener(v -> {
+                    PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                    if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
+                        showWarning(getString(R.string.txt_battery_optimization_enabled));
+                    }
+
                     swchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
                     boolean trustResult = trustUntrustApByName(apName);
                     swchTrustAp.setChecked(trustResult);
@@ -375,7 +398,7 @@ public class ActivityMain extends AppCompatActivity {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder
                 .setCancelable(false)
-                .setTitle(R.string.txt_location_disclosure_agreement_title)
+                .setTitle(R.string.txt_location_disclosure_agreement)
                 .setMessage(R.string.txt_location_disclosure_agreement)
                 .setPositiveButton("Grant Permissions", (dialog, which) -> requestLocationPermission())
                 .setNegativeButton("Cancel", (dialog, which) -> {
