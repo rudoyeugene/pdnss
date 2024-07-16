@@ -11,11 +11,10 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:alpha="@dimen/material_emphasis_medium"
-        android:background="@color/material_dynamic_neutral20"
         android:text="@string/txt_app_name"
         android:textAlignment="center"
         android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-        android:textColor="@color/material_dynamic_neutral90"
+        android:textColor="@color/material_dynamic_neutral0"
         android:textSize="24sp"
         android:textStyle="bold"
         android:typeface="normal"
@@ -57,30 +56,30 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:text="ON"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/divider3" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOff"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:text="OFF"
         app:layout_constraintEnd_toStartOf="@+id/btnGoogle"
         app:layout_constraintStart_toEndOf="@+id/btnOn"
-        app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/divider3" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGoogle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
         android:text="GOOGLE"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/divider3" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnSet"
@@ -197,7 +196,7 @@
 
     <View
         android:id="@+id/divider"
-        android:layout_width="409dp"
+        android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_marginStart="1dp"
         android:layout_marginTop="8dp"
@@ -209,7 +208,7 @@
 
     <View
         android:id="@+id/divider2"
-        android:layout_width="409dp"
+        android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
@@ -218,5 +217,16 @@
         app:layout_constraintBottom_toTopOf="@+id/btnInstructions"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/divider3"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
