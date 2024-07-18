@@ -188,6 +188,8 @@ public class ActivityMain extends AppCompatActivity {
             swchDisableForVpn = this.findViewById(R.id.cbDisableForVpn);
             swchDisableForVpn.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
+                    showDozeModeWarning();
+
                     SharedPreferences.Editor editor = getSharedPrefsEditor();
                     editor.putBoolean(getString(R.string.settings_name_disable_while_vpn), checked);
                     editor.apply();
@@ -201,16 +203,20 @@ public class ActivityMain extends AppCompatActivity {
             swchEnableForCellular = this.findViewById(R.id.cbEnableForCellular);
             swchEnableForCellular.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
-                    PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                    if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
-                        showWarning(getString(R.string.txt_battery_optimization_enabled));
-                    }
+                    showDozeModeWarning();
 
                     SharedPreferences.Editor editor = getSharedPrefsEditor();
                     editor.putBoolean(getString(R.string.settings_name_enable_while_cellular), checked);
                     editor.apply();
                 }
             });
+        }
+    }
+
+    private void showDozeModeWarning() {
+        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
+            showWarning(getString(R.string.txt_battery_optimization_enabled));
         }
     }
 
@@ -296,10 +302,7 @@ public class ActivityMain extends AppCompatActivity {
 
                 swchTrustWiFi.setOnCheckedChangeListener((compoundButton, checked) -> {
                     if (!activityInitInProgress) {
-                        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                        if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
-                            showWarning(getString(R.string.txt_battery_optimization_enabled));
-                        }
+                        showDozeModeWarning();
 
                         SharedPreferences.Editor editor = getSharedPrefsEditor();
                         editor.putBoolean(getString(R.string.settings_name_trust_wifi), checked);
@@ -324,10 +327,7 @@ public class ActivityMain extends AppCompatActivity {
                 swchTrustAp.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
                 swchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
                 swchTrustAp.setOnClickListener(v -> {
-                    PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                    if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
-                        showWarning(getString(R.string.txt_battery_optimization_enabled));
-                    }
+                    showDozeModeWarning();
 
                     swchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
                     boolean trustResult = trustUntrustApByName(apName);
@@ -353,7 +353,7 @@ public class ActivityMain extends AppCompatActivity {
                         showWarning(getString(R.string.txt_empty_ap_list));
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                        builder.setTitle("Choose WiFi AP to remove");
+                        builder.setTitle(getString(R.string.txt_click_to_remove_ap));
                         String[] apsSimple = apsCopy.toArray(new String[0]);
                         builder.setItems(apsSimple, (dialog, which) -> {
                             apsCopy.remove(apsSimple[which]);

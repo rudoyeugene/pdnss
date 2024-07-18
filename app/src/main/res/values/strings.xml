@@ -21,8 +21,7 @@
     <string name="swch_enable_on_cellular">Enable Private DNS on cellular network</string>
 
     <string name="txt_app_name">Private DNS Switcher (PDNSS)</string>
-    <string name="txt_empty_ap_list">Trusted WiFi AP List is empty</string>
-    <string name="txt_battery_optimization_enabled">The battery optimization mode is ON, see Instructions</string>
+    <string name="txt_battery_optimization_enabled">Android is optimizing battery for PDNSS (Doze mode). See Instructions.</string>
     <string name="txt_connected_ap_name">Connected AP name: %1$s</string>
     <string name="txt_connected_ap_trusted">WiFi AP named %1$s added into \'Trusted WiFi AP List\'</string>
     <string name="txt_connected_ap_untrusted">WiFi AP named %1$s removed from \'Trusted WiFi AP List\'</string>
@@ -33,13 +32,15 @@
     <string name="txt_dns_state_google">GOOGLE</string>
     <string name="txt_dns_state_off">OFF</string>
     <string name="txt_dns_state_on">ON</string>
+    <string name="txt_click_to_remove_ap">Click to remove from Trusted WiFi AP List</string>
     <string name="txt_dns_state_quicktile">Private DNS</string>
     <string name="txt_dns_state_unknown">unknown</string>
     <string name="txt_dummy_pdns_url">one.one.one.one</string>
+    <string name="txt_empty_ap_list">Trusted WiFi AP List is empty</string>
     <string name="txt_error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
     <string name="txt_instructions">
         <b>Main feature:</b>
-                \n
+                        \n
         PDNSS requires You to grant special permissions (Android limitations)\n
         To grant the proper permissions please follow the instructions as below:\n
         1. Enable Developer Options\n
@@ -53,11 +54,13 @@
         
         
         
+        
         <b>Optional features:</b>
-                        \n
+                                \n
         PDNSS also able to control Private DNS Settings automatically using Trusted WiFi AP, Cellular Network or VPN State.\n
         To do that PDNSS needs Service running in background that is strictly limited by Android Doze Mode.\n
         You can allow Service to run in background by disabling battery optimization for PDNSS.
+    
     
     
     
@@ -65,30 +68,35 @@
     <string name="txt_instructions_title">PDNSS requirements:</string>
     <string name="txt_location_disclosure_agreement">
         <b>This App needs Your location permission in the background to enable the Trusted WiFi AP functionality.</b>
-                                                        This is an Android requirement to detect trusted Wi-Fi networks.\n
+                                                                This is an Android requirement to detect trusted Wi-Fi networks.\n
         \n
+        
         
         
         
         <b>Granting permission allows You to:</b>
-                        \n
+                                \n
+        
         
         
         
         <b>- </b>
-                        Trust or untrust currently connected Wi-Fi access points based on their names. Denying permission disables the Trusted WiFi AP functionality. You can always revisit this prompt later to enable it.\n
+                                Trust or untrust currently connected Wi-Fi access points based on their names. Denying permission disables the Trusted WiFi AP functionality. You can always revisit this prompt later to enable it.\n
         \n
+        
         
         
         
         <u>Here\'s how Your location is used:</u>
-                        \n
+                                \n
+        
         
         
         
         <b>- In the background:</b>
-                         This App uses Your location in the background to identify nearby Wi-Fi networks and check their AP names against Your trusted list. This functionality is not used for any other purpose.\n
+                                 This App uses Your location in the background to identify nearby Wi-Fi networks and check their AP names against Your trusted list. This functionality is not used for any other purpose.\n
         \n
+        
         
         
         
