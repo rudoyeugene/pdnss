@@ -21,6 +21,7 @@
     <string name="swch_enable_on_cellular">Enable Private DNS on cellular network</string>
 
     <string name="txt_app_name">Private DNS Switcher (PDNSS)</string>
+    <string name="txt_empty_ap_list">Trusted WiFi AP List is empty</string>
     <string name="txt_battery_optimization_enabled">The battery optimization mode is ON, see Instructions</string>
     <string name="txt_connected_ap_name">Connected AP name: %1$s</string>
     <string name="txt_connected_ap_trusted">WiFi AP named %1$s added into \'Trusted WiFi AP List\'</string>

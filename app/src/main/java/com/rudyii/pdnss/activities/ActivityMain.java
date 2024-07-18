@@ -348,19 +348,23 @@ public class ActivityMain extends AppCompatActivity {
 
 
                 btnApList.setOnClickListener(v -> {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Choose WiFi AP to remove");
                     Set<String> apsCopy = new HashSet<>(getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), Collections.emptySet()));
-                    String[] apsSimple = apsCopy.toArray(new String[0]);
-                    builder.setItems(apsSimple, (dialog, which) -> {
-                        apsCopy.remove(apsSimple[which]);
-                        SharedPreferences.Editor editor = getSharedPrefsEditor();
-                        editor.putStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), apsCopy);
-                        editor.apply();
-                        updatePdnsSettingsOnNetworkChange();
-                    });
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
+                    if (apsCopy.isEmpty()) {
+                        showWarning(getString(R.string.txt_empty_ap_list));
+                    } else {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        builder.setTitle("Choose WiFi AP to remove");
+                        String[] apsSimple = apsCopy.toArray(new String[0]);
+                        builder.setItems(apsSimple, (dialog, which) -> {
+                            apsCopy.remove(apsSimple[which]);
+                            SharedPreferences.Editor editor = getSharedPrefsEditor();
+                            editor.putStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), apsCopy);
+                            editor.apply();
+                            updatePdnsSettingsOnNetworkChange();
+                        });
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
                 });
             } else {
                 btnApList.setVisibility(View.INVISIBLE);
