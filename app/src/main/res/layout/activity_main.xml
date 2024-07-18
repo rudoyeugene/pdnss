@@ -6,15 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".activities.ActivityMain">
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/txtLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:alpha="@dimen/material_emphasis_medium"
         android:text="@string/txt_app_name"
         android:textAlignment="center"
-        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
-        android:textColor="@color/material_dynamic_neutral0"
         android:textSize="24sp"
         android:textStyle="bold"
         android:typeface="normal"
@@ -45,7 +42,7 @@
         android:layout_marginBottom="16dp"
         android:text="@string/txt_copyrights"
         android:textAlignment="center"
-        android:textColor="@color/material_dynamic_neutral70"
+        android:textColor="@android:color/darker_gray"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -223,6 +220,7 @@
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_marginStart="1dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="1dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"

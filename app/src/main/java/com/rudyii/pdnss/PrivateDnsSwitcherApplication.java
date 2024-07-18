@@ -28,7 +28,7 @@ public class PrivateDnsSwitcherApplication extends Application {
 
         if (NetworkMonitor.isStopped()) {
             Intent service = new Intent(getApplicationContext(), NetworkMonitor.class);
-            getApplicationContext().startService(service);
+            getApplicationContext().startForegroundService(service);
         }
     }
 }

@@ -3,6 +3,9 @@ package com.rudyii.pdnss.services;
 import static com.rudyii.pdnss.common.Constants.APP_NAME;
 import static com.rudyii.pdnss.common.Utils.updatePdnsSettingsOnNetworkChange;
 
+import android.app.Notification;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
@@ -13,6 +16,9 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
+
+import com.rudyii.pdnss.R;
 
 public class NetworkMonitor extends Service {
     private static boolean isStarted = false;
@@ -26,6 +32,8 @@ public class NetworkMonitor extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        startInForeground();
+
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
@@ -35,6 +43,21 @@ public class NetworkMonitor extends Service {
         };
         Log.i(APP_NAME, "NetworkMonitor created");
         isStarted = true;
+    }
+
+    private void startInForeground() {
+        String CHANNEL_ID = "my_channel_01";
+        NotificationChannel channel = new NotificationChannel(CHANNEL_ID,
+                getString(R.string.txt_notification_channel_description),
+                NotificationManager.IMPORTANCE_DEFAULT);
+
+        ((NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE)).createNotificationChannel(channel);
+
+        Notification notification = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setContentTitle(getString(R.string.txt_notification_title))
+                .setContentText(getString(R.string.txt_notification_body)).build();
+
+        startForeground(111, notification);
     }
 
     @Override

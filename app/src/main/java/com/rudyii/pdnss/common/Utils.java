@@ -84,19 +84,15 @@ public class Utils {
 
     public static String getPDNSState() {
         String pDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
-        if (pDNSState == null) {
-            return getContext().getString(R.string.txt_dns_state_unknown);
-        } else {
-            switch (pDNSState) {
-                case VALUE_PRIVATE_DNS_MODE_OFF_STRING:
-                    return getContext().getString(R.string.txt_dns_state_off);
-                case VALUE_PRIVATE_DNS_MODE_GOOGLE_STRING:
-                    return getContext().getString(R.string.txt_dns_state_google);
-                case VALUE_PRIVATE_DNS_MODE_ON_STRING:
-                    return getContext().getString(R.string.txt_dns_state_on);
-                default:
-                    return getContext().getString(R.string.txt_dns_state_unknown);
-            }
+        switch (pDNSState) {
+            case VALUE_PRIVATE_DNS_MODE_OFF_STRING:
+                return getContext().getString(R.string.txt_dns_state_off);
+            case VALUE_PRIVATE_DNS_MODE_GOOGLE_STRING:
+                return getContext().getString(R.string.txt_dns_state_google);
+            case VALUE_PRIVATE_DNS_MODE_ON_STRING:
+                return getContext().getString(R.string.txt_dns_state_on);
+            default:
+                return getContext().getString(R.string.txt_dns_state_unknown);
         }
     }
 
