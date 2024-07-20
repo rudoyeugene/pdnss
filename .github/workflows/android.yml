@@ -1,4 +1,4 @@
-name: Upload APK in Releases
+name: Build and Deploy Debug APK
 on:
   push:
     branches:
@@ -23,8 +23,7 @@ jobs:
         
       - name: Print version
         id: print_version
-        run: |
-          bash ./gradlew printVersion | tee $APP_VERSION
+        run: bash cat app/build.gradle | grep versionName | cut -d '"' -f2 | awk '{print $1}' >> $APP_VERSION
 
       - name: Build debug APK
         id: build_apk
