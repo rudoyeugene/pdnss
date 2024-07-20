@@ -24,8 +24,7 @@ jobs:
       - name: Print version
         id: print_version
         run: |
-          bash APP_VERSION=$(./gradlew printVersion)
-          echo $APP_VERSION
+          bash ./gradlew printVersion | tee $APP_VERSION
 
       - name: Build debug APK
         id: build_apk
