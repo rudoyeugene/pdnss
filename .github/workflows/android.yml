@@ -1,4 +1,4 @@
-name: Build and Deploy Debug APK
+name: Do Release
 on:
   push:
     branches:
@@ -7,25 +7,25 @@ on:
 
 jobs:
   apk:
-    name: Upload APK in Releases
+    name: Build and Deploy APK into Releases
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v4
-      - name: set up JDK 21
+      - name: Set up JDK 21
         uses: actions/setup-java@v4
         with:
           distribution: 'liberica'
           java-version: 21
 
-      - name: Grant Permission to Execute
+      - name: Allow executions of gradlew
         run: chmod +x gradlew
 
-      - name: Build debug APK
+      - name: Build PDNSS APK
         id: build_apk
         run: bash ./gradlew assembleDebug
 
-      - name: Upload APK to Github Artifacts
+      - name: Upload PDNSS APK to Github Artifactory
         uses: actions/upload-artifact@v4
         with:
           name: app
@@ -37,7 +37,7 @@ jobs:
           APP_VERSION=$(cat app/build.gradle | grep versionName | cut -d '"' -f2 | awk '{print $1}')
           echo "APP_VERSION=$APP_VERSION" >> $GITHUB_OUTPUT
 
-      - name: Create Release
+      - name: Create new PDNSS Release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -48,7 +48,7 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload APK to Release
+      - name: Push PDNSS APK to new Release
         id: upload-release-asset
         uses: actions/upload-release-asset@v1
         env:
