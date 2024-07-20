@@ -23,7 +23,9 @@ jobs:
         
       - name: Print version
         id: print_version
-        run: bash cat app/build.gradle | grep versionName | cut -d '"' -f2 | awk '{print $1}' >> $APP_VERSION
+        run: |
+          APP_VERSION=$(cat app/build.gradle | grep versionName | cut -d '"' -f2 | awk '{print $1}')
+          echo "::set-output name=output_name::$APP_VERSION"
 
       - name: Build debug APK
         id: build_apk
