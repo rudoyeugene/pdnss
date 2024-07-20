@@ -25,7 +25,7 @@ jobs:
         id: print_version
         run: |
           APP_VERSION=$(cat app/build.gradle | grep versionName | cut -d '"' -f2 | awk '{print $1}')
-          echo "::set-output name=output_name::$APP_VERSION"
+          echo "::set-output name=APP_VERSION::$APP_VERSION"
 
       - name: Build debug APK
         id: build_apk
@@ -43,8 +43,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
-          tag_name: ${{ steps.print_version.outputs.APP_VERSION }}
-          release_name: ${{ steps.print_version.outputs.APP_VERSION }}
+          tag_name: v${{ steps.print_version.outputs.APP_VERSION }}
+          release_name: v${{ steps.print_version.outputs.APP_VERSION }}
           draft: false
           prerelease: false
 
