@@ -31,8 +31,8 @@ jobs:
           name: app
           path: app/build/outputs/apk/debug/app-debug.apk
 
-      - name: Print version
-        id: print_version
+      - name: Get PDNSS version
+        id: get_version
         run: |
           APP_VERSION=$(cat app/build.gradle | grep versionName | cut -d '"' -f2 | awk '{print $1}')
           echo "APP_VERSION=$APP_VERSION" >> $APP_VERSION
@@ -43,8 +43,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.TOKEN }}
         with:
-          tag_name: v${{ steps.print_version.outputs.APP_VERSION }}
-          release_name: v${{ steps.print_version.outputs.APP_VERSION }}
+          release_name: v${{ steps.get_version.outputs.APP_VERSION }}
           draft: false
           prerelease: false
 
@@ -56,5 +55,5 @@ jobs:
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
           asset_path: ./app/build/outputs/apk/debug/app-debug.apk
-          asset_name: release.apk
+          asset_name: ${{ steps.get_version.outputs.APP_VERSION }}.apk
           asset_content_type: application/zip
