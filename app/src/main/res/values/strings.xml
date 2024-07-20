@@ -109,4 +109,5 @@
     <string name="txt_notification_channel_description">A placeholder to make Service running in foreground</string>
     <string name="txt_notification_title">Private DNS Switcher</string>
     <string name="txt_ok">OK</string>
+    <string name="txt_missing_permissions">NO_PERMISSIONS</string>
 </resources>

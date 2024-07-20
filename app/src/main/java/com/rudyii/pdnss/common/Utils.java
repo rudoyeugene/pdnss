@@ -239,4 +239,8 @@ public class Utils {
                 && PackageManager.PERMISSION_GRANTED == getContext().checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
                 && PackageManager.PERMISSION_GRANTED == getContext().checkSelfPermission(Manifest.permission.ACCESS_FINE_LOCATION);
     }
+
+    public static boolean isWriteSecureSettingsPermissionGranted() {
+        return PackageManager.PERMISSION_GRANTED == getContext().checkSelfPermission(Manifest.permission.WRITE_SECURE_SETTINGS);
+    }
 }

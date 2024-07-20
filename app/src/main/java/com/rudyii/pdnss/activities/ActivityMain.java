@@ -17,6 +17,7 @@ import static com.rudyii.pdnss.common.Utils.getSharedPrefsEditor;
 import static com.rudyii.pdnss.common.Utils.getWifiApName;
 import static com.rudyii.pdnss.common.Utils.isAllNeededLocationPermissionsGranted;
 import static com.rudyii.pdnss.common.Utils.isLocationPermissionsGranted;
+import static com.rudyii.pdnss.common.Utils.isWriteSecureSettingsPermissionGranted;
 import static com.rudyii.pdnss.common.Utils.itTrustedWiFiAp;
 import static com.rudyii.pdnss.common.Utils.showWarning;
 import static com.rudyii.pdnss.common.Utils.trustUntrustApByName;
@@ -166,7 +167,11 @@ public class ActivityMain extends AppCompatActivity {
         }
         if (editTxtDnsHost == null) {
             editTxtDnsHost = this.findViewById(R.id.editTxtDsnHost);
-            editTxtDnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+            if (isWriteSecureSettingsPermissionGranted()) {
+                editTxtDnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+            } else {
+                editTxtDnsHost.setText(getString(R.string.txt_missing_permissions));
+            }
         }
     }
 
@@ -224,45 +229,62 @@ public class ActivityMain extends AppCompatActivity {
         if (btnOn == null) {
             btnOn = this.findViewById(R.id.btnOn);
 
+            btnOn.setEnabled(isWriteSecureSettingsPermissionGranted());
+
             btnOn.setOnClickListener(v -> {
-                updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
-                updateLastPdnsState(ON);
-                updateTexts();
-                refreshQsTile();
+                if (isWriteSecureSettingsPermissionGranted()) {
+                    updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+                    updateLastPdnsState(ON);
+                    updateTexts();
+                    refreshQsTile();
+                }
             });
         }
         if (btnOff == null) {
             btnOff = this.findViewById(R.id.btnOff);
 
+            btnOff.setEnabled(isWriteSecureSettingsPermissionGranted());
+
             btnOff.setOnClickListener(v -> {
-                updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
-                updateLastPdnsState(OFF);
-                updateTexts();
-                refreshQsTile();
+                if (isWriteSecureSettingsPermissionGranted()) {
+                    updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
+                    updateLastPdnsState(OFF);
+                    updateTexts();
+                    refreshQsTile();
+                }
             });
         }
         if (btnGoogle == null) {
             btnGoogle = this.findViewById(R.id.btnGoogle);
 
+            btnGoogle.setEnabled(isWriteSecureSettingsPermissionGranted());
+
             btnGoogle.setOnClickListener(v -> {
-                updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
-                updateLastPdnsState(GOOGLE);
-                updateTexts();
-                refreshQsTile();
+                if (isWriteSecureSettingsPermissionGranted()) {
+                    updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
+                    updateLastPdnsState(GOOGLE);
+                    updateTexts();
+                    refreshQsTile();
+                }
             });
         }
         if (btnSet == null) {
             btnSet = this.findViewById(R.id.btnSet);
 
+            btnSet.setEnabled(isWriteSecureSettingsPermissionGranted());
+
             btnSet.setOnClickListener(v -> {
-                InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                String dnsUrl = editTxtDnsHost.getText().toString();
-                updatePdnsUrl(dnsUrl);
-                showWarning(getString(R.string.txt_dns_set_host_notification, dnsUrl));
-                updateTexts();
-                editTxtDnsHost.clearFocus();
-                editTxtDnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+                if (isWriteSecureSettingsPermissionGranted()) {
+                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+                    String dnsUrl = editTxtDnsHost.getText().toString();
+                    updatePdnsUrl(dnsUrl);
+                    showWarning(getString(R.string.txt_dns_set_host_notification, dnsUrl));
+                    updateTexts();
+                    editTxtDnsHost.clearFocus();
+                    editTxtDnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+
+                }
             });
         }
         if (btnInstructions == null) {
