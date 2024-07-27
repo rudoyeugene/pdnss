@@ -1,6 +1,11 @@
 package com.rudyii.pdnss;
 
+import static com.rudyii.pdnss.common.Constants.SERVICE_NOTIFICATION_NAME;
+import static com.rudyii.pdnss.common.Constants.STATE_NOTIFICATION_NAME;
+
 import android.app.Application;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +26,7 @@ public class PrivateDnsSwitcherApplication extends Application {
         instance = this;
         super.onCreate();
         registerServices();
+        createNotificationChannels();
     }
 
     private void registerServices() {
@@ -30,5 +36,20 @@ public class PrivateDnsSwitcherApplication extends Application {
             Intent service = new Intent(getApplicationContext(), NetworkMonitor.class);
             getApplicationContext().startForegroundService(service);
         }
+    }
+
+    private void createNotificationChannels() {
+        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+
+        NotificationChannel serviceChannel = new NotificationChannel(SERVICE_NOTIFICATION_NAME,
+                getString(R.string.txt_notification_service_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT);
+
+        NotificationChannel stateChannel = new NotificationChannel(STATE_NOTIFICATION_NAME,
+                getString(R.string.txt_notification_state_channel_name),
+                NotificationManager.IMPORTANCE_HIGH);
+
+        notificationManager.createNotificationChannel(serviceChannel);
+        notificationManager.createNotificationChannel(stateChannel);
     }
 }

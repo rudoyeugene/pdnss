@@ -7,6 +7,8 @@ import static com.rudyii.pdnss.PrivateDnsSwitcherApplication.getContext;
 import static com.rudyii.pdnss.common.Constants.PDNS_STATE_CHANGED;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_MODE;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
+import static com.rudyii.pdnss.common.Constants.STATE_NOTIFICATION_ID;
+import static com.rudyii.pdnss.common.Constants.STATE_NOTIFICATION_NAME;
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_GOOGLE_STRING;
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_OFF_STRING;
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_ON_STRING;
@@ -18,6 +20,8 @@ import static com.rudyii.pdnss.common.PdnsModeType.ON_WHILE_CELLULAR;
 import static com.rudyii.pdnss.services.QuickTile.refreshQsTile;
 
 import android.Manifest;
+import android.app.Notification;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,6 +34,7 @@ import android.net.wifi.WifiManager;
 import android.provider.Settings;
 import android.widget.Toast;
 
+import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.rudyii.pdnss.R;
@@ -106,6 +111,7 @@ public class Utils {
         Network network = connectivityManager.getActiveNetwork();
 
         NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (capabilities != null) {
             boolean isVpn = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
@@ -119,6 +125,12 @@ public class Utils {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_VPN);
                     refreshQsTile();
+                    showNotification(getContext().getString(R.string.txt_notification_state_title,
+                                    getContext().getString(R.string.txt_notification_state_body_disabled)),
+                            getContext().getString(
+                                    R.string.txt_notification_state_body,
+                                    getContext().getString(R.string.txt_notification_state_body_disabled),
+                                    getContext().getString(R.string.txt_notification_state_body_on_vpn)));
                 }
             } else if (isWiFi && isAllNeededLocationPermissionsGranted()) {
                 String apName = getWifiApName();
@@ -126,10 +138,22 @@ public class Utils {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_TRUSTED_WIFI);
                     refreshQsTile();
+                    showNotification(getContext().getString(R.string.txt_notification_state_title,
+                                    getContext().getString(R.string.txt_notification_state_body_disabled)),
+                            getContext().getString(
+                                    R.string.txt_notification_state_body,
+                                    getContext().getString(R.string.txt_notification_state_body_disabled),
+                                    getContext().getString(R.string.txt_notification_state_body_on_trusted_ap)));
                 } else if (!itTrustedWiFiAp(apName) && trustedWiFiModeOn()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     updateLastPdnsState(ON);
                     refreshQsTile();
+                    showNotification(getContext().getString(R.string.txt_notification_state_title,
+                                    getContext().getString(R.string.txt_notification_state_body_enabled)),
+                            getContext().getString(
+                                    R.string.txt_notification_state_body,
+                                    getContext().getString(R.string.txt_notification_state_body_enabled),
+                                    getContext().getString(R.string.txt_notification_state_body_on_untrusted_ap)));
                 }
             } else if (isCellular) {
                 boolean pDnsStateOff = VALUE_PRIVATE_DNS_MODE_OFF_STRING.equals(getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
@@ -138,6 +162,12 @@ public class Utils {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     updateLastPdnsState(ON_WHILE_CELLULAR);
                     refreshQsTile();
+                    showNotification(getContext().getString(R.string.txt_notification_state_title,
+                                    getContext().getString(R.string.txt_notification_state_body_enabled)),
+                            getContext().getString(
+                                    R.string.txt_notification_state_body,
+                                    getContext().getString(R.string.txt_notification_state_body_enabled),
+                                    getContext().getString(R.string.txt_notification_state_body_on_cellular)));
                 }
             } else {
                 switch (getLastKnownState()) {
@@ -146,10 +176,26 @@ public class Utils {
                         updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                         updateLastPdnsState(ON);
                         refreshQsTile();
+                        showNotification(getContext().getString(R.string.txt_notification_state_title,
+                                        getContext().getString(R.string.txt_notification_state_body_enabled)),
+                                getContext().getString(
+                                        R.string.txt_notification_state_body_on_last_state));
                 }
             }
         }
         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(PDNS_STATE_CHANGED));
+    }
+
+    public static void showNotification(String title, String body) {
+        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+        Notification notification = new NotificationCompat.Builder(getContext(), STATE_NOTIFICATION_NAME)
+                .setContentTitle(title)
+                .setContentText(body)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setOngoing(false)
+                .build();
+
+        notificationManager.notify(STATE_NOTIFICATION_ID, notification);
     }
 
     public static boolean trustedWiFiModeOn() {

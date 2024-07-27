@@ -15,4 +15,8 @@ public class Constants {
     public static final String QUICKBOOT_POWERON = "android.intent.action.QUICKBOOT_POWERON";
     public static final String BOOT_COMPLETED = "android.intent.action.BOOT_COMPLETED";
     public static final String CONNECTIVITY_CHANGE = "android.net.conn.CONNECTIVITY_CHANGE";
+    public static final String SERVICE_NOTIFICATION_NAME = "SERVICE_NOTIFICATIONS";
+    public static final String STATE_NOTIFICATION_NAME = "STATE_NOTIFICATIONS";
+    public static final int SERVICE_NOTIFICATION_ID = 111111;
+    public static final int STATE_NOTIFICATION_ID = 112211;
 }

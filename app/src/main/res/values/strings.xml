@@ -22,6 +22,7 @@
 
     <string name="txt_app_name">Private DNS Switcher (PDNSS)</string>
     <string name="txt_battery_optimization_enabled">Android is optimizing battery for PDNSS (Doze mode). See Instructions.</string>
+    <string name="txt_click_to_remove_ap">Click to remove from Trusted WiFi AP List</string>
     <string name="txt_connected_ap_name">Connected AP name: %1$s</string>
     <string name="txt_connected_ap_trusted">WiFi AP named %1$s added into \'Trusted WiFi AP List\'</string>
     <string name="txt_connected_ap_untrusted">WiFi AP named %1$s removed from \'Trusted WiFi AP List\'</string>
@@ -32,7 +33,6 @@
     <string name="txt_dns_state_google">GOOGLE</string>
     <string name="txt_dns_state_off">OFF</string>
     <string name="txt_dns_state_on">ON</string>
-    <string name="txt_click_to_remove_ap">Click to remove from Trusted WiFi AP List</string>
     <string name="txt_dns_state_quicktile">Private DNS</string>
     <string name="txt_dns_state_unknown">unknown</string>
     <string name="txt_dummy_pdns_url">one.one.one.one</string>
@@ -40,7 +40,7 @@
     <string name="txt_error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
     <string name="txt_instructions">
         <b>Main feature:</b>
-                        \n
+                                                        \n
         PDNSS requires You to grant special permissions (Android limitations)\n
         To grant the proper permissions please follow the instructions as below:\n
         1. Enable Developer Options\n
@@ -55,11 +55,19 @@
         
         
         
+        
+        
+        
+        
         <b>Optional features:</b>
-                                \n
+                                                                \n
         PDNSS also able to control Private DNS Settings automatically using Trusted WiFi AP, Cellular Network or VPN State.\n
         To do that PDNSS needs Service running in background that is strictly limited by Android Doze Mode.\n
         You can allow Service to run in background by disabling battery optimization for PDNSS.
+    
+    
+    
+    
     
     
     
@@ -68,46 +76,75 @@
     <string name="txt_instructions_title">PDNSS requirements:</string>
     <string name="txt_location_disclosure_agreement">
         <b>This App needs Your location permission in the background to enable the Trusted WiFi AP functionality.</b>
-                                                                This is an Android requirement to detect trusted Wi-Fi networks.\n
+                                                                                                This is an Android requirement to detect trusted Wi-Fi networks.\n
         \n
+        
+        
+        
+        
         
         
         
         
         <b>Granting permission allows You to:</b>
-                                \n
+                                                                \n
+        
+        
+        
+        
         
         
         
         
         <b>- </b>
-                                Trust or untrust currently connected Wi-Fi access points based on their names. Denying permission disables the Trusted WiFi AP functionality. You can always revisit this prompt later to enable it.\n
+                                                                Trust or untrust currently connected Wi-Fi access points based on their names. Denying permission disables the Trusted WiFi AP functionality. You can always revisit this prompt later to enable it.\n
         \n
+        
+        
+        
+        
         
         
         
         
         <u>Here\'s how Your location is used:</u>
-                                \n
+                                                                \n
+        
+        
+        
+        
         
         
         
         
         <b>- In the background:</b>
-                                 This App uses Your location in the background to identify nearby Wi-Fi networks and check their AP names against Your trusted list. This functionality is not used for any other purpose.\n
+                                                                 This App uses Your location in the background to identify nearby Wi-Fi networks and check their AP names against Your trusted list. This functionality is not used for any other purpose.\n
         \n
+        
+        
+        
+        
         
         
         
         
         <b>This App does not use Your location data for advertising.</b>
     </string>
-    <string name="txt_location_disclosure_agreement_title">Location Permissions Disclosure</string>
+    <string name="txt_missing_permissions">NO_PERMISSIONS</string>
     <string name="txt_missing_permissions_warning">Missing permissions, please see INSTRUCTIONS to resolve</string>
     <string name="txt_none">none</string>
-    <string name="txt_notification_body">You can discard this notification if you don\'t want to see it anymore</string>
-    <string name="txt_notification_channel_description">A placeholder to make Service running in foreground</string>
-    <string name="txt_notification_title">Private DNS Switcher</string>
+    <string name="txt_notification_service_body">It\'s a system notification to keep Service running. You can disable the Notification if you don\'t want to see it</string>
+    <string name="txt_notification_service_channel_name">Service notifications</string>
+    <string name="txt_notification_service_title">Private DNS Service is running</string>
+    <string name="txt_notification_state_body">Private DNS is %1$s while connected to %2$s</string>
+    <string name="txt_notification_state_body_disabled">disabled</string>
+    <string name="txt_notification_state_body_enabled">enabled</string>
+    <string name="txt_notification_state_body_on_cellular">cellular network</string>
+    <string name="txt_notification_state_body_on_last_state">Private DNS is enabled as it\'s the last known state</string>
+    <string name="txt_notification_state_body_on_trusted_ap">Trusted WiFi AP</string>
+    <string name="txt_notification_state_body_on_untrusted_ap">Untrusted WiFi AP</string>
+    <string name="txt_notification_state_body_on_vpn">VPN</string>
+    <string name="txt_notification_state_channel_name">PDNS state changed</string>
+    <string name="txt_notification_state_title">Private DNS %1$s</string>
     <string name="txt_ok">OK</string>
-    <string name="txt_missing_permissions">NO_PERMISSIONS</string>
 </resources>
