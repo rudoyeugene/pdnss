@@ -119,10 +119,10 @@
         android:layout_marginEnd="24dp"
         android:text="AP LIST"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnTrustWiFi" />
+        app:layout_constraintTop_toBottomOf="@+id/switchTrustWiFi" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/btnTrustWiFi"
+        android:id="@+id/switchTrustWiFi"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -132,10 +132,10 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cbTrustWiFi" />
+        app:layout_constraintTop_toBottomOf="@+id/switchTrustWiFiMode" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/cbTrustWiFi"
+        android:id="@+id/switchTrustWiFiMode"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -149,7 +149,7 @@
 
 
     <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/cbDisableForVpn"
+        android:id="@+id/switchDisableForVpn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -162,7 +162,7 @@
         app:layout_constraintTop_toBottomOf="@+id/txtDnsState" />
 
     <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/cbEnableForCellular"
+        android:id="@+id/switchEnableForCellular"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
@@ -172,7 +172,7 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cbDisableForVpn" />
+        app:layout_constraintTop_toBottomOf="@+id/switchDisableForVpn" />
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/editTxtDsnHost"
@@ -202,7 +202,7 @@
         android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cbEnableForCellular" />
+        app:layout_constraintTop_toBottomOf="@+id/switchEnableForCellular" />
 
     <View
         android:id="@+id/divider2"

@@ -73,10 +73,10 @@ public class ActivityMain extends AppCompatActivity {
     private Button btnInstructions;
     private Button btnPermissions;
     private Button btnApList;
-    private MaterialSwitch swchTrustAp;
-    private MaterialSwitch swchDisableForVpn;
-    private MaterialSwitch swchEnableForCellular;
-    private MaterialSwitch swchTrustWiFi;
+    private MaterialSwitch switchTrustAp;
+    private MaterialSwitch switchDisableForVpn;
+    private MaterialSwitch switchEnableForCellular;
+    private MaterialSwitch switchTrustWiFiMode;
     private EditText editTxtDnsHost;
     private boolean activityInitInProgress;
 
@@ -91,12 +91,12 @@ public class ActivityMain extends AppCompatActivity {
                 if (txtDnsState != null) {
                     txtDnsState.setText(getContext().getString(R.string.txt_dns_state_details_text, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
                 }
-                if (swchTrustAp != null) {
+                if (switchTrustAp != null) {
                     String apName = getWifiApName();
-                    swchTrustAp.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && trustedWiFiModeOn());
-                    swchTrustAp.setChecked(itTrustedWiFiAp(apName));
+                    switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && trustedWiFiModeOn());
+                    switchTrustAp.setChecked(itTrustedWiFiAp(apName));
                     if (ConnectionType.WIFI.equals(getConnectionType())) {
-                        swchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
+                        switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
                     }
                 }
             }
@@ -186,12 +186,12 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private void initCheckboxes() {
-        if (swchDisableForVpn == null) {
-            swchDisableForVpn = this.findViewById(R.id.cbDisableForVpn);
+        if (switchDisableForVpn == null) {
+            switchDisableForVpn = this.findViewById(R.id.switchDisableForVpn);
 
-            swchDisableForVpn.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_disable_while_vpn), false));
-            swchDisableForVpn = this.findViewById(R.id.cbDisableForVpn);
-            swchDisableForVpn.setOnCheckedChangeListener((compoundButton, checked) -> {
+            switchDisableForVpn.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_disable_while_vpn), false));
+            switchDisableForVpn = this.findViewById(R.id.switchDisableForVpn);
+            switchDisableForVpn.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
                     showDozeModeWarning();
 
@@ -201,12 +201,12 @@ public class ActivityMain extends AppCompatActivity {
                 }
             });
         }
-        if (swchEnableForCellular == null) {
-            swchEnableForCellular = this.findViewById(R.id.cbEnableForCellular);
+        if (switchEnableForCellular == null) {
+            switchEnableForCellular = this.findViewById(R.id.switchEnableForCellular);
 
-            swchEnableForCellular.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_enable_while_cellular), false));
-            swchEnableForCellular = this.findViewById(R.id.cbEnableForCellular);
-            swchEnableForCellular.setOnCheckedChangeListener((compoundButton, checked) -> {
+            switchEnableForCellular.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_enable_while_cellular), false));
+            switchEnableForCellular = this.findViewById(R.id.switchEnableForCellular);
+            switchEnableForCellular.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
                     showDozeModeWarning();
 
@@ -314,51 +314,51 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     public void initSensitiveControls() {
-        if (swchTrustWiFi == null) {
-            swchTrustWiFi = this.findViewById(R.id.cbTrustWiFi);
+        if (switchTrustWiFiMode == null) {
+            switchTrustWiFiMode = this.findViewById(R.id.switchTrustWiFiMode);
 
             if (isLocationPermissionsGranted()) {
-                swchTrustWiFi.setVisibility(View.VISIBLE);
-                swchTrustWiFi.setEnabled(isAllNeededLocationPermissionsGranted());
-                swchTrustWiFi.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_trust_wifi), false));
+                switchTrustWiFiMode.setVisibility(View.VISIBLE);
+                switchTrustWiFiMode.setEnabled(isAllNeededLocationPermissionsGranted());
+                switchTrustWiFiMode.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_trust_wifi), false));
 
-                swchTrustWiFi.setOnCheckedChangeListener((compoundButton, checked) -> {
+                switchTrustWiFiMode.setOnCheckedChangeListener((compoundButton, checked) -> {
                     if (!activityInitInProgress) {
                         showDozeModeWarning();
 
                         SharedPreferences.Editor editor = getSharedPrefsEditor();
                         editor.putBoolean(getString(R.string.settings_name_trust_wifi), checked);
                         editor.apply();
-                        swchTrustAp.setEnabled(checked && ConnectionType.WIFI.equals(getConnectionType()));
+                        switchTrustAp.setEnabled(checked && ConnectionType.WIFI.equals(getConnectionType()));
                     }
                 });
             } else {
-                swchTrustWiFi.setVisibility(View.INVISIBLE);
+                switchTrustWiFiMode.setVisibility(View.INVISIBLE);
             }
         }
-        if (swchTrustAp == null) {
-            swchTrustAp = this.findViewById(R.id.btnTrustWiFi);
+        if (switchTrustAp == null) {
+            switchTrustAp = this.findViewById(R.id.switchTrustWiFi);
 
             if (isLocationPermissionsGranted()) {
-                swchTrustAp.setVisibility(View.VISIBLE);
-                swchTrustAp.setActivated(ConnectionType.WIFI.equals(getConnectionType()));
+                switchTrustAp.setVisibility(View.VISIBLE);
+                switchTrustAp.setActivated(ConnectionType.WIFI.equals(getConnectionType()));
                 String apName = getWifiApName();
-                swchTrustAp.setChecked(itTrustedWiFiAp(apName));
+                switchTrustAp.setChecked(itTrustedWiFiAp(apName));
 
                 SharedPreferences sharedPrefForInit = getSharedPrefs();
-                swchTrustAp.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
-                swchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
-                swchTrustAp.setOnClickListener(v -> {
+                switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
+                switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
+                switchTrustAp.setOnClickListener(v -> {
                     showDozeModeWarning();
 
-                    swchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
+                    switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
                     boolean trustResult = trustUntrustApByName(apName);
-                    swchTrustAp.setChecked(trustResult);
+                    switchTrustAp.setChecked(trustResult);
                     showWarning(trustResult ? getString(R.string.txt_connected_ap_trusted, apName) : getString(R.string.txt_connected_ap_untrusted, apName));
                     updatePdnsSettingsOnNetworkChange();
                 });
             } else {
-                swchTrustAp.setVisibility(View.INVISIBLE);
+                switchTrustAp.setVisibility(View.INVISIBLE);
             }
         }
         if (btnApList == null) {

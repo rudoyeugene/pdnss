@@ -30,6 +30,7 @@
         <activity
             android:name=".activities.ActivityMain"
             android:exported="true"
+            android:screenOrientation="locked"
             android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

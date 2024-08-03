@@ -22,6 +22,7 @@ import static com.rudyii.pdnss.services.QuickTile.refreshQsTile;
 import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -38,6 +39,7 @@ import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.rudyii.pdnss.R;
+import com.rudyii.pdnss.activities.ActivityMain;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -111,7 +113,6 @@ public class Utils {
         Network network = connectivityManager.getActiveNetwork();
 
         NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
-        NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
 
         if (capabilities != null) {
             boolean isVpn = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
@@ -187,11 +188,16 @@ public class Utils {
     }
 
     public static void showNotification(String title, String body) {
+        Intent activityIntent = new Intent(getContext(), ActivityMain.class);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, activityIntent, PendingIntent.FLAG_IMMUTABLE);
+
         NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = new NotificationCompat.Builder(getContext(), STATE_NOTIFICATION_NAME)
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setContentIntent(pendingIntent)
                 .setContentTitle(title)
                 .setContentText(body)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setAutoCancel(true)
                 .setOngoing(false)
                 .build();
 
