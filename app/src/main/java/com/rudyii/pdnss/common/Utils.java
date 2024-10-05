@@ -142,9 +142,10 @@ public class Utils {
                     showNotification(getContext().getString(R.string.txt_notification_state_title,
                                     getContext().getString(R.string.txt_notification_state_body_disabled)),
                             getContext().getString(
-                                    R.string.txt_notification_state_body,
+                                    R.string.txt_notification_state_body_with_ap_name,
                                     getContext().getString(R.string.txt_notification_state_body_disabled),
-                                    getContext().getString(R.string.txt_notification_state_body_on_trusted_ap)));
+                                    getContext().getString(R.string.txt_notification_state_body_on_trusted_ap),
+                                    apName));
                 } else if (!itTrustedWiFiAp(apName) && trustedWiFiModeOn()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     updateLastPdnsState(ON);
@@ -152,9 +153,10 @@ public class Utils {
                     showNotification(getContext().getString(R.string.txt_notification_state_title,
                                     getContext().getString(R.string.txt_notification_state_body_enabled)),
                             getContext().getString(
-                                    R.string.txt_notification_state_body,
+                                    R.string.txt_notification_state_body_with_ap_name,
                                     getContext().getString(R.string.txt_notification_state_body_enabled),
-                                    getContext().getString(R.string.txt_notification_state_body_on_untrusted_ap)));
+                                    getContext().getString(R.string.txt_notification_state_body_on_untrusted_ap),
+                                    apName));
                 }
             } else if (isCellular) {
                 boolean pDnsStateOff = VALUE_PRIVATE_DNS_MODE_OFF_STRING.equals(getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));

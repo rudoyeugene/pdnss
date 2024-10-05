@@ -79,6 +79,7 @@
     <string name="txt_notification_service_channel_name">Service notifications</string>
     <string name="txt_notification_service_title">Private DNS Service is running</string>
     <string name="txt_notification_state_body">Private DNS is %1$s while connected to %2$s</string>
+    <string name="txt_notification_state_body_with_ap_name">Private DNS is %1$s while connected to %2$s (%3$s)</string>
     <string name="txt_notification_state_body_disabled">disabled</string>
     <string name="txt_notification_state_body_enabled">enabled</string>
     <string name="txt_notification_state_body_on_cellular">cellular network</string>
