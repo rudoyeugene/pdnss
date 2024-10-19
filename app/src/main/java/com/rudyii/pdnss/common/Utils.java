@@ -12,11 +12,13 @@ import static com.rudyii.pdnss.common.Constants.STATE_NOTIFICATION_NAME;
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_GOOGLE_STRING;
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_OFF_STRING;
 import static com.rudyii.pdnss.common.Constants.VALUE_PRIVATE_DNS_MODE_ON_STRING;
+import static com.rudyii.pdnss.common.PdnsModeType.GOOGLE;
 import static com.rudyii.pdnss.common.PdnsModeType.OFF;
 import static com.rudyii.pdnss.common.PdnsModeType.OFF_WHILE_TRUSTED_WIFI;
 import static com.rudyii.pdnss.common.PdnsModeType.OFF_WHILE_VPN;
 import static com.rudyii.pdnss.common.PdnsModeType.ON;
 import static com.rudyii.pdnss.common.PdnsModeType.ON_WHILE_CELLULAR;
+import static com.rudyii.pdnss.common.PdnsModeType.UNKNOWN;
 import static com.rudyii.pdnss.services.QuickTile.refreshQsTile;
 
 import android.Manifest;
@@ -89,17 +91,17 @@ public class Utils {
         return result == null ? getContext().getString(R.string.txt_none) : result;
     }
 
-    public static String getPDNSState() {
+    public static PdnsModeType getPDNSState() {
         String pDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
         switch (pDNSState) {
             case VALUE_PRIVATE_DNS_MODE_OFF_STRING:
-                return getContext().getString(R.string.txt_dns_state_off);
+                return OFF;
             case VALUE_PRIVATE_DNS_MODE_GOOGLE_STRING:
-                return getContext().getString(R.string.txt_dns_state_google);
+                return GOOGLE;
             case VALUE_PRIVATE_DNS_MODE_ON_STRING:
-                return getContext().getString(R.string.txt_dns_state_on);
+                return ON;
             default:
-                return getContext().getString(R.string.txt_dns_state_unknown);
+                return UNKNOWN;
         }
     }
 

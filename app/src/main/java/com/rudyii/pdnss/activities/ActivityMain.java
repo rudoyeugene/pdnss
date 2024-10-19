@@ -64,7 +64,6 @@ public class ActivityMain extends AppCompatActivity {
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1122;
     public static final int BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE = 1133;
     private BroadcastReceiver broadcastReceiver;
-    private TextView txtDnsState;
     private TextView txtCopyrights;
     private Button btnOn;
     private Button btnOff;
@@ -88,9 +87,6 @@ public class ActivityMain extends AppCompatActivity {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (txtDnsState != null) {
-                    txtDnsState.setText(getContext().getString(R.string.txt_dns_state_details_text, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
-                }
                 if (switchTrustAp != null) {
                     String apName = getWifiApName();
                     switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && trustedWiFiModeOn());
@@ -151,7 +147,6 @@ public class ActivityMain extends AppCompatActivity {
 //        initReceivers();
         initButtons();
         initTexts();
-        updateTexts();
         initCheckboxes();
         initSensitiveControls();
 
@@ -159,11 +154,13 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private void initTexts() {
-        if (txtDnsState == null) {
-            txtDnsState = this.findViewById(R.id.txtDnsState);
-        }
         if (txtCopyrights == null) {
             txtCopyrights = this.findViewById(R.id.txtCopyrights);
+            try {
+                txtCopyrights.setText(getString(R.string.txt_copyrights,
+                        getPackageManager().getPackageInfo(getPackageName(), 0).versionName));
+            } catch (Exception ignored) {
+            }
         }
         if (editTxtDnsHost == null) {
             editTxtDnsHost = this.findViewById(R.id.editTxtDsnHost);
@@ -172,16 +169,6 @@ public class ActivityMain extends AppCompatActivity {
             } else {
                 editTxtDnsHost.setText(getString(R.string.txt_missing_permissions));
             }
-        }
-    }
-
-    private void updateTexts() {
-        txtDnsState.setText(getString(R.string.txt_dns_state_details_text, getPDNSState(), getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER)));
-
-        try {
-            txtCopyrights.setText(getString(R.string.txt_copyrights,
-                    getPackageManager().getPackageInfo(getPackageName(), 0).versionName));
-        } catch (Exception ignored) {
         }
     }
 
@@ -229,13 +216,17 @@ public class ActivityMain extends AppCompatActivity {
         if (btnOn == null) {
             btnOn = this.findViewById(R.id.btnOn);
 
-            btnOn.setEnabled(isWriteSecureSettingsPermissionGranted());
+            if (isWriteSecureSettingsPermissionGranted()) {
+                btnOn.setEnabled(getPDNSState() != ON);
+            } else {
+                btnOn.setEnabled(false);
+            }
 
             btnOn.setOnClickListener(v -> {
                 if (isWriteSecureSettingsPermissionGranted()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     updateLastPdnsState(ON);
-                    updateTexts();
+                    updateControlButtonsStates();
                     refreshQsTile();
                 }
             });
@@ -243,13 +234,17 @@ public class ActivityMain extends AppCompatActivity {
         if (btnOff == null) {
             btnOff = this.findViewById(R.id.btnOff);
 
-            btnOff.setEnabled(isWriteSecureSettingsPermissionGranted());
+            if (isWriteSecureSettingsPermissionGranted()) {
+                btnOff.setEnabled(getPDNSState() != OFF);
+            } else {
+                btnOff.setEnabled(false);
+            }
 
             btnOff.setOnClickListener(v -> {
                 if (isWriteSecureSettingsPermissionGranted()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF);
-                    updateTexts();
+                    updateControlButtonsStates();
                     refreshQsTile();
                 }
             });
@@ -257,19 +252,23 @@ public class ActivityMain extends AppCompatActivity {
         if (btnGoogle == null) {
             btnGoogle = this.findViewById(R.id.btnGoogle);
 
-            btnGoogle.setEnabled(isWriteSecureSettingsPermissionGranted());
+            if (isWriteSecureSettingsPermissionGranted()) {
+                btnGoogle.setEnabled(getPDNSState() != GOOGLE);
+            } else {
+                btnGoogle.setEnabled(false);
+            }
 
             btnGoogle.setOnClickListener(v -> {
                 if (isWriteSecureSettingsPermissionGranted()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
                     updateLastPdnsState(GOOGLE);
-                    updateTexts();
+                    updateControlButtonsStates();
                     refreshQsTile();
                 }
             });
         }
         if (btnSet == null) {
-            btnSet = this.findViewById(R.id.btnSet);
+            btnSet = this.findViewById(R.id.btnUpdate);
 
             btnSet.setEnabled(isWriteSecureSettingsPermissionGranted());
 
@@ -280,7 +279,6 @@ public class ActivityMain extends AppCompatActivity {
                     String dnsUrl = editTxtDnsHost.getText().toString();
                     updatePdnsUrl(dnsUrl);
                     showWarning(getString(R.string.txt_dns_set_host_notification, dnsUrl));
-                    updateTexts();
                     editTxtDnsHost.clearFocus();
                     editTxtDnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
 
@@ -310,6 +308,18 @@ public class ActivityMain extends AppCompatActivity {
             btnPermissions.setOnClickListener(v -> {
                 checkPermissions();
             });
+        }
+    }
+
+    private void updateControlButtonsStates() {
+        if (btnOn != null) {
+            btnOn.setEnabled(getPDNSState() != ON);
+        }
+        if (btnOff != null) {
+            btnOff.setEnabled(getPDNSState() != OFF);
+        }
+        if (btnGoogle != null) {
+            btnGoogle.setEnabled(getPDNSState() != GOOGLE);
         }
     }
 

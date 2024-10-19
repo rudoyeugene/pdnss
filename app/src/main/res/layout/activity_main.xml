@@ -19,34 +19,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/txtDnsState"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/txt_dns_state_details_text"
-        android:textSize="16sp"
-        android:textAlignment="center"
-        android:textStyle="bold"
+    <View
+        android:id="@+id/dividerLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="1dp"
+        android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTxtDsnHost" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/txtCopyrights"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:text="@string/txt_copyrights"
-        android:textAlignment="center"
-        android:textColor="@android:color/darker_gray"
-        android:textSize="10sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOn"
@@ -56,7 +39,7 @@
         android:layout_marginTop="8dp"
         android:text="ON"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider3" />
+        app:layout_constraintTop_toBottomOf="@+id/dividerLabel" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnOff"
@@ -66,7 +49,7 @@
         android:text="OFF"
         app:layout_constraintEnd_toStartOf="@+id/btnGoogle"
         app:layout_constraintStart_toEndOf="@+id/btnOn"
-        app:layout_constraintTop_toBottomOf="@+id/divider3" />
+        app:layout_constraintTop_toBottomOf="@+id/dividerLabel" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnGoogle"
@@ -76,10 +59,28 @@
         android:layout_marginEnd="24dp"
         android:text="GOOGLE"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider3" />
+        app:layout_constraintTop_toBottomOf="@+id/dividerLabel" />
+
+    <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/editTxtDsnHost"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="8dp"
+        android:ems="10"
+        android:importantForAutofill="auto"
+        android:inputType="text"
+        android:text="@string/txt_dummy_pdns_url"
+        android:textAlignment="textStart"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnUpdate"
+        app:layout_constraintEnd_toStartOf="@+id/btnUpdate"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/btnUpdate" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnSet"
+        android:id="@+id/btnUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
@@ -87,6 +88,92 @@
         android:text="UPDATE"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btnGoogle" />
+
+    <View
+        android:id="@+id/dividerControls"
+        android:layout_width="446dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTxtDsnHost" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchDisableForVpn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/swch_disable_on_vpn"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dividerControls" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchEnableForCellular"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/swch_enable_on_cellular"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchDisableForVpn" />
+
+    <View
+        android:id="@+id/dividerGeneral"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchEnableForCellular" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchTrustWiFiMode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:text="@string/btn_trust_wifi"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dividerGeneral" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchTrustWiFi"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:text="AP Name"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchTrustWiFiMode" />
+
+    <Button
+        android:id="@+id/btnApList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="24dp"
+        android:text="AP LIST"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/switchTrustWiFi" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnInstructions"
@@ -111,101 +198,9 @@
         app:layout_constraintStart_toEndOf="@+id/btnInstructions"
         app:layout_constraintTop_toTopOf="@+id/btnInstructions" />
 
-    <Button
-        android:id="@+id/btnApList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:text="AP LIST"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchTrustWiFi" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchTrustWiFi"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:text="AP Name"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchTrustWiFiMode" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchTrustWiFiMode"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/btn_trust_wifi"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
-
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchDisableForVpn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/swch_disable_on_vpn"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtDnsState" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchEnableForCellular"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/swch_enable_on_cellular"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchDisableForVpn" />
-
-    <com.google.android.material.textfield.TextInputEditText
-        android:id="@+id/editTxtDsnHost"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="8dp"
-        android:ems="10"
-        android:importantForAutofill="auto"
-        android:inputType="text"
-        android:text="@string/txt_dummy_pdns_url"
-        android:textAlignment="textStart"
-        android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/btnSet"
-        app:layout_constraintEnd_toStartOf="@+id/btnSet"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnSet" />
 
     <View
-        android:id="@+id/divider"
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchEnableForCellular" />
-
-    <View
-        android:id="@+id/divider2"
+        android:id="@+id/dividerInstructions"
         android:layout_width="wrap_content"
         android:layout_height="1dp"
         android:layout_marginStart="1dp"
@@ -216,16 +211,17 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <View
-        android:id="@+id/divider3"
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="1dp"
-        android:background="?android:attr/listDivider"
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/txtCopyrights"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:text="@string/txt_copyrights"
+        android:textAlignment="center"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="10sp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
