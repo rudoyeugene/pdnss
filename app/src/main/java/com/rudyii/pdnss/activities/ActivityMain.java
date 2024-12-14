@@ -10,7 +10,7 @@ import static com.rudyii.pdnss.common.PdnsModeType.GOOGLE;
 import static com.rudyii.pdnss.common.PdnsModeType.OFF;
 import static com.rudyii.pdnss.common.PdnsModeType.ON;
 import static com.rudyii.pdnss.common.Utils.getConnectionType;
-import static com.rudyii.pdnss.common.Utils.getPDNSState;
+import static com.rudyii.pdnss.common.Utils.getPDNSStateInFloat;
 import static com.rudyii.pdnss.common.Utils.getSettingsValue;
 import static com.rudyii.pdnss.common.Utils.getSharedPrefs;
 import static com.rudyii.pdnss.common.Utils.getSharedPrefsEditor;
@@ -39,6 +39,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.os.VibrationEffect;
 import android.provider.Settings;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -53,6 +54,7 @@ import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.slider.Slider;
 import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.common.ConnectionType;
 
@@ -65,9 +67,6 @@ public class ActivityMain extends AppCompatActivity {
     public static final int BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE = 1133;
     private BroadcastReceiver broadcastReceiver;
     private TextView txtCopyrights;
-    private Button btnOn;
-    private Button btnOff;
-    private Button btnGoogle;
     private Button btnSet;
     private Button btnInstructions;
     private Button btnPermissions;
@@ -77,6 +76,7 @@ public class ActivityMain extends AppCompatActivity {
     private MaterialSwitch switchEnableForCellular;
     private MaterialSwitch switchTrustWiFiMode;
     private EditText editTxtDnsHost;
+    private Slider slider;
     private boolean activityInitInProgress;
 
     @Override
@@ -180,6 +180,7 @@ public class ActivityMain extends AppCompatActivity {
             switchDisableForVpn = this.findViewById(R.id.switchDisableForVpn);
             switchDisableForVpn.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
+                    compoundButton.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                     showDozeModeWarning();
 
                     SharedPreferences.Editor editor = getSharedPrefsEditor();
@@ -195,6 +196,7 @@ public class ActivityMain extends AppCompatActivity {
             switchEnableForCellular = this.findViewById(R.id.switchEnableForCellular);
             switchEnableForCellular.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
+                    compoundButton.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                     showDozeModeWarning();
 
                     SharedPreferences.Editor editor = getSharedPrefsEditor();
@@ -213,57 +215,62 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private void initButtons() {
-        if (btnOn == null) {
-            btnOn = this.findViewById(R.id.btnOn);
+        if (slider == null) {
+            slider = this.findViewById(R.id.slider);
 
-            if (isWriteSecureSettingsPermissionGranted()) {
-                btnOn.setEnabled(getPDNSState() != ON);
-            } else {
-                btnOn.setEnabled(false);
-            }
+            slider.setEnabled(isWriteSecureSettingsPermissionGranted());
+            slider.setValue(getPDNSStateInFloat());
 
-            btnOn.setOnClickListener(v -> {
-                if (isWriteSecureSettingsPermissionGranted()) {
-                    updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
-                    updateLastPdnsState(ON);
-                    updateControlButtonsStates();
-                    refreshQsTile();
+            slider.setLabelFormatter(value -> {
+                switch (String.valueOf(slider.getValue())) {
+                    case "1.0":
+                        return getString(R.string.txt_dns_state_off);
+                    case "2.0":
+                        return getString(R.string.txt_dns_state_google);
+                    case "3.0":
+                        return getString(R.string.txt_dns_state_on);
+                    default:
+                        return getString(R.string.txt_dns_state_unknown);
                 }
             });
-        }
-        if (btnOff == null) {
-            btnOff = this.findViewById(R.id.btnOff);
 
-            if (isWriteSecureSettingsPermissionGranted()) {
-                btnOff.setEnabled(getPDNSState() != OFF);
-            } else {
-                btnOff.setEnabled(false);
-            }
+            slider.addOnChangeListener((slider1, value, fromUser) ->
+                    slider.performHapticFeedback(VibrationEffect.EFFECT_CLICK));
 
-            btnOff.setOnClickListener(v -> {
-                if (isWriteSecureSettingsPermissionGranted()) {
-                    updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
-                    updateLastPdnsState(OFF);
-                    updateControlButtonsStates();
-                    refreshQsTile();
+            slider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+                @Override
+                public void onStartTrackingTouch(@NonNull Slider slider) {
+
                 }
-            });
-        }
-        if (btnGoogle == null) {
-            btnGoogle = this.findViewById(R.id.btnGoogle);
 
-            if (isWriteSecureSettingsPermissionGranted()) {
-                btnGoogle.setEnabled(getPDNSState() != GOOGLE);
-            } else {
-                btnGoogle.setEnabled(false);
-            }
-
-            btnGoogle.setOnClickListener(v -> {
-                if (isWriteSecureSettingsPermissionGranted()) {
-                    updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
-                    updateLastPdnsState(GOOGLE);
-                    updateControlButtonsStates();
-                    refreshQsTile();
+                @Override
+                public void onStopTrackingTouch(@NonNull Slider slider) {
+                    switch (String.valueOf(slider.getValue())) {
+                        case "1.0":
+                            if (isWriteSecureSettingsPermissionGranted()) {
+                                updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
+                                updateLastPdnsState(OFF);
+                                updateControlButtonsStates();
+                                refreshQsTile();
+                            }
+                            break;
+                        case "2.0":
+                            if (isWriteSecureSettingsPermissionGranted()) {
+                                updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
+                                updateLastPdnsState(GOOGLE);
+                                updateControlButtonsStates();
+                                refreshQsTile();
+                            }
+                            break;
+                        case "3.0":
+                            if (isWriteSecureSettingsPermissionGranted()) {
+                                updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+                                updateLastPdnsState(ON);
+                                updateControlButtonsStates();
+                                refreshQsTile();
+                            }
+                            break;
+                    }
                 }
             });
         }
@@ -273,6 +280,7 @@ public class ActivityMain extends AppCompatActivity {
             btnSet.setEnabled(isWriteSecureSettingsPermissionGranted());
 
             btnSet.setOnClickListener(v -> {
+                v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                 if (isWriteSecureSettingsPermissionGranted()) {
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
@@ -289,6 +297,7 @@ public class ActivityMain extends AppCompatActivity {
             btnInstructions = this.findViewById(R.id.btnInstructions);
 
             btnInstructions.setOnClickListener(v -> {
+                v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle(getString(R.string.txt_instructions_title));
                 alert.setMessage(R.string.txt_instructions);
@@ -305,21 +314,17 @@ public class ActivityMain extends AppCompatActivity {
         if (btnPermissions == null) {
             btnPermissions = this.findViewById(R.id.btnPermissions);
 
+            btnPermissions.setEnabled(!isAllNeededLocationPermissionsGranted());
             btnPermissions.setOnClickListener(v -> {
+                v.performHapticFeedback(VibrationEffect.EFFECT_TICK);
                 checkPermissions();
             });
         }
     }
 
     private void updateControlButtonsStates() {
-        if (btnOn != null) {
-            btnOn.setEnabled(getPDNSState() != ON);
-        }
-        if (btnOff != null) {
-            btnOff.setEnabled(getPDNSState() != OFF);
-        }
-        if (btnGoogle != null) {
-            btnGoogle.setEnabled(getPDNSState() != GOOGLE);
+        if (slider != null) {
+            slider.setValue(getPDNSStateInFloat());
         }
     }
 
@@ -334,6 +339,7 @@ public class ActivityMain extends AppCompatActivity {
 
                 switchTrustWiFiMode.setOnCheckedChangeListener((compoundButton, checked) -> {
                     if (!activityInitInProgress) {
+                        compoundButton.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                         showDozeModeWarning();
 
                         SharedPreferences.Editor editor = getSharedPrefsEditor();
@@ -359,6 +365,7 @@ public class ActivityMain extends AppCompatActivity {
                 switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
                 switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
                 switchTrustAp.setOnClickListener(v -> {
+                    v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                     showDozeModeWarning();
 
                     switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
@@ -380,6 +387,7 @@ public class ActivityMain extends AppCompatActivity {
 
 
                 btnApList.setOnClickListener(v -> {
+                    v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                     Set<String> apsCopy = new HashSet<>(getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), Collections.emptySet()));
                     if (apsCopy.isEmpty()) {
                         showWarning(getString(R.string.txt_empty_ap_list));

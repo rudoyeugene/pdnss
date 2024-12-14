@@ -19,47 +19,134 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <View
-        android:id="@+id/dividerLabel"
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnInstructions"
         android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:hapticFeedbackEnabled="true"
+        android:text="INSTRUCTIONS"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/btnPermissions"
+        app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnOn"
+        android:id="@+id/btnPermissions"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hapticFeedbackEnabled="true"
+        android:text="ALLOW TRUSTED WIFI MODE"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/btnInstructions"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/btnInstructions"
+        app:layout_constraintTop_toTopOf="@+id/btnInstructions" />
+
+    <View
+        android:id="@+id/dividerInstructions"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="16dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toTopOf="@+id/switchDisableForVpn"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchDisableForVpn"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:text="ON"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dividerLabel" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnOff"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="OFF"
-        app:layout_constraintEnd_toStartOf="@+id/btnGoogle"
-        app:layout_constraintStart_toEndOf="@+id/btnOn"
-        app:layout_constraintTop_toBottomOf="@+id/dividerLabel" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnGoogle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:layout_marginEnd="24dp"
-        android:text="GOOGLE"
+        android:layout_marginBottom="8dp"
+        android:hapticFeedbackEnabled="true"
+        android:text="@string/swch_disable_on_vpn"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/switchEnableForCellular"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dividerLabel" />
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchEnableForCellular"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:hapticFeedbackEnabled="true"
+        android:text="@string/swch_enable_on_cellular"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/dividerVpnCellular"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <View
+        android:id="@+id/dividerVpnCellular"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="16dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toTopOf="@+id/switchTrustWiFiMode"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchTrustWiFiMode"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
+        android:hapticFeedbackEnabled="true"
+        android:text="@string/btn_trust_wifi"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/switchTrustWiFi"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switchTrustWiFi"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="24dp"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="8dp"
+        android:hapticFeedbackEnabled="true"
+        android:text="AP Name"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/btnApList"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
+        android:id="@+id/btnApList"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="24dp"
+        android:layout_marginBottom="16dp"
+        android:hapticFeedbackEnabled="true"
+        android:text="AP LIST"
+        app:layout_constraintBottom_toTopOf="@+id/dividerWiFi"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <View
+        android:id="@+id/dividerWiFi"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="32dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toTopOf="@+id/editTxtDsnHost"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/editTxtDsnHost"
@@ -83,133 +170,48 @@
         android:id="@+id/btnUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="32dp"
+        android:hapticFeedbackEnabled="true"
         android:text="UPDATE"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btnGoogle" />
+        app:layout_constraintBottom_toTopOf="@+id/dividerSlide"
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <View
-        android:id="@+id/dividerControls"
+        android:id="@+id/dividerSlide"
         android:layout_width="446dp"
         android:layout_height="1dp"
         android:layout_marginStart="1dp"
-        android:layout_marginTop="16dp"
         android:layout_marginEnd="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTxtDsnHost" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchDisableForVpn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/swch_disable_on_vpn"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dividerControls" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchEnableForCellular"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/swch_enable_on_cellular"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchDisableForVpn" />
-
-    <View
-        android:id="@+id/dividerGeneral"
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="1dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchEnableForCellular" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchTrustWiFiMode"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:text="@string/btn_trust_wifi"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dividerGeneral" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchTrustWiFi"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:text="AP Name"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchTrustWiFiMode" />
-
-    <Button
-        android:id="@+id/btnApList"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="24dp"
-        android:text="AP LIST"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/switchTrustWiFi" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnInstructions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:layout_marginBottom="32dp"
-        android:text="INSTRUCTIONS"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toTopOf="@+id/txtCopyrights"
-        app:layout_constraintEnd_toStartOf="@+id/btnPermissions"
-        app:layout_constraintHorizontal_bias="0.498"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnPermissions"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="ALLOW TRUSTED WIFI MODE"
-        android:textSize="12sp"
-        app:layout_constraintBottom_toBottomOf="@+id/btnInstructions"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/btnInstructions"
-        app:layout_constraintTop_toTopOf="@+id/btnInstructions" />
-
-
-    <View
-        android:id="@+id/dividerInstructions"
-        android:layout_width="wrap_content"
-        android:layout_height="1dp"
-        android:layout_marginStart="1dp"
-        android:layout_marginEnd="1dp"
-        android:layout_marginBottom="8dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/btnInstructions"
+        app:layout_constraintBottom_toTopOf="@+id/slider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.slider.Slider
+        android:id="@+id/slider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="64dp"
+        android:fadeScrollbars="true"
+        android:hapticFeedbackEnabled="true"
+        android:stepSize="1"
+        android:valueFrom="1"
+        android:valueTo="3"
+        app:haloRadius="12dp"
+        app:labelBehavior="visible"
+        app:layout_constraintBottom_toTopOf="@+id/txtCopyrights"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:thumbElevation="12dp"
+        app:thumbHeight="32dp"
+        app:thumbRadius="12dp"
+        app:thumbTrackGapSize="12dp"
+        app:thumbWidth="32dp" />
+
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/txtCopyrights"

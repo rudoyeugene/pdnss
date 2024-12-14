@@ -11,8 +11,8 @@ android {
         applicationId "com.rudyii.pdnss"
         minSdk 29
         targetSdk 34
-        versionCode 176
-        versionName "1.7.6"
+        versionCode 180
+        versionName "1.8.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -26,6 +26,10 @@ android {
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+
+    buildFeatures {
+        compose true
     }
 }
 
