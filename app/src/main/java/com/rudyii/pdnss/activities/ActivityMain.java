@@ -223,14 +223,12 @@ public class ActivityMain extends AppCompatActivity {
 
             slider.setLabelFormatter(value -> {
                 switch (String.valueOf(slider.getValue())) {
-                    case "1.0":
-                        return getString(R.string.txt_dns_state_off);
                     case "2.0":
                         return getString(R.string.txt_dns_state_google);
                     case "3.0":
                         return getString(R.string.txt_dns_state_on);
                     default:
-                        return getString(R.string.txt_dns_state_unknown);
+                        return getString(R.string.txt_dns_state_off);
                 }
             });
 

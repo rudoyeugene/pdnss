@@ -108,14 +108,12 @@ public class Utils {
     public static float getPDNSStateInFloat() {
         String pDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
         switch (pDNSState) {
-            case VALUE_PRIVATE_DNS_MODE_OFF_STRING:
-                return 1.0f;
             case VALUE_PRIVATE_DNS_MODE_GOOGLE_STRING:
                 return 2.0f;
             case VALUE_PRIVATE_DNS_MODE_ON_STRING:
                 return 3.0f;
             default:
-                return 0.0f;
+                return 1.0f;
         }
     }
 
