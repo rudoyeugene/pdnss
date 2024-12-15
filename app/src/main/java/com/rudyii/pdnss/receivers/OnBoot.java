@@ -14,7 +14,7 @@ public class OnBoot extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String action = intent.getAction();
         if (BOOT_COMPLETED.equals(action) || QUICKBOOT_POWERON.equals(action)) {
-            if (NetworkMonitor.isStopped()) {
+            if (NetworkMonitor.isNotRunning()) {
                 Intent service = new Intent(context, NetworkMonitor.class);
                 context.startForegroundService(service);
             }

@@ -57,6 +57,7 @@ import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.slider.Slider;
 import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.common.ConnectionType;
+import com.rudyii.pdnss.services.NetworkMonitor;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -97,6 +98,10 @@ public class ActivityMain extends AppCompatActivity {
                 }
             }
         };
+        if (NetworkMonitor.isNotRunning()) {
+            Intent service = new Intent(getApplicationContext(), NetworkMonitor.class);
+            startForegroundService(service);
+        }
     }
 
     @Override

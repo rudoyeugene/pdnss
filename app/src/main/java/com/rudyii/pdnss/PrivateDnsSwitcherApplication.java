@@ -1,5 +1,6 @@
 package com.rudyii.pdnss;
 
+import static com.rudyii.pdnss.common.Constants.APP_NAME;
 import static com.rudyii.pdnss.common.Constants.SERVICE_NOTIFICATION_NAME;
 import static com.rudyii.pdnss.common.Constants.STATE_NOTIFICATION_NAME;
 
@@ -10,6 +11,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.service.quicksettings.TileService;
+import android.util.Log;
 
 import com.rudyii.pdnss.services.NetworkMonitor;
 import com.rudyii.pdnss.services.QuickTile;
@@ -32,9 +34,13 @@ public class PrivateDnsSwitcherApplication extends Application {
     private void registerServices() {
         TileService.requestListeningState(this, new ComponentName(this, QuickTile.class));
 
-        if (NetworkMonitor.isStopped()) {
-            Intent service = new Intent(getApplicationContext(), NetworkMonitor.class);
-            getApplicationContext().startForegroundService(service);
+        if (NetworkMonitor.isNotRunning()) {
+            try {
+                Intent service = new Intent(getApplicationContext(), NetworkMonitor.class);
+                getApplicationContext().startForegroundService(service);
+            } catch (Exception e) {
+                Log.w(APP_NAME, "NetworkMonitor Service will start later...");
+            }
         }
     }
 

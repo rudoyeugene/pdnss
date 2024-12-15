@@ -22,12 +22,12 @@ import androidx.core.app.NotificationCompat;
 import com.rudyii.pdnss.R;
 
 public class NetworkMonitor extends Service {
-    private static boolean isStarted = false;
+    private static boolean isRunning = false;
     private ConnectivityManager connectivityManager;
     private ConnectivityManager.NetworkCallback networkCallback;
 
-    public static boolean isStopped() {
-        return !isStarted;
+    public static boolean isNotRunning() {
+        return !isRunning;
     }
 
     @Override
@@ -43,7 +43,7 @@ public class NetworkMonitor extends Service {
             }
         };
         Log.i(APP_NAME, "NetworkMonitor created");
-        isStarted = true;
+        isRunning = true;
     }
 
     private void startInForeground() {
@@ -76,7 +76,7 @@ public class NetworkMonitor extends Service {
         connectivityManager.unregisterNetworkCallback(networkCallback);
         Log.i(APP_NAME, "NetworkMonitor stopped");
 
-        isStarted = false;
+        isRunning = false;
     }
 
     @Nullable
