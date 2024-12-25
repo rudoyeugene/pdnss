@@ -1,5 +1,0 @@
-<device-admin>
-    <uses-policies>
-        <set-global-proxy />
-    </uses-policies>
-</device-admin>

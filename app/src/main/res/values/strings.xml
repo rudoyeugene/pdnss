@@ -29,12 +29,10 @@
     <string name="txt_copyrights">© 2024 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nPDNSS Version: %s</string>
     <string name="txt_disable_battery_optimizations">Disable battery optimizations</string>
     <string name="txt_dns_set_host_notification">Updated PDNS URL to %1$s</string>
-    <string name="txt_dns_state_details_text">Private DNS is %1$s\nURL: %2$s</string>
     <string name="txt_dns_state_google">GOOGLE</string>
     <string name="txt_dns_state_off">OFF</string>
     <string name="txt_dns_state_on">ON</string>
     <string name="txt_dns_state_quicktile">Private DNS</string>
-    <string name="txt_dns_state_unknown">unknown</string>
     <string name="txt_dummy_pdns_url">one.one.one.one</string>
     <string name="txt_empty_ap_list">Trusted WiFi AP List is empty</string>
     <string name="txt_error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
