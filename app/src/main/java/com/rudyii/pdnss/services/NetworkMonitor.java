@@ -73,8 +73,12 @@ public class NetworkMonitor extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        connectivityManager.unregisterNetworkCallback(networkCallback);
-        Log.i(APP_NAME, "NetworkMonitor stopped");
+        try {
+            connectivityManager.unregisterNetworkCallback(networkCallback);
+            Log.i(APP_NAME, "NetworkMonitor stopped");
+        } catch (Exception e) {
+            Log.w(APP_NAME, "NetworkMonitor was not running");
+        }
 
         isRunning = false;
     }
