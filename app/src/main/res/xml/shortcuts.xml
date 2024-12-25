@@ -13,7 +13,7 @@
     </shortcut>
     <shortcut
         android:enabled="true"
-        android:icon="@mipmap/on"
+        android:icon="@mipmap/enabled"
         android:shortcutId="enable"
         android:shortcutLongLabel="@string/shortcut_long_on"
         android:shortcutShortLabel="@string/shortcut_short_on">
@@ -24,7 +24,7 @@
     </shortcut>
     <shortcut
         android:enabled="true"
-        android:icon="@mipmap/off"
+        android:icon="@mipmap/disabled"
         android:shortcutId="disable"
         android:shortcutLongLabel="@string/shortcut_long_off"
         android:shortcutShortLabel="@string/shortcut_short_off">

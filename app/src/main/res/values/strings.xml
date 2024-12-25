@@ -10,7 +10,7 @@
     <string name="settings_name_trust_wifi">trust_wifi</string>
     <string name="settings_name_trust_wifi_ap_set">trust_wifi_ap_set</string>
 
-    <string name="shortcut_long_google">Use Google</string>
+    <string name="shortcut_long_google">Google</string>
     <string name="shortcut_long_off">Disable</string>
     <string name="shortcut_long_on">Enable</string>
     <string name="shortcut_short_google">GOOGLE</string>

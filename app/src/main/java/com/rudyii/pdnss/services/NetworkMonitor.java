@@ -52,7 +52,7 @@ public class NetworkMonitor extends Service {
         Notification notification = new NotificationCompat.Builder(this, SERVICE_NOTIFICATION_NAME)
                 .setContentTitle(getString(R.string.txt_notification_service_title))
                 .setContentText(getString(R.string.txt_notification_service_body))
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.ic_launcher)
                 .setOngoing(true)
                 .setSilent(true)
                 .build();

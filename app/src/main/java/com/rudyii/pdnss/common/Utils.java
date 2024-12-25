@@ -119,7 +119,7 @@ public class Utils {
 
     public static void showWarning(String warningMessage) {
         Toast.makeText(getContext(), warningMessage,
-                Toast.LENGTH_LONG).show();
+                Toast.LENGTH_SHORT).show();
     }
 
     public static void updatePdnsSettingsOnNetworkChange() {
@@ -145,7 +145,8 @@ public class Utils {
                             getContext().getString(
                                     R.string.txt_notification_state_body,
                                     getContext().getString(R.string.txt_notification_state_body_disabled),
-                                    getContext().getString(R.string.txt_notification_state_body_on_vpn)));
+                                    getContext().getString(R.string.txt_notification_state_body_on_vpn)),
+                            false);
                 }
             } else if (isWiFi && isAllNeededLocationPermissionsGranted()) {
                 String apName = getWifiApName();
@@ -159,7 +160,8 @@ public class Utils {
                                     R.string.txt_notification_state_body_with_ap_name,
                                     getContext().getString(R.string.txt_notification_state_body_disabled),
                                     getContext().getString(R.string.txt_notification_state_body_on_trusted_ap),
-                                    apName));
+                                    apName),
+                            false);
                 } else if (!itTrustedWiFiAp(apName) && trustedWiFiModeOn()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     updateLastPdnsState(ON);
@@ -170,11 +172,13 @@ public class Utils {
                                     R.string.txt_notification_state_body_with_ap_name,
                                     getContext().getString(R.string.txt_notification_state_body_enabled),
                                     getContext().getString(R.string.txt_notification_state_body_on_untrusted_ap),
-                                    apName));
+                                    apName),
+                            true);
                 }
             } else if (isCellular) {
                 boolean pDnsStateOff = VALUE_PRIVATE_DNS_MODE_OFF_STRING.equals(getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
-                boolean enableWhileCellular = getSharedPrefs().getBoolean(getContext().getString(R.string.settings_name_enable_while_cellular), false);
+                boolean enableWhileCellular = getSharedPrefs().getBoolean(getContext().getString(R.string.settings_name_enable_while_cellular),
+                        false);
                 if (enableWhileCellular && pDnsStateOff) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     updateLastPdnsState(ON_WHILE_CELLULAR);
@@ -184,7 +188,8 @@ public class Utils {
                             getContext().getString(
                                     R.string.txt_notification_state_body,
                                     getContext().getString(R.string.txt_notification_state_body_enabled),
-                                    getContext().getString(R.string.txt_notification_state_body_on_cellular)));
+                                    getContext().getString(R.string.txt_notification_state_body_on_cellular)),
+                            true);
                 }
             } else {
                 switch (getLastKnownState()) {
@@ -196,20 +201,21 @@ public class Utils {
                         showNotification(getContext().getString(R.string.txt_notification_state_title,
                                         getContext().getString(R.string.txt_notification_state_body_enabled)),
                                 getContext().getString(
-                                        R.string.txt_notification_state_body_on_last_state));
+                                        R.string.txt_notification_state_body_on_last_state),
+                                true);
                 }
             }
         }
         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(PDNS_STATE_CHANGED));
     }
 
-    public static void showNotification(String title, String body) {
+    public static void showNotification(String title, String body, boolean enabled) {
         Intent activityIntent = new Intent(getContext(), ActivityMain.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, activityIntent, PendingIntent.FLAG_IMMUTABLE);
 
         NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = new NotificationCompat.Builder(getContext(), STATE_NOTIFICATION_NAME)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(enabled ? R.drawable.enabled : R.drawable.disabled)
                 .setContentIntent(pendingIntent)
                 .setContentTitle(title)
                 .setContentText(body)

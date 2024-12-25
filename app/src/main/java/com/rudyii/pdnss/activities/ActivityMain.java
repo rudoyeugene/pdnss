@@ -41,7 +41,6 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.provider.Settings;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -181,6 +180,8 @@ public class ActivityMain extends AppCompatActivity {
         if (switchDisableForVpn == null) {
             switchDisableForVpn = this.findViewById(R.id.switchDisableForVpn);
 
+            switchDisableForVpn.setEnabled(isWriteSecureSettingsPermissionGranted());
+
             switchDisableForVpn.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_disable_while_vpn), false));
             switchDisableForVpn = this.findViewById(R.id.switchDisableForVpn);
             switchDisableForVpn.setOnCheckedChangeListener((compoundButton, checked) -> {
@@ -196,6 +197,8 @@ public class ActivityMain extends AppCompatActivity {
         }
         if (switchEnableForCellular == null) {
             switchEnableForCellular = this.findViewById(R.id.switchEnableForCellular);
+
+            switchEnableForCellular.setEnabled(isWriteSecureSettingsPermissionGranted());
 
             switchEnableForCellular.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_enable_while_cellular), false));
             switchEnableForCellular = this.findViewById(R.id.switchEnableForCellular);
@@ -213,10 +216,13 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private void showDozeModeWarning() {
-        PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
+        if (!isIgnoringBatteryOptimizations()) {
             showWarning(getString(R.string.txt_battery_optimization_enabled));
         }
+    }
+
+    private boolean isIgnoringBatteryOptimizations() {
+        return ((PowerManager) getSystemService(Context.POWER_SERVICE)).isIgnoringBatteryOptimizations(getPackageName());
     }
 
     private void initButtons() {
@@ -299,6 +305,8 @@ public class ActivityMain extends AppCompatActivity {
         if (btnInstructions == null) {
             btnInstructions = this.findViewById(R.id.btnInstructions);
 
+            btnInstructions.setEnabled(!isWriteSecureSettingsPermissionGranted() || !isIgnoringBatteryOptimizations());
+
             btnInstructions.setOnClickListener(v -> {
                 v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
@@ -335,9 +343,9 @@ public class ActivityMain extends AppCompatActivity {
         if (switchTrustWiFiMode == null) {
             switchTrustWiFiMode = this.findViewById(R.id.switchTrustWiFiMode);
 
-            if (isLocationPermissionsGranted()) {
-                switchTrustWiFiMode.setVisibility(View.VISIBLE);
-                switchTrustWiFiMode.setEnabled(isAllNeededLocationPermissionsGranted());
+            switchTrustWiFiMode.setEnabled(isAllNeededLocationPermissionsGranted());
+
+            if (isAllNeededLocationPermissionsGranted()) {
                 switchTrustWiFiMode.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_trust_wifi), false));
 
                 switchTrustWiFiMode.setOnCheckedChangeListener((compoundButton, checked) -> {
@@ -351,15 +359,14 @@ public class ActivityMain extends AppCompatActivity {
                         switchTrustAp.setEnabled(checked && ConnectionType.WIFI.equals(getConnectionType()));
                     }
                 });
-            } else {
-                switchTrustWiFiMode.setVisibility(View.INVISIBLE);
             }
         }
         if (switchTrustAp == null) {
             switchTrustAp = this.findViewById(R.id.switchTrustWiFi);
 
-            if (isLocationPermissionsGranted()) {
-                switchTrustAp.setVisibility(View.VISIBLE);
+            switchTrustAp.setEnabled(isAllNeededLocationPermissionsGranted());
+
+            if (isAllNeededLocationPermissionsGranted()) {
                 switchTrustAp.setActivated(ConnectionType.WIFI.equals(getConnectionType()));
                 String apName = getWifiApName();
                 switchTrustAp.setChecked(itTrustedWiFiAp(apName));
@@ -376,18 +383,17 @@ public class ActivityMain extends AppCompatActivity {
                     switchTrustAp.setChecked(trustResult);
                     showWarning(trustResult ? getString(R.string.txt_connected_ap_trusted, apName) : getString(R.string.txt_connected_ap_untrusted, apName));
                     updatePdnsSettingsOnNetworkChange();
+                    slider.setValue(getPDNSStateInFloat());
                 });
-            } else {
-                switchTrustAp.setVisibility(View.INVISIBLE);
             }
         }
         if (btnApList == null) {
             btnApList = this.findViewById(R.id.btnApList);
 
-            if (isLocationPermissionsGranted()) {
-                btnApList.setVisibility(View.VISIBLE);
-                btnApList.setActivated(ConnectionType.WIFI.equals(getConnectionType()));
+            btnApList.setEnabled(isAllNeededLocationPermissionsGranted());
 
+            if (isLocationPermissionsGranted()) {
+                btnApList.setActivated(ConnectionType.WIFI.equals(getConnectionType()));
 
                 btnApList.setOnClickListener(v -> {
                     v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
@@ -404,13 +410,12 @@ public class ActivityMain extends AppCompatActivity {
                             editor.putStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), apsCopy);
                             editor.apply();
                             updatePdnsSettingsOnNetworkChange();
+                            slider.setValue(getPDNSStateInFloat());
                         });
                         AlertDialog dialog = builder.create();
                         dialog.show();
                     }
                 });
-            } else {
-                btnApList.setVisibility(View.INVISIBLE);
             }
         }
     }

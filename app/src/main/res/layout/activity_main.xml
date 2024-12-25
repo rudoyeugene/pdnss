@@ -19,25 +19,36 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <View
+        android:id="@+id/dividerApName"
+        android:layout_width="446dp"
+        android:layout_height="4dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
+
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnInstructions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="16dp"
         android:hapticFeedbackEnabled="true"
-        android:text="INSTRUCTIONS"
+        android:text="BASE PERMISSIONS"
         android:textSize="12sp"
         app:layout_constraintEnd_toStartOf="@+id/btnPermissions"
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtLabel" />
+        app:layout_constraintTop_toBottomOf="@+id/dividerApName" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnPermissions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:hapticFeedbackEnabled="true"
-        android:text="ALLOW TRUSTED WIFI MODE"
+        android:text="TRUSTED WIFI MODE"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/btnInstructions"
         app:layout_constraintEnd_toEndOf="parent"
@@ -47,7 +58,7 @@
     <View
         android:id="@+id/dividerInstructions"
         android:layout_width="wrap_content"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="16dp"
@@ -87,7 +98,7 @@
     <View
         android:id="@+id/dividerVpnCellular"
         android:layout_width="wrap_content"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
         android:layout_marginBottom="16dp"
@@ -128,20 +139,20 @@
         android:id="@+id/btnApList"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="24dp"
         android:layout_marginBottom="16dp"
         android:hapticFeedbackEnabled="true"
         android:text="AP LIST"
         app:layout_constraintBottom_toTopOf="@+id/dividerWiFi"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <View
         android:id="@+id/dividerWiFi"
         android:layout_width="wrap_content"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="16dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintBottom_toTopOf="@+id/editTxtDsnHost"
         app:layout_constraintEnd_toEndOf="parent"
@@ -151,39 +162,38 @@
     <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/editTxtDsnHost"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginEnd="8dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
         android:ems="10"
+        android:gravity="center"
         android:importantForAutofill="auto"
         android:inputType="text"
         android:text="@string/txt_dummy_pdns_url"
-        android:textAlignment="textStart"
         android:textSize="20sp"
-        app:layout_constraintBottom_toBottomOf="@+id/btnUpdate"
-        app:layout_constraintEnd_toStartOf="@+id/btnUpdate"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnUpdate" />
+        app:layout_constraintBottom_toTopOf="@+id/btnUpdate"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnUpdate"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="32dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="16dp"
         android:hapticFeedbackEnabled="true"
         android:text="UPDATE"
         app:layout_constraintBottom_toTopOf="@+id/dividerSlide"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <View
         android:id="@+id/dividerSlide"
-        android:layout_width="446dp"
-        android:layout_height="1dp"
+        android:layout_width="0dp"
+        android:layout_height="2dp"
         android:layout_marginStart="1dp"
         android:layout_marginEnd="1dp"
-        android:layout_marginBottom="32dp"
+        android:layout_marginBottom="8dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintBottom_toTopOf="@+id/slider"
         app:layout_constraintEnd_toEndOf="parent"
@@ -195,7 +205,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
         android:layout_marginEnd="32dp"
-        android:layout_marginBottom="64dp"
+        android:layout_marginBottom="32dp"
         android:fadeScrollbars="true"
         android:hapticFeedbackEnabled="true"
         android:stepSize="1"
@@ -203,7 +213,7 @@
         android:valueTo="3"
         app:haloRadius="12dp"
         app:labelBehavior="visible"
-        app:layout_constraintBottom_toTopOf="@+id/txtCopyrights"
+        app:layout_constraintBottom_toTopOf="@+id/dividerCopyright"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:thumbElevation="12dp"
@@ -212,6 +222,18 @@
         app:thumbTrackGapSize="12dp"
         app:thumbWidth="32dp" />
 
+
+    <View
+        android:id="@+id/dividerCopyright"
+        android:layout_width="446dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="1dp"
+        android:layout_marginEnd="1dp"
+        android:layout_marginBottom="8dp"
+        android:background="?android:attr/listDivider"
+        app:layout_constraintBottom_toTopOf="@+id/txtCopyrights"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/txtCopyrights"
