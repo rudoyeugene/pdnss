@@ -4,15 +4,15 @@ plugins {
 
 android {
     namespace 'com.rudyii.pdnss'
-    compileSdk 34
-    buildToolsVersion = '34.0.0'
+    compileSdk 35
+    buildToolsVersion = '35.0.0'
 
     defaultConfig {
         applicationId "com.rudyii.pdnss"
         minSdk 29
-        targetSdk 34
-        versionCode 186
-        versionName "1.8.6"
+        targetSdk 35
+        versionCode 188
+        versionName "1.8.8"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

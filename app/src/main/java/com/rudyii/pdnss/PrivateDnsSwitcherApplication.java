@@ -34,7 +34,7 @@ public class PrivateDnsSwitcherApplication extends Application {
     private void registerServices() {
         TileService.requestListeningState(this, new ComponentName(this, QuickTile.class));
 
-        if (NetworkMonitor.isNotRunning()) {
+        if (!NetworkMonitor.isRunning()) {
             try {
                 Intent service = new Intent(getApplicationContext(), NetworkMonitor.class);
                 getApplicationContext().startForegroundService(service);

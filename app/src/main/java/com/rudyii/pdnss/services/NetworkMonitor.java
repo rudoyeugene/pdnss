@@ -26,14 +26,17 @@ public class NetworkMonitor extends Service {
     private ConnectivityManager connectivityManager;
     private ConnectivityManager.NetworkCallback networkCallback;
 
-    public static boolean isNotRunning() {
-        return !isRunning;
+    public static boolean isRunning() {
+        return isRunning;
+    }
+
+    private static void serviceStarted() {
+        isRunning = true;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        startInForeground();
 
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         networkCallback = new ConnectivityManager.NetworkCallback() {
@@ -42,11 +45,12 @@ public class NetworkMonitor extends Service {
                 updatePdnsSettingsOnNetworkChange();
             }
         };
+        createServiceNotification();
+        serviceStarted();
         Log.i(APP_NAME, "NetworkMonitor created");
-        isRunning = true;
     }
 
-    private void startInForeground() {
+    private void createServiceNotification() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
 
         Notification notification = new NotificationCompat.Builder(this, SERVICE_NOTIFICATION_NAME)
@@ -64,8 +68,13 @@ public class NetworkMonitor extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        connectivityManager.registerDefaultNetworkCallback(networkCallback);
-        Log.i(APP_NAME, "NetworkMonitor started");
+        if (!isRunning()) {
+            connectivityManager.registerDefaultNetworkCallback(networkCallback);
+            serviceStarted();
+            Log.i(APP_NAME, "NetworkMonitor started");
+        } else {
+            Log.i(APP_NAME, "NetworkMonitor already running");
+        }
 
         return START_STICKY;
     }

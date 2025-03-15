@@ -29,6 +29,7 @@ import static com.rudyii.pdnss.common.Utils.updatePdnsUrl;
 import static com.rudyii.pdnss.services.QuickTile.refreshQsTile;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -97,12 +98,13 @@ public class ActivityMain extends AppCompatActivity {
                 }
             }
         };
-        if (NetworkMonitor.isNotRunning()) {
+        if (!NetworkMonitor.isRunning()) {
             Intent service = new Intent(getApplicationContext(), NetworkMonitor.class);
             startForegroundService(service);
         }
     }
 
+    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onResume() {
         super.onResume();

@@ -1,7 +1,7 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Base.Theme.PrivateDNSSwitcher" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.PrivateDNSSwitcher" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
         <!-- Customize your dark theme here. -->
-        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+        <item name="colorPrimary">@color/material_dynamic_tertiary90</item>
     </style>
 </resources>

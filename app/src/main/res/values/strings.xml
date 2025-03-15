@@ -2,20 +2,20 @@
 <resources>
     <string name="btn_trust_wifi">Enable \'Trusted WiFi AP\' Mode</string>
 
-    <string name="settings_location_permissions_granted">location_permissions_granted</string>
-    <string name="settings_name">com.rudyii.pdnss.SETTINGS</string>
-    <string name="settings_name_disable_while_vpn">disable_while_vpn</string>
-    <string name="settings_name_enable_while_cellular">enable_while_cellular</string>
-    <string name="settings_name_last_pdns_state">last_pdns_state</string>
-    <string name="settings_name_trust_wifi">trust_wifi</string>
-    <string name="settings_name_trust_wifi_ap_set">trust_wifi_ap_set</string>
+    <string name="settings_location_permissions_granted" translatable="false">location_permissions_granted</string>
+    <string name="settings_name" translatable="false">com.rudyii.pdnss.SETTINGS</string>
+    <string name="settings_name_disable_while_vpn" translatable="false">disable_while_vpn</string>
+    <string name="settings_name_enable_while_cellular" translatable="false">enable_while_cellular</string>
+    <string name="settings_name_last_pdns_state" translatable="false">last_pdns_state</string>
+    <string name="settings_name_trust_wifi" translatable="false">trust_wifi</string>
+    <string name="settings_name_trust_wifi_ap_set" translatable="false">trust_wifi_ap_set</string>
 
-    <string name="shortcut_long_google">Google</string>
+    <string name="shortcut_long_google" translatable="false">Google</string>
     <string name="shortcut_long_off">Disable</string>
     <string name="shortcut_long_on">Enable</string>
-    <string name="shortcut_short_google">GOOGLE</string>
-    <string name="shortcut_short_off">OFF</string>
-    <string name="shortcut_short_on">ON</string>
+    <string name="shortcut_short_google" translatable="false">GOOGLE</string>
+    <string name="shortcut_short_off" translatable="false">OFF</string>
+    <string name="shortcut_short_on" translatable="false">ON</string>
 
     <string name="swch_disable_on_vpn">Disable Private DNS on VPN</string>
     <string name="swch_enable_on_cellular">Enable Private DNS on cellular network</string>
@@ -23,20 +23,20 @@
     <string name="txt_app_name">Private DNS Switcher</string>
     <string name="txt_battery_optimization_enabled">Android is optimizing battery for PDNSS (Doze mode). See Instructions.</string>
     <string name="txt_click_to_remove_ap">Click to remove from Trusted WiFi AP List</string>
-    <string name="txt_connected_ap_name">Connected AP name: %1$s</string>
-    <string name="txt_connected_ap_trusted">WiFi AP named %1$s added into \'Trusted WiFi AP List\'</string>
-    <string name="txt_connected_ap_untrusted">WiFi AP named %1$s removed from \'Trusted WiFi AP List\'</string>
-    <string name="txt_copyrights">© 2024 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nPDNSS Version: %s</string>
+    <string name="txt_connected_ap_name" formatted="true">Connected AP name: %1$s</string>
+    <string name="txt_connected_ap_trusted" formatted="true">WiFi AP named %1$s added into \'Trusted WiFi AP List\'</string>
+    <string name="txt_connected_ap_untrusted" formatted="true">WiFi AP named %1$s removed from \'Trusted WiFi AP List\'</string>
+    <string name="txt_copyrights" translatable="false">© 2024 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nPDNSS Version: %s</string>
     <string name="txt_disable_battery_optimizations">Disable battery optimizations</string>
-    <string name="txt_dns_set_host_notification">Updated PDNS URL to %1$s</string>
-    <string name="txt_dns_state_google">GOOGLE</string>
-    <string name="txt_dns_state_off">OFF</string>
-    <string name="txt_dns_state_on">ON</string>
+    <string name="txt_dns_set_host_notification" formatted="true">Updated PDNS URL to %1$s</string>
+    <string name="txt_dns_state_google" translatable="false">GOOGLE</string>
+    <string name="txt_dns_state_off" translatable="false">OFF</string>
+    <string name="txt_dns_state_on" translatable="false">ON</string>
     <string name="txt_dns_state_quicktile">Private DNS</string>
     <string name="txt_dummy_pdns_url">one.one.one.one</string>
     <string name="txt_empty_ap_list">Trusted WiFi AP List is empty</string>
     <string name="txt_error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
-    <string name="txt_instructions">
+    <string name="txt_instructions" translatable="false">
         <b>Main feature:</b>
         \n
         Private DNS Switcher also known as PDNSS requires You to grant special permissions (Android limitations)\n
@@ -56,7 +56,7 @@
         You can allow Service to run in background by disabling battery optimization for PDNSS.
     </string>
     <string name="txt_instructions_title">PDNSS requirements:</string>
-    <string name="txt_location_disclosure_agreement">
+    <string name="txt_location_disclosure_agreement" translatable="false">
         <b>This App needs Your location permission in the background to enable the Trusted WiFi AP functionality.</b>
         This is an Android requirement to detect trusted Wi-Fi networks.\n
         \n
@@ -70,14 +70,14 @@
         \n
         <b>This App does not use Your location data for advertising.</b>
     </string>
-    <string name="txt_missing_permissions">NO_PERMISSIONS</string>
+    <string name="txt_missing_permissions" translatable="false">NO_PERMISSIONS</string>
     <string name="txt_missing_permissions_warning">Missing permissions, please see INSTRUCTIONS to resolve</string>
-    <string name="txt_none">none</string>
+    <string name="txt_none" translatable="false">none</string>
     <string name="txt_notification_service_body">It\'s a system notification to keep Service running. You can disable the Notification if you don\'t want to see it</string>
     <string name="txt_notification_service_channel_name">Service notifications</string>
     <string name="txt_notification_service_title">Private DNS Service is running</string>
-    <string name="txt_notification_state_body">Private DNS is %1$s while connected to %2$s</string>
-    <string name="txt_notification_state_body_with_ap_name">Private DNS is %1$s while connected to %2$s (%3$s)</string>
+    <string name="txt_notification_state_body" formatted="true">Private DNS is %1$s while connected to %2$s</string>
+    <string name="txt_notification_state_body_with_ap_name" formatted="true">Private DNS is %1$s while connected to %2$s (%3$s)</string>
     <string name="txt_notification_state_body_disabled">disabled</string>
     <string name="txt_notification_state_body_enabled">enabled</string>
     <string name="txt_notification_state_body_on_cellular">cellular network</string>
@@ -86,6 +86,6 @@
     <string name="txt_notification_state_body_on_untrusted_ap">Untrusted WiFi AP</string>
     <string name="txt_notification_state_body_on_vpn">VPN</string>
     <string name="txt_notification_state_channel_name">PDNS state changed</string>
-    <string name="txt_notification_state_title">Private DNS %1$s</string>
-    <string name="txt_ok">OK</string>
+    <string name="txt_notification_state_title" formatted="true">Private DNS %1$s</string>
+    <string name="txt_ok" translatable="false">OK</string>
 </resources>
