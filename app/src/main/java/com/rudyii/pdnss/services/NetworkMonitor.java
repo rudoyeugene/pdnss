@@ -12,25 +12,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.Network;
+import android.net.NetworkCapabilities;
+import android.net.NetworkRequest;
 import android.os.IBinder;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
 import com.rudyii.pdnss.R;
 
 public class NetworkMonitor extends Service {
-    private static boolean isRunning = false;
+    private boolean isRunning = false;
     private ConnectivityManager connectivityManager;
     private ConnectivityManager.NetworkCallback networkCallback;
 
-    public static boolean isRunning() {
+    public boolean isRunning() {
         return isRunning;
     }
 
-    private static void serviceStarted() {
+    private void serviceStarted() {
         isRunning = true;
     }
 
@@ -41,12 +42,11 @@ public class NetworkMonitor extends Service {
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
-            public void onAvailable(@NonNull Network network) {
-                updatePdnsSettingsOnNetworkChange();
+            public void onCapabilitiesChanged(Network network, NetworkCapabilities networkCapabilities) {
+                updatePdnsSettingsOnNetworkChange(networkCapabilities);
             }
         };
         createServiceNotification();
-        serviceStarted();
         Log.i(APP_NAME, "NetworkMonitor created");
     }
 
@@ -69,7 +69,11 @@ public class NetworkMonitor extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (!isRunning()) {
-            connectivityManager.registerDefaultNetworkCallback(networkCallback);
+            connectivityManager.registerNetworkCallback(new NetworkRequest.Builder()
+                    .addTransportType(NetworkCapabilities.TRANSPORT_CELLULAR)
+                    .addTransportType(NetworkCapabilities.TRANSPORT_WIFI)
+                    .addTransportType(NetworkCapabilities.TRANSPORT_VPN)
+                    .build(), networkCallback);
             serviceStarted();
             Log.i(APP_NAME, "NetworkMonitor started");
         } else {

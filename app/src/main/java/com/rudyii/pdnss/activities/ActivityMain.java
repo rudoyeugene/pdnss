@@ -4,6 +4,7 @@ import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
 import static com.rudyii.pdnss.PrivateDnsSwitcherApplication.getContext;
+import static com.rudyii.pdnss.common.Constants.APP_NAME;
 import static com.rudyii.pdnss.common.Constants.PDNS_STATE_CHANGED;
 import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.common.PdnsModeType.GOOGLE;
@@ -42,6 +43,7 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.provider.Settings;
+import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -98,9 +100,11 @@ public class ActivityMain extends AppCompatActivity {
                 }
             }
         };
-        if (!NetworkMonitor.isRunning()) {
+        try {
             Intent service = new Intent(getApplicationContext(), NetworkMonitor.class);
-            startForegroundService(service);
+            getApplicationContext().startForegroundService(service);
+        } catch (Exception e) {
+            Log.w(APP_NAME, "NetworkMonitor Service will start later...");
         }
     }
 
@@ -384,7 +388,7 @@ public class ActivityMain extends AppCompatActivity {
                     boolean trustResult = trustUntrustApByName(apName);
                     switchTrustAp.setChecked(trustResult);
                     showWarning(trustResult ? getString(R.string.txt_connected_ap_trusted, apName) : getString(R.string.txt_connected_ap_untrusted, apName));
-                    updatePdnsSettingsOnNetworkChange();
+                    updatePdnsSettingsOnNetworkChange(null);
                     slider.setValue(getPDNSStateInFloat());
                 });
             }
@@ -411,7 +415,7 @@ public class ActivityMain extends AppCompatActivity {
                             SharedPreferences.Editor editor = getSharedPrefsEditor();
                             editor.putStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), apsCopy);
                             editor.apply();
-                            updatePdnsSettingsOnNetworkChange();
+                            updatePdnsSettingsOnNetworkChange(null);
                             slider.setValue(getPDNSStateInFloat());
                         });
                         AlertDialog dialog = builder.create();

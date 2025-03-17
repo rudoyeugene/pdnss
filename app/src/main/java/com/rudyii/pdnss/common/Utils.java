@@ -122,11 +122,12 @@ public class Utils {
                 Toast.LENGTH_SHORT).show();
     }
 
-    public static void updatePdnsSettingsOnNetworkChange() {
-        ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        Network network = connectivityManager.getActiveNetwork();
-
-        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+    public static void updatePdnsSettingsOnNetworkChange(NetworkCapabilities capabilities) {
+        if (capabilities == null) {
+            ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            Network network = connectivityManager.getActiveNetwork();
+            capabilities = connectivityManager.getNetworkCapabilities(network);
+        }
 
         if (capabilities != null) {
             boolean isVpn = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
@@ -205,6 +206,8 @@ public class Utils {
                                 true);
                 }
             }
+        } else {
+            showWarning(getContext().getString(R.string.txt_missing_permissions_warning));
         }
         LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(PDNS_STATE_CHANGED));
     }
