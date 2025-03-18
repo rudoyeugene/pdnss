@@ -122,10 +122,11 @@ public class Utils {
                 Toast.LENGTH_SHORT).show();
     }
 
-    public static void updatePdnsSettingsOnNetworkChange(NetworkCapabilities capabilities) {
-        if (capabilities == null) {
+    public static void updatePdnsSettingsOnNetworkChange(Network network) {
+        NetworkCapabilities capabilities = null;
+        if (network == null) {
             ConnectivityManager connectivityManager = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-            Network network = connectivityManager.getActiveNetwork();
+            network = connectivityManager.getActiveNetwork();
             capabilities = connectivityManager.getNetworkCapabilities(network);
         }
 

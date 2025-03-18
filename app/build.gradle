@@ -3,16 +3,16 @@ plugins {
 }
 
 android {
-    namespace 'com.rudyii.pdnss'
-    compileSdk 35
+    namespace = 'com.rudyii.pdnss'
+    compileSdk = 35
     buildToolsVersion = '35.0.0'
 
     defaultConfig {
         applicationId "com.rudyii.pdnss"
-        minSdk 29
-        targetSdk 35
-        versionCode 190
-        versionName "1.9.0"
+        minSdk = 29
+        targetSdk = 35
+        versionCode 191
+        versionName "1.9.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,7 +29,7 @@ android {
     }
 
     buildFeatures {
-        compose true
+        compose = true
     }
 }
 

@@ -17,6 +17,7 @@ import android.net.NetworkRequest;
 import android.os.IBinder;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
 
@@ -42,8 +43,8 @@ public class NetworkMonitor extends Service {
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
-            public void onCapabilitiesChanged(Network network, NetworkCapabilities networkCapabilities) {
-                updatePdnsSettingsOnNetworkChange(networkCapabilities);
+            public void onAvailable(@NonNull Network network) {
+                updatePdnsSettingsOnNetworkChange(network);
             }
         };
         createServiceNotification();
