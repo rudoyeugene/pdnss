@@ -1,4 +1,4 @@
-package com.rudyii.pdnss.common;
+package com.rudyii.pdnss.utils;
 
 
 import android.Manifest;
@@ -7,15 +7,15 @@ import android.content.pm.PackageManager;
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
 
-public class PermissionsUtil {
+public class PermissionsUtils {
     private final PrivateDnsSwitcherApplication context;
 
-    public PermissionsUtil(PrivateDnsSwitcherApplication context) {
+    public PermissionsUtils(PrivateDnsSwitcherApplication context) {
         this.context = context;
     }
 
     public boolean isLocationPermissionsGranted() {
-        return context.getSettingsUtil().getSharedPrefs().getBoolean(context.getString(R.string.settings_location_permissions_granted), false);
+        return context.getSettingsUtils().getSharedPrefs().getBoolean(context.getString(R.string.settings_location_permissions_granted), false);
     }
 
     public boolean isAllNeededLocationPermissionsGranted() {

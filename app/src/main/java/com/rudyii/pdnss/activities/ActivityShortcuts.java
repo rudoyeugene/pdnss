@@ -26,7 +26,7 @@ public class ActivityShortcuts extends Activity {
             switch (intent.getAction()) {
                 case PDNSS_GOOGLE:
                     try {
-                        getAppContext().getSettingsUtil().updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
+                        getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
                         getAppContext().refreshQuickTile();
                     } catch (Exception e) {
                         getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_missing_permissions_warning));
@@ -34,7 +34,7 @@ public class ActivityShortcuts extends Activity {
                     break;
                 case PDNSS_ON:
                     try {
-                        getAppContext().getSettingsUtil().updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+                        getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                         getAppContext().refreshQuickTile();
                     } catch (Exception e) {
                         getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_missing_permissions_warning));
@@ -42,7 +42,7 @@ public class ActivityShortcuts extends Activity {
                     break;
                 case PDNSS_OFF:
                     try {
-                        getAppContext().getSettingsUtil().updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
+                        getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                         getAppContext().refreshQuickTile();
                     } catch (Exception e) {
                         getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_missing_permissions_warning));

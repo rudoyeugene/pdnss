@@ -17,16 +17,16 @@ import android.util.Log;
 
 import androidx.annotation.NonNull;
 
-import com.rudyii.pdnss.common.NotificationsUtils;
-import com.rudyii.pdnss.common.PermissionsUtil;
-import com.rudyii.pdnss.common.SettingsUtil;
 import com.rudyii.pdnss.services.NetworkMonitor;
 import com.rudyii.pdnss.services.QuickTile;
+import com.rudyii.pdnss.utils.NotificationsUtils;
+import com.rudyii.pdnss.utils.PermissionsUtils;
+import com.rudyii.pdnss.utils.SettingsUtils;
 
 public class PrivateDnsSwitcherApplication extends Application {
     private QuickTile tile;
-    private SettingsUtil settingsUtil;
-    private PermissionsUtil permissionsUtil;
+    private SettingsUtils settingsUtils;
+    private PermissionsUtils permissionsUtils;
     private NotificationsUtils notificationsUtils;
 
     private ConnectivityManager.NetworkCallback networkCallback;
@@ -36,14 +36,14 @@ public class PrivateDnsSwitcherApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
-        settingsUtil = new SettingsUtil(this);
-        permissionsUtil = new PermissionsUtil(this);
+        settingsUtils = new SettingsUtils(this);
+        permissionsUtils = new PermissionsUtils(this);
         notificationsUtils = new NotificationsUtils(this);
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onAvailable(@NonNull Network network) {
-                settingsUtil.updatePdnsSettingsOnNetworkChange(network);
+                settingsUtils.updatePdnsSettingsOnNetworkChange(network);
             }
         };
 
@@ -69,12 +69,12 @@ public class PrivateDnsSwitcherApplication extends Application {
         return networkCallback;
     }
 
-    public SettingsUtil getSettingsUtil() {
-        return settingsUtil;
+    public SettingsUtils getSettingsUtils() {
+        return settingsUtils;
     }
 
-    public PermissionsUtil getPermissionsUtil() {
-        return permissionsUtil;
+    public PermissionsUtils getPermissionsUtils() {
+        return permissionsUtils;
     }
 
     public NotificationsUtils getNotificationsUtils() {

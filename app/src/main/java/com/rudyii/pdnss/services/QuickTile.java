@@ -29,14 +29,14 @@ public class QuickTile extends TileService {
     @Override
     public void onClick() {
         super.onClick();
-        String pDNSState = getAppContext().getSettingsUtil().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
+        String pDNSState = getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
 
         if (VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(pDNSState)) {
-            getAppContext().getSettingsUtil().updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
-            getAppContext().getSettingsUtil().updateLastPdnsState(PdnsModeType.OFF);
+            getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
+            getAppContext().getSettingsUtils().updateLastPdnsState(PdnsModeType.OFF);
         } else {
-            getAppContext().getSettingsUtil().updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
-            getAppContext().getSettingsUtil().updateLastPdnsState(PdnsModeType.ON);
+            getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+            getAppContext().getSettingsUtils().updateLastPdnsState(PdnsModeType.ON);
         }
         updateTile();
     }
@@ -68,11 +68,11 @@ public class QuickTile extends TileService {
     }
 
     public void updateTile() {
-        String pDnsState = getAppContext().getSettingsUtil().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
+        String pDnsState = getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
         tile = getQsTile();
 
         tile.setLabel(getString(R.string.txt_dns_state_quicktile));
-        tile.setSubtitle(getAppContext().getSettingsUtil().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+        tile.setSubtitle(getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
 
         if (VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(pDnsState)) {
             tile.setState(STATE_ACTIVE);

@@ -1,4 +1,4 @@
-package com.rudyii.pdnss.common;
+package com.rudyii.pdnss.utils;
 
 
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
@@ -39,10 +39,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class SettingsUtil {
+public class SettingsUtils {
     private final PrivateDnsSwitcherApplication context;
 
-    public SettingsUtil(PrivateDnsSwitcherApplication context) {
+    public SettingsUtils(PrivateDnsSwitcherApplication context) {
         this.context = context;
     }
 
@@ -59,8 +59,8 @@ public class SettingsUtil {
             boolean isCellular = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
 
             if (isVpn) {
-                boolean pDnsStateOn = VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(context.getSettingsUtil().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
-                boolean disableWhileVnp = context.getSettingsUtil().getSharedPrefs().getBoolean(context.getString(R.string.settings_name_disable_while_vpn), false);
+                boolean pDnsStateOn = VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(context.getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
+                boolean disableWhileVnp = context.getSettingsUtils().getSharedPrefs().getBoolean(context.getString(R.string.settings_name_disable_while_vpn), false);
                 if (disableWhileVnp && pDnsStateOn) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_VPN);
@@ -73,9 +73,9 @@ public class SettingsUtil {
                                     context.getString(R.string.txt_notification_state_body_on_vpn)),
                             false);
                 }
-            } else if (isWiFi && context.getPermissionsUtil().isAllNeededLocationPermissionsGranted()) {
+            } else if (isWiFi && context.getPermissionsUtils().isAllNeededLocationPermissionsGranted()) {
                 String apName = getWifiApName();
-                if (context.getSettingsUtil().itTrustedWiFiAp(apName) && trustedWiFiModeOn()) {
+                if (context.getSettingsUtils().itTrustedWiFiAp(apName) && trustedWiFiModeOn()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_TRUSTED_WIFI);
                     context.refreshQuickTile();
@@ -175,7 +175,7 @@ public class SettingsUtil {
 
 
     public PdnsModeType getPDNSState() {
-        String pDNSState = context.getSettingsUtil().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
+        String pDNSState = context.getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
         switch (pDNSState) {
             case VALUE_PRIVATE_DNS_MODE_OFF_STRING:
                 return OFF;
@@ -241,7 +241,7 @@ public class SettingsUtil {
     public String getWifiApName() {
         if (ConnectionType.WIFI.equals(getConnectionType())) {
             WifiManager mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-            if (context.getPermissionsUtil().isAllNeededLocationPermissionsGranted() && mWifiManager != null) {
+            if (context.getPermissionsUtils().isAllNeededLocationPermissionsGranted() && mWifiManager != null) {
                 WifiInfo info = mWifiManager.getConnectionInfo();
                 return info.getSSID().replace("\"", "");
             } else {
@@ -253,7 +253,7 @@ public class SettingsUtil {
     }
 
     public boolean itTrustedWiFiAp(String apName) {
-        if (context.getPermissionsUtil().isAllNeededLocationPermissionsGranted()) {
+        if (context.getPermissionsUtils().isAllNeededLocationPermissionsGranted()) {
             Set<String> trustedAps = getSharedPrefs().getStringSet(context.getString(R.string.settings_name_trust_wifi_ap_set), Collections.emptySet());
 
             return trustedAps.contains(apName);

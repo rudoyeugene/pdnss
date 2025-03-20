@@ -1,4 +1,4 @@
-package com.rudyii.pdnss.common;
+package com.rudyii.pdnss.utils;
 
 import static com.rudyii.pdnss.types.Constants.STATE_NOTIFICATION_ID;
 import static com.rudyii.pdnss.types.Constants.STATE_NOTIFICATION_NAME;
