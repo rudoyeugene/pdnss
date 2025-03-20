@@ -3,31 +3,12 @@ package com.rudyii.pdnss.activities;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
-import static com.rudyii.pdnss.PrivateDnsSwitcherApplication.getContext;
-import static com.rudyii.pdnss.common.Constants.APP_NAME;
-import static com.rudyii.pdnss.common.Constants.PDNS_STATE_CHANGED;
-import static com.rudyii.pdnss.common.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
-import static com.rudyii.pdnss.common.PdnsModeType.GOOGLE;
-import static com.rudyii.pdnss.common.PdnsModeType.OFF;
-import static com.rudyii.pdnss.common.PdnsModeType.ON;
-import static com.rudyii.pdnss.common.Utils.getConnectionType;
-import static com.rudyii.pdnss.common.Utils.getPDNSStateInFloat;
-import static com.rudyii.pdnss.common.Utils.getSettingsValue;
-import static com.rudyii.pdnss.common.Utils.getSharedPrefs;
-import static com.rudyii.pdnss.common.Utils.getSharedPrefsEditor;
-import static com.rudyii.pdnss.common.Utils.getWifiApName;
-import static com.rudyii.pdnss.common.Utils.isAllNeededLocationPermissionsGranted;
-import static com.rudyii.pdnss.common.Utils.isLocationPermissionsGranted;
-import static com.rudyii.pdnss.common.Utils.isWriteSecureSettingsPermissionGranted;
-import static com.rudyii.pdnss.common.Utils.itTrustedWiFiAp;
-import static com.rudyii.pdnss.common.Utils.showWarning;
-import static com.rudyii.pdnss.common.Utils.trustUntrustApByName;
-import static com.rudyii.pdnss.common.Utils.trustedWiFiModeOn;
-import static com.rudyii.pdnss.common.Utils.updateLastPdnsState;
-import static com.rudyii.pdnss.common.Utils.updatePdnsModeSettings;
-import static com.rudyii.pdnss.common.Utils.updatePdnsSettingsOnNetworkChange;
-import static com.rudyii.pdnss.common.Utils.updatePdnsUrl;
-import static com.rudyii.pdnss.services.QuickTile.refreshQsTile;
+import static com.rudyii.pdnss.types.Constants.APP_NAME;
+import static com.rudyii.pdnss.types.Constants.PDNS_STATE_CHANGED;
+import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
+import static com.rudyii.pdnss.types.PdnsModeType.GOOGLE;
+import static com.rudyii.pdnss.types.PdnsModeType.OFF;
+import static com.rudyii.pdnss.types.PdnsModeType.ON;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -57,9 +38,10 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.materialswitch.MaterialSwitch;
 import com.google.android.material.slider.Slider;
+import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
-import com.rudyii.pdnss.common.ConnectionType;
 import com.rudyii.pdnss.services.NetworkMonitor;
+import com.rudyii.pdnss.types.ConnectionType;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -91,10 +73,10 @@ public class ActivityMain extends AppCompatActivity {
             @Override
             public void onReceive(Context context, Intent intent) {
                 if (switchTrustAp != null) {
-                    String apName = getWifiApName();
-                    switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && trustedWiFiModeOn());
-                    switchTrustAp.setChecked(itTrustedWiFiAp(apName));
-                    if (ConnectionType.WIFI.equals(getConnectionType())) {
+                    String apName = getAppContext().getSettingsUtil().getWifiApName();
+                    switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getAppContext().getSettingsUtil().getConnectionType()) && getAppContext().getSettingsUtil().trustedWiFiModeOn());
+                    switchTrustAp.setChecked(getAppContext().getSettingsUtil().itTrustedWiFiAp(apName));
+                    if (ConnectionType.WIFI.equals(getAppContext().getSettingsUtil().getConnectionType())) {
                         switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
                     }
                 }
@@ -174,8 +156,8 @@ public class ActivityMain extends AppCompatActivity {
         }
         if (editTxtDnsHost == null) {
             editTxtDnsHost = this.findViewById(R.id.editTxtDsnHost);
-            if (isWriteSecureSettingsPermissionGranted()) {
-                editTxtDnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+            if (getAppContext().getPermissionsUtil().isWriteSecureSettingsPermissionGranted()) {
+                editTxtDnsHost.setText(getAppContext().getSettingsUtil().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
             } else {
                 editTxtDnsHost.setText(getString(R.string.txt_missing_permissions));
             }
@@ -186,16 +168,16 @@ public class ActivityMain extends AppCompatActivity {
         if (switchDisableForVpn == null) {
             switchDisableForVpn = this.findViewById(R.id.switchDisableForVpn);
 
-            switchDisableForVpn.setEnabled(isWriteSecureSettingsPermissionGranted());
+            switchDisableForVpn.setEnabled(getAppContext().getPermissionsUtil().isWriteSecureSettingsPermissionGranted());
 
-            switchDisableForVpn.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_disable_while_vpn), false));
+            switchDisableForVpn.setChecked(getAppContext().getSettingsUtil().getSharedPrefs().getBoolean(getString(R.string.settings_name_disable_while_vpn), false));
             switchDisableForVpn = this.findViewById(R.id.switchDisableForVpn);
             switchDisableForVpn.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
                     compoundButton.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                     showDozeModeWarning();
 
-                    SharedPreferences.Editor editor = getSharedPrefsEditor();
+                    SharedPreferences.Editor editor = getAppContext().getSettingsUtil().getSharedPrefsEditor();
                     editor.putBoolean(getString(R.string.settings_name_disable_while_vpn), checked);
                     editor.apply();
                 }
@@ -204,16 +186,16 @@ public class ActivityMain extends AppCompatActivity {
         if (switchEnableForCellular == null) {
             switchEnableForCellular = this.findViewById(R.id.switchEnableForCellular);
 
-            switchEnableForCellular.setEnabled(isWriteSecureSettingsPermissionGranted());
+            switchEnableForCellular.setEnabled(getAppContext().getPermissionsUtil().isWriteSecureSettingsPermissionGranted());
 
-            switchEnableForCellular.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_enable_while_cellular), false));
+            switchEnableForCellular.setChecked(getAppContext().getSettingsUtil().getSharedPrefs().getBoolean(getString(R.string.settings_name_enable_while_cellular), false));
             switchEnableForCellular = this.findViewById(R.id.switchEnableForCellular);
             switchEnableForCellular.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
                     compoundButton.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                     showDozeModeWarning();
 
-                    SharedPreferences.Editor editor = getSharedPrefsEditor();
+                    SharedPreferences.Editor editor = getAppContext().getSettingsUtil().getSharedPrefsEditor();
                     editor.putBoolean(getString(R.string.settings_name_enable_while_cellular), checked);
                     editor.apply();
                 }
@@ -223,7 +205,7 @@ public class ActivityMain extends AppCompatActivity {
 
     private void showDozeModeWarning() {
         if (!isIgnoringBatteryOptimizations()) {
-            showWarning(getString(R.string.txt_battery_optimization_enabled));
+            getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_battery_optimization_enabled));
         }
     }
 
@@ -235,8 +217,8 @@ public class ActivityMain extends AppCompatActivity {
         if (slider == null) {
             slider = this.findViewById(R.id.slider);
 
-            slider.setEnabled(isWriteSecureSettingsPermissionGranted());
-            slider.setValue(getPDNSStateInFloat());
+            slider.setEnabled(getAppContext().getPermissionsUtil().isWriteSecureSettingsPermissionGranted());
+            slider.setValue(getAppContext().getSettingsUtil().getPDNSStateInFloat());
 
             slider.setLabelFormatter(value -> {
                 switch (String.valueOf(slider.getValue())) {
@@ -262,27 +244,27 @@ public class ActivityMain extends AppCompatActivity {
                 public void onStopTrackingTouch(@NonNull Slider slider) {
                     switch (String.valueOf(slider.getValue())) {
                         case "1.0":
-                            if (isWriteSecureSettingsPermissionGranted()) {
-                                updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
-                                updateLastPdnsState(OFF);
+                            if (getAppContext().getPermissionsUtil().isWriteSecureSettingsPermissionGranted()) {
+                                getAppContext().getSettingsUtil().updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
+                                getAppContext().getSettingsUtil().updateLastPdnsState(OFF);
                                 updateControlButtonsStates();
-                                refreshQsTile();
+                                getAppContext().refreshQuickTile();
                             }
                             break;
                         case "2.0":
-                            if (isWriteSecureSettingsPermissionGranted()) {
-                                updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
-                                updateLastPdnsState(GOOGLE);
+                            if (getAppContext().getPermissionsUtil().isWriteSecureSettingsPermissionGranted()) {
+                                getAppContext().getSettingsUtil().updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
+                                getAppContext().getSettingsUtil().updateLastPdnsState(GOOGLE);
                                 updateControlButtonsStates();
-                                refreshQsTile();
+                                getAppContext().refreshQuickTile();
                             }
                             break;
                         case "3.0":
-                            if (isWriteSecureSettingsPermissionGranted()) {
-                                updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
-                                updateLastPdnsState(ON);
+                            if (getAppContext().getPermissionsUtil().isWriteSecureSettingsPermissionGranted()) {
+                                getAppContext().getSettingsUtil().updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+                                getAppContext().getSettingsUtil().updateLastPdnsState(ON);
                                 updateControlButtonsStates();
-                                refreshQsTile();
+                                getAppContext().refreshQuickTile();
                             }
                             break;
                     }
@@ -292,18 +274,18 @@ public class ActivityMain extends AppCompatActivity {
         if (btnSet == null) {
             btnSet = this.findViewById(R.id.btnUpdate);
 
-            btnSet.setEnabled(isWriteSecureSettingsPermissionGranted());
+            btnSet.setEnabled(getAppContext().getPermissionsUtil().isWriteSecureSettingsPermissionGranted());
 
             btnSet.setOnClickListener(v -> {
                 v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
-                if (isWriteSecureSettingsPermissionGranted()) {
+                if (getAppContext().getPermissionsUtil().isWriteSecureSettingsPermissionGranted()) {
                     InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                     imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
                     String dnsUrl = editTxtDnsHost.getText().toString();
-                    updatePdnsUrl(dnsUrl);
-                    showWarning(getString(R.string.txt_dns_set_host_notification, dnsUrl));
+                    getAppContext().getSettingsUtil().updatePdnsUrl(dnsUrl);
+                    getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_dns_set_host_notification, dnsUrl));
                     editTxtDnsHost.clearFocus();
-                    editTxtDnsHost.setText(getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+                    editTxtDnsHost.setText(getAppContext().getSettingsUtil().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
 
                 }
             });
@@ -311,7 +293,7 @@ public class ActivityMain extends AppCompatActivity {
         if (btnInstructions == null) {
             btnInstructions = this.findViewById(R.id.btnInstructions);
 
-            btnInstructions.setEnabled(!isWriteSecureSettingsPermissionGranted() || !isIgnoringBatteryOptimizations());
+            btnInstructions.setEnabled(!getAppContext().getPermissionsUtil().isWriteSecureSettingsPermissionGranted() || !isIgnoringBatteryOptimizations());
 
             btnInstructions.setOnClickListener(v -> {
                 v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
@@ -331,7 +313,7 @@ public class ActivityMain extends AppCompatActivity {
         if (btnPermissions == null) {
             btnPermissions = this.findViewById(R.id.btnPermissions);
 
-            btnPermissions.setEnabled(!isAllNeededLocationPermissionsGranted());
+            btnPermissions.setEnabled(!getAppContext().getPermissionsUtil().isAllNeededLocationPermissionsGranted());
             btnPermissions.setOnClickListener(v -> {
                 v.performHapticFeedback(VibrationEffect.EFFECT_TICK);
                 checkPermissions();
@@ -341,7 +323,7 @@ public class ActivityMain extends AppCompatActivity {
 
     private void updateControlButtonsStates() {
         if (slider != null) {
-            slider.setValue(getPDNSStateInFloat());
+            slider.setValue(getAppContext().getSettingsUtil().getPDNSStateInFloat());
         }
     }
 
@@ -349,20 +331,20 @@ public class ActivityMain extends AppCompatActivity {
         if (switchTrustWiFiMode == null) {
             switchTrustWiFiMode = this.findViewById(R.id.switchTrustWiFiMode);
 
-            switchTrustWiFiMode.setEnabled(isAllNeededLocationPermissionsGranted());
+            switchTrustWiFiMode.setEnabled(getAppContext().getPermissionsUtil().isAllNeededLocationPermissionsGranted());
 
-            if (isAllNeededLocationPermissionsGranted()) {
-                switchTrustWiFiMode.setChecked(getSharedPrefs().getBoolean(getString(R.string.settings_name_trust_wifi), false));
+            if (getAppContext().getPermissionsUtil().isAllNeededLocationPermissionsGranted()) {
+                switchTrustWiFiMode.setChecked(getAppContext().getSettingsUtil().getSharedPrefs().getBoolean(getString(R.string.settings_name_trust_wifi), false));
 
                 switchTrustWiFiMode.setOnCheckedChangeListener((compoundButton, checked) -> {
                     if (!activityInitInProgress) {
                         compoundButton.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                         showDozeModeWarning();
 
-                        SharedPreferences.Editor editor = getSharedPrefsEditor();
+                        SharedPreferences.Editor editor = getAppContext().getSettingsUtil().getSharedPrefsEditor();
                         editor.putBoolean(getString(R.string.settings_name_trust_wifi), checked);
                         editor.apply();
-                        switchTrustAp.setEnabled(checked && ConnectionType.WIFI.equals(getConnectionType()));
+                        switchTrustAp.setEnabled(checked && ConnectionType.WIFI.equals(getAppContext().getSettingsUtil().getConnectionType()));
                     }
                 });
             }
@@ -370,53 +352,53 @@ public class ActivityMain extends AppCompatActivity {
         if (switchTrustAp == null) {
             switchTrustAp = this.findViewById(R.id.switchTrustWiFi);
 
-            switchTrustAp.setEnabled(isAllNeededLocationPermissionsGranted());
+            switchTrustAp.setEnabled(getAppContext().getPermissionsUtil().isAllNeededLocationPermissionsGranted());
 
-            if (isAllNeededLocationPermissionsGranted()) {
-                switchTrustAp.setActivated(ConnectionType.WIFI.equals(getConnectionType()));
-                String apName = getWifiApName();
-                switchTrustAp.setChecked(itTrustedWiFiAp(apName));
+            if (getAppContext().getPermissionsUtil().isAllNeededLocationPermissionsGranted()) {
+                switchTrustAp.setActivated(ConnectionType.WIFI.equals(getAppContext().getSettingsUtil().getConnectionType()));
+                String apName = getAppContext().getSettingsUtil().getWifiApName();
+                switchTrustAp.setChecked(getAppContext().getSettingsUtil().itTrustedWiFiAp(apName));
 
-                SharedPreferences sharedPrefForInit = getSharedPrefs();
-                switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getConnectionType()) && sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
+                SharedPreferences sharedPrefForInit = getAppContext().getSettingsUtil().getSharedPrefs();
+                switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getAppContext().getSettingsUtil().getConnectionType()) && sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
                 switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
                 switchTrustAp.setOnClickListener(v -> {
                     v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                     showDozeModeWarning();
 
                     switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
-                    boolean trustResult = trustUntrustApByName(apName);
+                    boolean trustResult = getAppContext().getSettingsUtil().trustUntrustApByName(apName);
                     switchTrustAp.setChecked(trustResult);
-                    showWarning(trustResult ? getString(R.string.txt_connected_ap_trusted, apName) : getString(R.string.txt_connected_ap_untrusted, apName));
-                    updatePdnsSettingsOnNetworkChange(null);
-                    slider.setValue(getPDNSStateInFloat());
+                    getAppContext().getNotificationsUtils().showWarning(trustResult ? getString(R.string.txt_connected_ap_trusted, apName) : getString(R.string.txt_connected_ap_untrusted, apName));
+                    getAppContext().getSettingsUtil().updatePdnsSettingsOnNetworkChange(null);
+                    slider.setValue(getAppContext().getSettingsUtil().getPDNSStateInFloat());
                 });
             }
         }
         if (btnApList == null) {
             btnApList = this.findViewById(R.id.btnApList);
 
-            btnApList.setEnabled(isAllNeededLocationPermissionsGranted());
+            btnApList.setEnabled(getAppContext().getPermissionsUtil().isAllNeededLocationPermissionsGranted());
 
-            if (isLocationPermissionsGranted()) {
-                btnApList.setActivated(ConnectionType.WIFI.equals(getConnectionType()));
+            if (getAppContext().getPermissionsUtil().isLocationPermissionsGranted()) {
+                btnApList.setActivated(ConnectionType.WIFI.equals(getAppContext().getSettingsUtil().getConnectionType()));
 
                 btnApList.setOnClickListener(v -> {
                     v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
-                    Set<String> apsCopy = new HashSet<>(getSharedPrefs().getStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), Collections.emptySet()));
+                    Set<String> apsCopy = new HashSet<>(getAppContext().getSettingsUtil().getSharedPrefs().getStringSet(getString(R.string.settings_name_trust_wifi_ap_set), Collections.emptySet()));
                     if (apsCopy.isEmpty()) {
-                        showWarning(getString(R.string.txt_empty_ap_list));
+                        getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_empty_ap_list));
                     } else {
                         AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setTitle(getString(R.string.txt_click_to_remove_ap));
                         String[] apsSimple = apsCopy.toArray(new String[0]);
                         builder.setItems(apsSimple, (dialog, which) -> {
                             apsCopy.remove(apsSimple[which]);
-                            SharedPreferences.Editor editor = getSharedPrefsEditor();
-                            editor.putStringSet(getContext().getString(R.string.settings_name_trust_wifi_ap_set), apsCopy);
+                            SharedPreferences.Editor editor = getAppContext().getSettingsUtil().getSharedPrefsEditor();
+                            editor.putStringSet(getString(R.string.settings_name_trust_wifi_ap_set), apsCopy);
                             editor.apply();
-                            updatePdnsSettingsOnNetworkChange(null);
-                            slider.setValue(getPDNSStateInFloat());
+                            getAppContext().getSettingsUtil().updatePdnsSettingsOnNetworkChange(null);
+                            slider.setValue(getAppContext().getSettingsUtil().getPDNSStateInFloat());
                         });
                         AlertDialog dialog = builder.create();
                         dialog.show();
@@ -491,6 +473,10 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private void handlePermissionsGranted(boolean granted) {
-        getSharedPrefsEditor().putBoolean(getString(R.string.settings_location_permissions_granted), granted).apply();
+        getAppContext().getSettingsUtil().getSharedPrefsEditor().putBoolean(getString(R.string.settings_location_permissions_granted), granted).apply();
+    }
+
+    private PrivateDnsSwitcherApplication getAppContext() {
+        return (PrivateDnsSwitcherApplication) getApplicationContext();
     }
 }

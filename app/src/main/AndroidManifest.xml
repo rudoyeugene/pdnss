@@ -5,7 +5,7 @@
     <uses-permission
         android:name="android.permission.WRITE_SECURE_SETTINGS"
         tools:ignore="ProtectedPermissions" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -51,7 +51,7 @@
             android:excludeFromRecents="true"
             android:exported="true"
             android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar">
+            android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="com.rudyii.pdnss.GOOGLE" />
             </intent-filter>
@@ -85,8 +85,12 @@
         <service
             android:name=".services.NetworkMonitor"
             android:enabled="true"
-            android:exported="true"
-            android:foregroundServiceType="dataSync" />
+            android:exported="false"
+            android:foregroundServiceType="specialUse" />
+
+        <property
+            android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+            android:value="Listens to network changes to enable-disable private DNS using User settings in the app" />
 
         <receiver
             android:name=".receivers.OnBoot"

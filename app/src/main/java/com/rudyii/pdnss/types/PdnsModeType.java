@@ -1,4 +1,4 @@
-package com.rudyii.pdnss.common;
+package com.rudyii.pdnss.types;
 
 public enum PdnsModeType {
     ON,
@@ -9,5 +9,5 @@ public enum PdnsModeType {
     OFF_WHILE_TRUSTED_WIFI,
     ON_WHILE_CELLULAR,
 
-    UNKNOWN;
+    UNKNOWN
 }

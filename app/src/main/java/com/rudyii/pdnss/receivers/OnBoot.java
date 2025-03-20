@@ -1,7 +1,7 @@
 package com.rudyii.pdnss.receivers;
 
-import static com.rudyii.pdnss.common.Constants.BOOT_COMPLETED;
-import static com.rudyii.pdnss.common.Constants.QUICKBOOT_POWERON;
+import static com.rudyii.pdnss.types.Constants.BOOT_COMPLETED;
+import static com.rudyii.pdnss.types.Constants.QUICKBOOT_POWERON;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;

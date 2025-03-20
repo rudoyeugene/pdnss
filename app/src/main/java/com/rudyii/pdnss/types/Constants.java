@@ -1,4 +1,4 @@
-package com.rudyii.pdnss.common;
+package com.rudyii.pdnss.types;
 
 public class Constants {
     public static final String APP_NAME = "com.rudyii.pdnss";
