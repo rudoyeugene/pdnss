@@ -28,6 +28,7 @@ public class ActivityShortcuts extends Activity {
                     try {
                         getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
                         getAppContext().refreshQuickTile();
+                        getAppContext().getSecurityScoreUtil().disabled();
                     } catch (Exception e) {
                         getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_missing_permissions_warning));
                     }
@@ -36,6 +37,7 @@ public class ActivityShortcuts extends Activity {
                     try {
                         getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                         getAppContext().refreshQuickTile();
+                        getAppContext().getSecurityScoreUtil().enabled();
                     } catch (Exception e) {
                         getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_missing_permissions_warning));
                     }
@@ -44,6 +46,7 @@ public class ActivityShortcuts extends Activity {
                     try {
                         getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                         getAppContext().refreshQuickTile();
+                        getAppContext().getSecurityScoreUtil().disabled();
                     } catch (Exception e) {
                         getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_missing_permissions_warning));
                     }

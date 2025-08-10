@@ -3,6 +3,7 @@ package com.rudyii.pdnss;
 import static com.rudyii.pdnss.types.Constants.APP_NAME;
 import static com.rudyii.pdnss.types.Constants.SERVICE_NOTIFICATION_NAME;
 import static com.rudyii.pdnss.types.Constants.STATE_NOTIFICATION_NAME;
+import static com.rudyii.pdnss.types.PdnsModeType.ON;
 
 import android.app.Application;
 import android.app.NotificationChannel;
@@ -21,6 +22,7 @@ import com.rudyii.pdnss.services.NetworkMonitor;
 import com.rudyii.pdnss.services.QuickTile;
 import com.rudyii.pdnss.utils.NotificationsUtils;
 import com.rudyii.pdnss.utils.PermissionsUtils;
+import com.rudyii.pdnss.utils.SecurityScoreUtil;
 import com.rudyii.pdnss.utils.SettingsUtils;
 
 public class PrivateDnsSwitcherApplication extends Application {
@@ -28,7 +30,7 @@ public class PrivateDnsSwitcherApplication extends Application {
     private SettingsUtils settingsUtils;
     private PermissionsUtils permissionsUtils;
     private NotificationsUtils notificationsUtils;
-
+    private SecurityScoreUtil securityScoreUtil;
     private ConnectivityManager.NetworkCallback networkCallback;
     private ConnectivityManager connectivityManager;
 
@@ -36,6 +38,7 @@ public class PrivateDnsSwitcherApplication extends Application {
     public void onCreate() {
         super.onCreate();
 
+        securityScoreUtil = new SecurityScoreUtil();
         settingsUtils = new SettingsUtils(this);
         permissionsUtils = new PermissionsUtils(this);
         notificationsUtils = new NotificationsUtils(this);
@@ -46,6 +49,10 @@ public class PrivateDnsSwitcherApplication extends Application {
                 settingsUtils.updatePdnsSettingsOnNetworkChange(network);
             }
         };
+
+        if (ON.equals(settingsUtils.getPDNSState())) {
+            securityScoreUtil.enabled();
+        }
 
         registerServices();
         createNotificationChannels();
@@ -79,6 +86,10 @@ public class PrivateDnsSwitcherApplication extends Application {
 
     public NotificationsUtils getNotificationsUtils() {
         return notificationsUtils;
+    }
+
+    public SecurityScoreUtil getSecurityScoreUtil() {
+        return securityScoreUtil;
     }
 
     private void registerServices() {

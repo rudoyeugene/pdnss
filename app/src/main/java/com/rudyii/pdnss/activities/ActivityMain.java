@@ -11,6 +11,7 @@ import static com.rudyii.pdnss.types.PdnsModeType.OFF;
 import static com.rudyii.pdnss.types.PdnsModeType.ON;
 
 import android.Manifest;
+import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
@@ -25,9 +26,11 @@ import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.animation.LinearInterpolator;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -52,6 +55,7 @@ public class ActivityMain extends AppCompatActivity {
     public static final int BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE = 1133;
     private BroadcastReceiver broadcastReceiver;
     private TextView txtCopyrights;
+    private ProgressBar score;
     private Button btnSet;
     private Button btnInstructions;
     private Button btnPermissions;
@@ -154,6 +158,14 @@ public class ActivityMain extends AppCompatActivity {
             } catch (Exception ignored) {
             }
         }
+        if (score == null) {
+            score = this.findViewById(R.id.score);
+            try {
+                int safeScore = (int) getAppContext().getSecurityScoreUtil().getSecurityScore();
+                animateProgressBar(safeScore);
+            } catch (Exception ignored) {
+            }
+        }
         if (editTxtDnsHost == null) {
             editTxtDnsHost = this.findViewById(R.id.editTxtDsnHost);
             if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
@@ -249,6 +261,7 @@ public class ActivityMain extends AppCompatActivity {
                                 getAppContext().getSettingsUtils().updateLastPdnsState(OFF);
                                 updateControlButtonsStates();
                                 getAppContext().refreshQuickTile();
+                                getAppContext().getSecurityScoreUtil().disabled();
                             }
                             break;
                         case "2.0":
@@ -257,6 +270,7 @@ public class ActivityMain extends AppCompatActivity {
                                 getAppContext().getSettingsUtils().updateLastPdnsState(GOOGLE);
                                 updateControlButtonsStates();
                                 getAppContext().refreshQuickTile();
+                                getAppContext().getSecurityScoreUtil().disabled();
                             }
                             break;
                         case "3.0":
@@ -265,6 +279,7 @@ public class ActivityMain extends AppCompatActivity {
                                 getAppContext().getSettingsUtils().updateLastPdnsState(ON);
                                 updateControlButtonsStates();
                                 getAppContext().refreshQuickTile();
+                                getAppContext().getSecurityScoreUtil().enabled();
                             }
                             break;
                     }
@@ -474,6 +489,17 @@ public class ActivityMain extends AppCompatActivity {
 
     private void handlePermissionsGranted(boolean granted) {
         getAppContext().getSettingsUtils().getSharedPrefsEditor().putBoolean(getString(R.string.settings_location_permissions_granted), granted).apply();
+    }
+
+    private void animateProgressBar(int targetProgress) {
+        ValueAnimator animator = ValueAnimator.ofInt(score.getProgress(), targetProgress);
+        animator.setDuration(3000L);
+        animator.setInterpolator(new LinearInterpolator());
+        animator.addUpdateListener(animation -> {
+            int animatedValue = (int) animation.getAnimatedValue();
+            score.setProgress(animatedValue);
+        });
+        animator.start();
     }
 
     private PrivateDnsSwitcherApplication getAppContext() {

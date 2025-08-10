@@ -4,6 +4,7 @@ import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
 import static android.service.quicksettings.Tile.STATE_ACTIVE;
 import static android.service.quicksettings.Tile.STATE_INACTIVE;
+import static com.rudyii.pdnss.types.Constants.APP_NAME;
 import static com.rudyii.pdnss.types.Constants.PDNS_STATE_CHANGED;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_MODE;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
@@ -12,6 +13,7 @@ import static com.rudyii.pdnss.types.Constants.VALUE_PRIVATE_DNS_MODE_ON_STRING;
 import android.content.Intent;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
+import android.util.Log;
 
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
@@ -34,10 +36,14 @@ public class QuickTile extends TileService {
         if (VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(pDNSState)) {
             getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
             getAppContext().getSettingsUtils().updateLastPdnsState(PdnsModeType.OFF);
+            getAppContext().getSecurityScoreUtil().disabled();
         } else {
             getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
             getAppContext().getSettingsUtils().updateLastPdnsState(PdnsModeType.ON);
+            getAppContext().getSecurityScoreUtil().enabled();
         }
+        Log.i(APP_NAME, "total enabled: " + getAppContext().getSecurityScoreUtil().getTotalEnabledTime());
+        Log.i(APP_NAME, "score: " + getAppContext().getSecurityScoreUtil().getSecurityScore());
         updateTile();
     }
 

@@ -15,6 +15,8 @@ public class Constants {
     public static final String BOOT_COMPLETED = "android.intent.action.BOOT_COMPLETED";
     public static final String SERVICE_NOTIFICATION_NAME = "SERVICE_NOTIFICATIONS";
     public static final String STATE_NOTIFICATION_NAME = "STATE_NOTIFICATIONS";
+    public static final String UNSAFE_DNS_NOTIFICATION_NAME = "UNSAFE_DNS_NOTIFICATIONS";
     public static final int SERVICE_NOTIFICATION_ID = 111111;
     public static final int STATE_NOTIFICATION_ID = 112211;
+    public static final int UNSAFE_DNS_NOTIFICATION_ID = 113311;
 }

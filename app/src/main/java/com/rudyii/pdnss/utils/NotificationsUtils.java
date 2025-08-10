@@ -28,7 +28,6 @@ public class NotificationsUtils {
                 Toast.LENGTH_SHORT).show();
     }
 
-
     public void showNotification(String title, String body, boolean enabled) {
         Intent activityIntent = new Intent(context, ActivityMain.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, activityIntent, PendingIntent.FLAG_IMMUTABLE);
