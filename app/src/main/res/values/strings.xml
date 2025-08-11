@@ -22,11 +22,11 @@
 
     <string name="txt_app_name">Private DNS Switcher</string>
     <string name="txt_battery_optimization_enabled">Android is optimizing battery for PDNSS (Doze mode). See Instructions.</string>
-    <string name="txt_click_to_remove_ap">Click to remove from Trusted WiFi AP List</string>
+    <string name="txt_click_to_remove_ap">Click to remove the AP from Trusted WiFi APs List</string>
     <string name="txt_connected_ap_name" formatted="true">Connected AP name: %1$s</string>
     <string name="txt_connected_ap_trusted" formatted="true">WiFi AP named %1$s added into \'Trusted WiFi AP List\'</string>
     <string name="txt_connected_ap_untrusted" formatted="true">WiFi AP named %1$s removed from \'Trusted WiFi AP List\'</string>
-    <string name="txt_copyrights" translatable="false">© 2024 Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nPDNSS Version: %s</string>
+    <string name="txt_copyrights" translatable="false">© %d Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nPDNSS Version: %s</string>
     <string name="txt_disable_battery_optimizations">Disable battery optimizations</string>
     <string name="txt_dns_set_host_notification" formatted="true">Updated PDNS URL to %1$s</string>
     <string name="txt_dns_state_google" translatable="false">GOOGLE</string>

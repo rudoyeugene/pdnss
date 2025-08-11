@@ -46,6 +46,7 @@ import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.services.NetworkMonitor;
 import com.rudyii.pdnss.types.ConnectionType;
 
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -154,6 +155,7 @@ public class ActivityMain extends AppCompatActivity {
             txtCopyrights = this.findViewById(R.id.txtCopyrights);
             try {
                 txtCopyrights.setText(getString(R.string.txt_copyrights,
+                        LocalDate.now().getYear(),
                         getPackageManager().getPackageInfo(getPackageName(), 0).versionName));
             } catch (Exception ignored) {
             }
@@ -412,7 +414,8 @@ public class ActivityMain extends AppCompatActivity {
                     if (apsCopy.isEmpty()) {
                         getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_empty_ap_list));
                     } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this, getAppContext().getSettingsUtils().isLightTheme()
+                                ? android.R.style.Theme_DeviceDefault_Light_Dialog_Alert : android.R.style.Theme_DeviceDefault_Dialog_Alert);
                         builder.setTitle(getString(R.string.txt_click_to_remove_ap));
                         String[] apsSimple = apsCopy.toArray(new String[0]);
                         builder.setItems(apsSimple, (dialog, which) -> {
