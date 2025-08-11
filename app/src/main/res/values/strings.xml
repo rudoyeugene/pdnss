@@ -88,4 +88,7 @@
     <string name="txt_notification_state_channel_name">PDNS state changed</string>
     <string name="txt_notification_state_title" formatted="true">Private DNS %1$s</string>
     <string name="txt_ok" translatable="false">OK</string>
+    <string name="txt_cancel" translatable="false">Cancel</string>
+    <string name="txt_save" translatable="false">Save</string>
+    <string name="txt_update_pdns_host" translatable="false">Update Private DNS host:</string>
 </resources>

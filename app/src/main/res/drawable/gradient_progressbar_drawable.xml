@@ -18,7 +18,7 @@
                     android:endColor="#FF00FF00"
                     android:startColor="#FFFF0000"
                     android:type="linear" />
-                <size android:height="8dp" />
+                <size android:height="4dp" />
             </shape>
         </clip>
     </item>

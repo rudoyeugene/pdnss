@@ -27,9 +27,9 @@ import android.os.VibrationEffect;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.animation.LinearInterpolator;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -59,12 +59,12 @@ public class ActivityMain extends AppCompatActivity {
     private Button btnSet;
     private Button btnInstructions;
     private Button btnPermissions;
+    private Button btnUpdatePdns;
     private Button btnApList;
     private MaterialSwitch switchTrustAp;
     private MaterialSwitch switchDisableForVpn;
     private MaterialSwitch switchEnableForCellular;
     private MaterialSwitch switchTrustWiFiMode;
-    private EditText editTxtDnsHost;
     private Slider slider;
     private boolean activityInitInProgress;
 
@@ -164,14 +164,6 @@ public class ActivityMain extends AppCompatActivity {
                 int safeScore = (int) getAppContext().getSecurityScoreUtil().getSecurityScore();
                 animateProgressBar(safeScore);
             } catch (Exception ignored) {
-            }
-        }
-        if (editTxtDnsHost == null) {
-            editTxtDnsHost = this.findViewById(R.id.editTxtDsnHost);
-            if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
-                editTxtDnsHost.setText(getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
-            } else {
-                editTxtDnsHost.setText(getString(R.string.txt_missing_permissions));
             }
         }
     }
@@ -286,25 +278,6 @@ public class ActivityMain extends AppCompatActivity {
                 }
             });
         }
-        if (btnSet == null) {
-            btnSet = this.findViewById(R.id.btnUpdate);
-
-            btnSet.setEnabled(getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted());
-
-            btnSet.setOnClickListener(v -> {
-                v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
-                if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
-                    InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
-                    String dnsUrl = editTxtDnsHost.getText().toString();
-                    getAppContext().getSettingsUtils().updatePdnsUrl(dnsUrl);
-                    getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_dns_set_host_notification, dnsUrl));
-                    editTxtDnsHost.clearFocus();
-                    editTxtDnsHost.setText(getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
-
-                }
-            });
-        }
         if (btnInstructions == null) {
             btnInstructions = this.findViewById(R.id.btnInstructions);
 
@@ -333,6 +306,41 @@ public class ActivityMain extends AppCompatActivity {
                 v.performHapticFeedback(VibrationEffect.EFFECT_TICK);
                 checkPermissions();
             });
+        }
+        if (btnUpdatePdns == null) {
+            btnUpdatePdns = this.findViewById(R.id.btnUpdatePdns);
+            if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
+                btnUpdatePdns.setOnClickListener(v -> {
+                    v.performHapticFeedback(VibrationEffect.EFFECT_TICK);
+                    EditText editTxtDnsHost = new EditText(this);
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                            LinearLayout.LayoutParams.MATCH_PARENT,
+                            LinearLayout.LayoutParams.MATCH_PARENT);
+                    editTxtDnsHost.setLayoutParams(lp);
+                    editTxtDnsHost.setText(getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this, getAppContext().getSettingsUtils().isLightTheme()
+                            ? android.R.style.Theme_DeviceDefault_Light_Dialog_Alert : android.R.style.Theme_DeviceDefault_Dialog_Alert);
+                    builder.setTitle(getString(R.string.txt_update_pdns_host));
+                    builder.setView(editTxtDnsHost);
+                    builder.setPositiveButton(getText(R.string.txt_save), (dialogInterface, i) -> {
+                        String dnsUrl = editTxtDnsHost.getText().toString();
+                        getAppContext().getSettingsUtils().updatePdnsUrl(dnsUrl);
+                        getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_dns_set_host_notification, dnsUrl));
+                        editTxtDnsHost.clearFocus();
+                        editTxtDnsHost.setText(getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+
+                    });
+                    builder.setNegativeButton(getText(R.string.txt_cancel), (dialogInterface, i) -> {
+                        dialogInterface.cancel();
+                    });
+                    builder.show();
+                });
+            } else {
+                btnUpdatePdns.setOnClickListener(v -> {
+                    v.performHapticFeedback(VibrationEffect.EFFECT_TICK);
+                    getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_missing_permissions_warning));
+                });
+            }
         }
     }
 

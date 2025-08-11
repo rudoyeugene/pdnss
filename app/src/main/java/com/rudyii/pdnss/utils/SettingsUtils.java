@@ -21,6 +21,7 @@ import static com.rudyii.pdnss.types.PdnsModeType.UNKNOWN;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.Network;
 import android.net.NetworkCapabilities;
@@ -282,4 +283,8 @@ public class SettingsUtils {
         return result;
     }
 
+    public boolean isLightTheme() {
+        int nightModeFlags = context.getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        return nightModeFlags == Configuration.UI_MODE_NIGHT_NO;
+    }
 }
