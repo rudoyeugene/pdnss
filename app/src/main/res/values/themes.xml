@@ -1,10 +1,8 @@
 <resources>
     <!-- Base application theme. -->
-    <style name="Base.Theme.PrivateDNSSwitcher" parent="Theme.Material3.DynamicColors.DayNight.NoActionBar">
+    <style name="Theme.PrivateDNSSwitcher" parent="Theme.Material3.DynamicColors.Light">
         <!-- Customize your light theme here. -->
         <item name="android:windowLightStatusBar">true</item>
-        <item name="colorPrimary">@color/material_dynamic_tertiary10</item>
+        <item name="colorPrimary">@color/material_dynamic_primary10</item>
     </style>
-
-    <style name="Theme.PrivateDNSSwitcher" parent="Base.Theme.PrivateDNSSwitcher" />
 </resources>

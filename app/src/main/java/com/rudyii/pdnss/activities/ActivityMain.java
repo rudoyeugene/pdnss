@@ -57,7 +57,6 @@ public class ActivityMain extends AppCompatActivity {
     private BroadcastReceiver broadcastReceiver;
     private TextView txtCopyrights;
     private ProgressBar score;
-    private Button btnSet;
     private Button btnInstructions;
     private Button btnPermissions;
     private Button btnUpdatePdns;
@@ -290,8 +289,8 @@ public class ActivityMain extends AppCompatActivity {
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle(getString(R.string.txt_instructions_title));
                 alert.setMessage(R.string.txt_instructions);
-                alert.setPositiveButton(getString(R.string.txt_ok), (dialog, which) -> dialog.dismiss());
-                alert.setNeutralButton(getString(R.string.txt_disable_battery_optimizations), (dialog, which) -> {
+                alert.setNegativeButton(getString(R.string.txt_cancel), (dialog, which) -> dialog.dismiss());
+                alert.setPositiveButton(getString(R.string.txt_disable_battery_optimizations), (dialog, which) -> {
                     PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
                     if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
                         startActivity(new Intent().setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
@@ -320,8 +319,7 @@ public class ActivityMain extends AppCompatActivity {
                             LinearLayout.LayoutParams.MATCH_PARENT);
                     editTxtDnsHost.setLayoutParams(lp);
                     editTxtDnsHost.setText(getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this, getAppContext().getSettingsUtils().isLightTheme()
-                            ? android.R.style.Theme_DeviceDefault_Light_Dialog_Alert : android.R.style.Theme_DeviceDefault_Dialog_Alert);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
                     builder.setTitle(getString(R.string.txt_update_pdns_host));
                     builder.setView(editTxtDnsHost);
                     builder.setPositiveButton(getText(R.string.txt_save), (dialogInterface, i) -> {
@@ -414,8 +412,7 @@ public class ActivityMain extends AppCompatActivity {
                     if (apsCopy.isEmpty()) {
                         getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_empty_ap_list));
                     } else {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(this, getAppContext().getSettingsUtils().isLightTheme()
-                                ? android.R.style.Theme_DeviceDefault_Light_Dialog_Alert : android.R.style.Theme_DeviceDefault_Dialog_Alert);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(this);
                         builder.setTitle(getString(R.string.txt_click_to_remove_ap));
                         String[] apsSimple = apsCopy.toArray(new String[0]);
                         builder.setItems(apsSimple, (dialog, which) -> {
@@ -504,7 +501,7 @@ public class ActivityMain extends AppCompatActivity {
 
     private void animateProgressBar(int targetProgress) {
         ValueAnimator animator = ValueAnimator.ofInt(score.getProgress(), targetProgress);
-        animator.setDuration(3000L);
+        animator.setDuration(1500L);
         animator.setInterpolator(new LinearInterpolator());
         animator.addUpdateListener(animation -> {
             int animatedValue = (int) animation.getAnimatedValue();
