@@ -11,8 +11,8 @@ android {
         applicationId "com.rudyii.pdnss"
         minSdkVersion 29
         targetSdkVersion 36
-        versionCode 213
-        versionName "2.1.3"
+        versionCode 215
+        versionName "2.1.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
