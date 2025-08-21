@@ -13,6 +13,7 @@ import static com.rudyii.pdnss.types.PdnsModeType.ON;
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -31,16 +32,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RadioGroup;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
-import com.google.android.material.materialswitch.MaterialSwitch;
-import com.google.android.material.slider.Slider;
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.services.NetworkMonitor;
@@ -51,7 +51,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ActivityMain extends AppCompatActivity {
+public class ActivityMain extends Activity {
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1122;
     public static final int BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE = 1133;
     private BroadcastReceiver broadcastReceiver;
@@ -61,12 +61,13 @@ public class ActivityMain extends AppCompatActivity {
     private Button btnPermissions;
     private Button btnUpdatePdns;
     private Button btnApList;
-    private MaterialSwitch switchTrustAp;
-    private MaterialSwitch switchDisableForVpn;
-    private MaterialSwitch switchEnableForCellular;
-    private MaterialSwitch switchTrustWiFiMode;
-    private Slider slider;
+    private Switch switchTrustAp;
+    private Switch switchDisableForVpn;
+    private Switch switchEnableForCellular;
+    private Switch switchTrustWiFiMode;
+    private RadioGroup selector;
     private boolean activityInitInProgress;
+    private boolean skipRadioButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -219,62 +220,38 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private void initButtons() {
-        if (slider == null) {
-            slider = this.findViewById(R.id.slider);
+        if (selector == null) {
+            selector = this.findViewById(R.id.selector);
+            updateRadioButtonsStates();
 
-            slider.setEnabled(getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted());
-            slider.setValue(getAppContext().getSettingsUtils().getPDNSStateInFloat());
-
-            slider.setLabelFormatter(value -> {
-                switch (String.valueOf(slider.getValue())) {
-                    case "2.0":
-                        return getString(R.string.txt_dns_state_google);
-                    case "3.0":
-                        return getString(R.string.txt_dns_state_on);
-                    default:
-                        return getString(R.string.txt_dns_state_off);
-                }
-            });
-
-            slider.addOnChangeListener((slider1, value, fromUser) ->
-                    slider.performHapticFeedback(VibrationEffect.EFFECT_CLICK));
-
-            slider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
-                @Override
-                public void onStartTrackingTouch(@NonNull Slider slider) {
-
-                }
-
-                @Override
-                public void onStopTrackingTouch(@NonNull Slider slider) {
-                    switch (String.valueOf(slider.getValue())) {
-                        case "1.0":
-                            if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
-                                getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
-                                getAppContext().getSettingsUtils().updateLastPdnsState(OFF);
-                                updateControlButtonsStates();
-                                getAppContext().refreshQuickTile();
-                                getAppContext().getSecurityScoreUtil().disabled();
-                            }
-                            break;
-                        case "2.0":
-                            if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
-                                getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
-                                getAppContext().getSettingsUtils().updateLastPdnsState(GOOGLE);
-                                updateControlButtonsStates();
-                                getAppContext().refreshQuickTile();
-                                getAppContext().getSecurityScoreUtil().disabled();
-                            }
-                            break;
-                        case "3.0":
-                            if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
-                                getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
-                                getAppContext().getSettingsUtils().updateLastPdnsState(ON);
-                                updateControlButtonsStates();
-                                getAppContext().refreshQuickTile();
-                                getAppContext().getSecurityScoreUtil().enabled();
-                            }
-                            break;
+            selector.setEnabled(getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted());
+            selector.setOnCheckedChangeListener((group, checkedId) -> {
+                if (!skipRadioButton) {
+                    selector.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
+                    if (checkedId == R.id.radioOff) {
+                        if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
+                            getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
+                            getAppContext().getSettingsUtils().updateLastPdnsState(OFF);
+                            updateRadioButtonsStates();
+                            getAppContext().refreshQuickTile();
+                            getAppContext().getSecurityScoreUtil().disabled();
+                        }
+                    } else if (checkedId == R.id.radioOn) {
+                        if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
+                            getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+                            getAppContext().getSettingsUtils().updateLastPdnsState(ON);
+                            updateRadioButtonsStates();
+                            getAppContext().refreshQuickTile();
+                            getAppContext().getSecurityScoreUtil().enabled();
+                        }
+                    } else {
+                        if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
+                            getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
+                            getAppContext().getSettingsUtils().updateLastPdnsState(GOOGLE);
+                            updateRadioButtonsStates();
+                            getAppContext().refreshQuickTile();
+                            getAppContext().getSecurityScoreUtil().disabled();
+                        }
                     }
                 }
             });
@@ -344,9 +321,20 @@ public class ActivityMain extends AppCompatActivity {
         }
     }
 
-    private void updateControlButtonsStates() {
-        if (slider != null) {
-            slider.setValue(getAppContext().getSettingsUtils().getPDNSStateInFloat());
+    private void updateRadioButtonsStates() {
+        if (selector != null) {
+            skipRadioButton = true;
+            switch (getAppContext().getSettingsUtils().getPDNSState()) {
+                case ON:
+                    selector.check(R.id.radioOn);
+                    break;
+                case OFF:
+                    selector.check(R.id.radioOff);
+                    break;
+                default:
+                    selector.check(R.id.radioAuto);
+            }
+            skipRadioButton = false;
         }
     }
 
@@ -394,7 +382,7 @@ public class ActivityMain extends AppCompatActivity {
                     switchTrustAp.setChecked(trustResult);
                     getAppContext().getNotificationsUtils().showWarning(trustResult ? getString(R.string.txt_connected_ap_trusted, apName) : getString(R.string.txt_connected_ap_untrusted, apName));
                     getAppContext().getSettingsUtils().updatePdnsSettingsOnNetworkChange(null);
-                    slider.setValue(getAppContext().getSettingsUtils().getPDNSStateInFloat());
+                    updateRadioButtonsStates();
                 });
             }
         }
@@ -421,7 +409,7 @@ public class ActivityMain extends AppCompatActivity {
                             editor.putStringSet(getString(R.string.settings_name_trust_wifi_ap_set), apsCopy);
                             editor.apply();
                             getAppContext().getSettingsUtils().updatePdnsSettingsOnNetworkChange(null);
-                            slider.setValue(getAppContext().getSettingsUtils().getPDNSStateInFloat());
+                            updateRadioButtonsStates();
                         });
                         AlertDialog dialog = builder.create();
                         dialog.show();

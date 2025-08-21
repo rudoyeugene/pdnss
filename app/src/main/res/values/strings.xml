@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <resources>
-    <string name="btn_trust_wifi">Enable \'Trusted WiFi AP\' Mode</string>
+    <string name="btn_trust_wifi">Use trusted WiFi APs</string>
 
     <string name="settings_location_permissions_granted" translatable="false">location_permissions_granted</string>
     <string name="settings_name" translatable="false">com.rudyii.pdnss.SETTINGS</string>
@@ -13,17 +13,14 @@
     <string name="shortcut_long_google" translatable="false">Google</string>
     <string name="shortcut_long_off">Disable</string>
     <string name="shortcut_long_on">Enable</string>
-    <string name="shortcut_short_google" translatable="false">GOOGLE</string>
-    <string name="shortcut_short_off" translatable="false">OFF</string>
-    <string name="shortcut_short_on" translatable="false">ON</string>
 
-    <string name="swch_disable_on_vpn">Disable Private DNS on VPN</string>
-    <string name="swch_enable_on_cellular">Enable Private DNS on cellular network</string>
+    <string name="swch_disable_on_vpn">Use DNS from VPN</string>
+    <string name="swch_enable_on_cellular">Use Private DNS on cellular network</string>
 
     <string name="txt_app_name">Private DNS Switcher</string>
     <string name="txt_battery_optimization_enabled">Android is optimizing battery for PDNSS (Doze mode). See Instructions.</string>
-    <string name="txt_click_to_remove_ap">Click to remove the AP from Trusted WiFi APs List</string>
-    <string name="txt_connected_ap_name" formatted="true">Connected AP name: %1$s</string>
+    <string name="txt_click_to_remove_ap">Untrust the WiFi AP:</string>
+    <string name="txt_connected_ap_name" formatted="true">Current WiFi AP name: %1$s</string>
     <string name="txt_connected_ap_trusted" formatted="true">WiFi AP named %1$s added into \'Trusted WiFi AP List\'</string>
     <string name="txt_connected_ap_untrusted" formatted="true">WiFi AP named %1$s removed from \'Trusted WiFi AP List\'</string>
     <string name="txt_copyrights" translatable="false">© %d Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nPDNSS Version: %s</string>
@@ -34,7 +31,7 @@
     <string name="txt_dns_state_on" translatable="false">ON</string>
     <string name="txt_dns_state_quicktile">Private DNS</string>
     <string name="txt_dummy_pdns_url">one.one.one.one</string>
-    <string name="txt_empty_ap_list">Trusted WiFi AP List is empty</string>
+    <string name="txt_empty_ap_list">No trusted WiFi APs</string>
     <string name="txt_error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
     <string name="txt_instructions" translatable="false">
         <b>Main feature:</b>
@@ -91,4 +88,13 @@
     <string name="txt_cancel" translatable="false">Cancel</string>
     <string name="txt_save" translatable="false">Save</string>
     <string name="txt_update_pdns_host" translatable="false">Update Private DNS host:</string>
+    <string name="txt_trusted_wifi_mode">TRUSTED WIFI MODE</string>
+    <string name="txt_base_permissions">BASE PERMISSIONS</string>
+    <string name="txt_aps_list">Trusted WiFi APs</string>
+    <string name="txt_update_dns_host">Update DNS Host</string>
+    <string name="txt_progress_stats">Total Time using Private DNS:</string>
+    <string name="txt_ap_name">AP Name</string>
+    <string name="txt_GOOGLE" translatable="false">GOOGLE</string>
+    <string name="txt_OFF" translatable="false">OFF</string>
+    <string name="txt_ON" translatable="false">ON</string>
 </resources>

@@ -22,58 +22,59 @@
         android:orientation="vertical"
         app:layout_constraintGuide_end="16dp" />
 
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnPermissions"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="8dp"
-        android:hapticFeedbackEnabled="true"
-        android:text="TRUSTED WIFI MODE"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@+id/end_guideline"
-        app:layout_constraintStart_toEndOf="@+id/btnInstructions"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/btnInstructions"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginEnd="32dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="4dp"
         android:hapticFeedbackEnabled="true"
-        android:text="BASE PERMISSIONS"
+        android:text="@string/txt_base_permissions"
         android:textSize="12sp"
         app:layout_constraintEnd_toStartOf="@+id/btnPermissions"
+        app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toStartOf="@+id/start_guideline"
-        app:layout_constraintTop_toTopOf="@+id/btnPermissions" />
+        app:layout_constraintTop_toTopOf="parent" />
 
-    <com.google.android.material.button.MaterialButton
+    <Button
+        android:id="@+id/btnPermissions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:hapticFeedbackEnabled="true"
+        android:text="@string/txt_trusted_wifi_mode"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
+        app:layout_constraintHorizontal_weight="1"
+        app:layout_constraintStart_toEndOf="@+id/btnInstructions"
+        app:layout_constraintTop_toTopOf="@+id/btnInstructions" />
+
+    <Button
         android:id="@+id/btnApList"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="APs List"
+        android:text="@string/txt_aps_list"
         app:layout_constraintEnd_toEndOf="@+id/btnInstructions"
         app:layout_constraintStart_toStartOf="@+id/btnInstructions"
         app:layout_constraintTop_toBottomOf="@+id/btnInstructions" />
 
-    <com.google.android.material.button.MaterialButton
+    <Button
         android:id="@+id/btnUpdatePdns"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:text="Update DNS Host"
+        android:text="@string/txt_update_dns_host"
         app:layout_constraintEnd_toEndOf="@+id/btnPermissions"
         app:layout_constraintStart_toStartOf="@+id/btnPermissions"
         app:layout_constraintTop_toBottomOf="@+id/btnPermissions" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/scoreText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:text="The Time You spent on the 'Safe Side'"
+        android:text="@string/txt_progress_stats"
         app:layout_constraintBottom_toTopOf="@+id/score"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -103,7 +104,7 @@
         app:layout_constraintEnd_toEndOf="@+id/end_guideline"
         app:layout_constraintStart_toStartOf="@+id/start_guideline" />
 
-    <com.google.android.material.materialswitch.MaterialSwitch
+    <android.widget.Switch
         android:id="@+id/switchDisableForVpn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -115,7 +116,7 @@
         app:layout_constraintEnd_toEndOf="@+id/end_guideline"
         app:layout_constraintStart_toStartOf="@+id/start_guideline" />
 
-    <com.google.android.material.materialswitch.MaterialSwitch
+    <android.widget.Switch
         android:id="@+id/switchEnableForCellular"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -137,7 +138,7 @@
         app:layout_constraintEnd_toEndOf="@+id/end_guideline"
         app:layout_constraintStart_toStartOf="@+id/start_guideline" />
 
-    <com.google.android.material.materialswitch.MaterialSwitch
+    <android.widget.Switch
         android:id="@+id/switchTrustWiFiMode"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -149,13 +150,13 @@
         app:layout_constraintEnd_toEndOf="@+id/end_guideline"
         app:layout_constraintStart_toStartOf="@+id/start_guideline" />
 
-    <com.google.android.material.materialswitch.MaterialSwitch
+    <android.widget.Switch
         android:id="@+id/switchTrustWiFi"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:hapticFeedbackEnabled="true"
-        android:text="AP Name"
+        android:text="@string/txt_ap_name"
         android:textSize="16sp"
         app:layout_constraintBottom_toTopOf="@+id/dividerSlide"
         app:layout_constraintEnd_toEndOf="@+id/end_guideline"
@@ -167,29 +168,46 @@
         android:layout_height="2dp"
         android:layout_marginBottom="8dp"
         android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/slider"
+        app:layout_constraintBottom_toTopOf="@+id/selector"
         app:layout_constraintEnd_toEndOf="@+id/end_guideline"
         app:layout_constraintStart_toStartOf="@+id/start_guideline" />
 
-    <com.google.android.material.slider.Slider
-        android:id="@+id/slider"
-        android:layout_width="0dp"
+
+    <RadioGroup
+        android:id="@+id/selector"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="32dp"
-        android:fadeScrollbars="true"
-        android:hapticFeedbackEnabled="true"
-        android:stepSize="1"
-        android:valueFrom="1"
-        android:valueTo="3"
-        app:labelBehavior="visible"
         app:layout_constraintBottom_toTopOf="@+id/dividerCopyright"
         app:layout_constraintEnd_toEndOf="@+id/end_guideline"
         app:layout_constraintStart_toStartOf="@+id/start_guideline"
-        app:thumbElevation="12dp"
-        app:thumbHeight="32dp"
-        app:thumbRadius="12dp"
-        app:thumbTrackGapSize="12dp"
-        app:thumbWidth="32dp" />
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/radioOff"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_OFF" />
+
+        <Space
+            android:layout_width="32dp"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/radioAuto"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/txt_GOOGLE" />
+
+        <Space
+            android:layout_width="32dp"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/radioOn"
+            android:layout_width="match_parent"
+            android:layout_height="57dp"
+            android:text="@string/txt_ON" />
+    </RadioGroup>
 
     <View
         android:id="@+id/dividerCopyright"
@@ -201,7 +219,7 @@
         app:layout_constraintEnd_toEndOf="@+id/end_guideline"
         app:layout_constraintStart_toStartOf="@+id/start_guideline" />
 
-    <com.google.android.material.textview.MaterialTextView
+    <TextView
         android:id="@+id/txtCopyrights"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
@@ -209,7 +227,7 @@
         android:text="@string/txt_copyrights"
         android:textAlignment="center"
         android:textColor="@android:color/darker_gray"
-        android:textSize="10sp"
+        android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/end_guideline"
         app:layout_constraintStart_toStartOf="@+id/start_guideline" />

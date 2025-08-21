@@ -5,7 +5,7 @@
         android:icon="@mipmap/disabled"
         android:shortcutId="disable"
         android:shortcutLongLabel="@string/shortcut_long_off"
-        android:shortcutShortLabel="@string/shortcut_short_off">
+        android:shortcutShortLabel="@string/txt_OFF">
         <intent
             android:action="com.rudyii.pdnss.OFF"
             android:targetClass="com.rudyii.pdnss.activities.ActivityShortcuts"
@@ -16,7 +16,7 @@
         android:icon="@mipmap/google"
         android:shortcutId="google"
         android:shortcutLongLabel="@string/shortcut_long_google"
-        android:shortcutShortLabel="@string/shortcut_short_google">
+        android:shortcutShortLabel="@string/txt_GOOGLE">
         <intent
             android:action="com.rudyii.pdnss.GOOGLE"
             android:targetClass="com.rudyii.pdnss.activities.ActivityShortcuts"
@@ -27,7 +27,7 @@
         android:icon="@mipmap/enabled"
         android:shortcutId="enable"
         android:shortcutLongLabel="@string/shortcut_long_on"
-        android:shortcutShortLabel="@string/shortcut_short_on">
+        android:shortcutShortLabel="@string/txt_ON">
         <intent
             android:action="com.rudyii.pdnss.ON"
             android:targetClass="com.rudyii.pdnss.activities.ActivityShortcuts"
