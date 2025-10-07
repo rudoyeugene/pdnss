@@ -20,6 +20,7 @@ import androidx.annotation.NonNull;
 
 import com.rudyii.pdnss.services.NetworkMonitor;
 import com.rudyii.pdnss.services.QuickTile;
+import com.rudyii.pdnss.utils.AppState;
 import com.rudyii.pdnss.utils.NotificationsUtils;
 import com.rudyii.pdnss.utils.PermissionsUtils;
 import com.rudyii.pdnss.utils.SecurityScoreUtil;
@@ -33,6 +34,7 @@ public class PrivateDnsSwitcherApplication extends Application {
     private SecurityScoreUtil securityScoreUtil;
     private ConnectivityManager.NetworkCallback networkCallback;
     private ConnectivityManager connectivityManager;
+    private AppState appState;
 
     @Override
     public void onCreate() {
@@ -43,6 +45,7 @@ public class PrivateDnsSwitcherApplication extends Application {
         permissionsUtils = new PermissionsUtils(this);
         notificationsUtils = new NotificationsUtils(this);
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        appState = new AppState();
         networkCallback = new ConnectivityManager.NetworkCallback() {
             @Override
             public void onAvailable(@NonNull Network network) {
@@ -86,6 +89,10 @@ public class PrivateDnsSwitcherApplication extends Application {
 
     public NotificationsUtils getNotificationsUtils() {
         return notificationsUtils;
+    }
+
+    public AppState getAppState() {
+        return appState;
     }
 
     public SecurityScoreUtil getSecurityScoreUtil() {

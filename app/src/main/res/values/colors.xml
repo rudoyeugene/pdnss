@@ -5,4 +5,8 @@
     <color name="yellow">#F0D908</color>
     <color name="red">#F01909</color>
     <color name="black">#020202</color>
+    <color name="material_dynamic_primary90">#EAEAEA</color>
+    <color name="purple_500">#6200EE</color>
+    <color name="purple_700">#3700B3</color>
+    <color name="teal_200">#03DAC5</color>
 </resources>

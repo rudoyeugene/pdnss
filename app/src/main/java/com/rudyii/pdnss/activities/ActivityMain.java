@@ -4,7 +4,6 @@ import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
 import static com.rudyii.pdnss.types.Constants.APP_NAME;
-import static com.rudyii.pdnss.types.Constants.PDNS_STATE_CHANGED;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.types.PdnsModeType.GOOGLE;
 import static com.rudyii.pdnss.types.PdnsModeType.OFF;
@@ -13,34 +12,32 @@ import static com.rudyii.pdnss.types.PdnsModeType.ON;
 import android.Manifest;
 import android.animation.ValueAnimator;
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.animation.LinearInterpolator;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RadioGroup;
-import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.materialswitch.MaterialSwitch;
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.services.NetworkMonitor;
@@ -51,20 +48,20 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-public class ActivityMain extends Activity {
+public class ActivityMain extends AppCompatActivity {
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1122;
     public static final int BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE = 1133;
     private BroadcastReceiver broadcastReceiver;
     private TextView txtCopyrights;
     private ProgressBar score;
-    private Button btnInstructions;
-    private Button btnPermissions;
-    private Button btnUpdatePdns;
-    private Button btnApList;
-    private Switch switchTrustAp;
-    private Switch switchDisableForVpn;
-    private Switch switchEnableForCellular;
-    private Switch switchTrustWiFiMode;
+    private MaterialButton btnInstructions;
+    private MaterialButton btnPermissions;
+    private MaterialButton btnUpdatePdns;
+    private MaterialButton btnApList;
+    private MaterialSwitch switchTrustAp;
+    private MaterialSwitch switchDisableForVpn;
+    private MaterialSwitch switchEnableForCellular;
+    private MaterialSwitch switchTrustWiFiMode;
     private RadioGroup selector;
     private boolean activityInitInProgress;
     private boolean skipRadioButton;
@@ -81,10 +78,16 @@ public class ActivityMain extends Activity {
                     String apName = getAppContext().getSettingsUtils().getWifiApName();
                     switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType()) && getAppContext().getSettingsUtils().trustedWiFiModeOn());
                     switchTrustAp.setChecked(getAppContext().getSettingsUtils().itTrustedWiFiAp(apName));
-                    if (ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType())) {
-                        switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
+                    switch (getAppContext().getSettingsUtils().getConnectionType()) {
+                        case WIFI ->
+                                switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
+                        case CELLULAR ->
+                                switchTrustAp.setText(getString(R.string.txt_trusted_ap_mode_unsupported, getString(R.string.txt_notification_state_body_on_cellular)));
+                        case VPN ->
+                                switchTrustAp.setText(getString(R.string.txt_trusted_ap_mode_unsupported, getString(R.string.txt_notification_state_body_on_vpn)));
                     }
                 }
+                updateRadioButtonsStates();
             }
         };
         try {
@@ -100,14 +103,22 @@ public class ActivityMain extends Activity {
     protected void onResume() {
         super.onResume();
         initAll();
-        IntentFilter filter = new IntentFilter(PDNS_STATE_CHANGED);
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            registerReceiver(broadcastReceiver, filter, RECEIVER_NOT_EXPORTED);
-        } else {
-            registerReceiver(broadcastReceiver, filter);
-        }
-        LocalBroadcastManager.getInstance(this).registerReceiver(broadcastReceiver, filter);
+        getAppContext().getAppState().getPdnsState().observe(this, s -> {
+            if (switchTrustAp != null) {
+                String apName = getAppContext().getSettingsUtils().getWifiApName();
+                switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType()) && getAppContext().getSettingsUtils().trustedWiFiModeOn());
+                switchTrustAp.setChecked(getAppContext().getSettingsUtils().itTrustedWiFiAp(apName));
+                switch (getAppContext().getSettingsUtils().getConnectionType()) {
+                    case WIFI ->
+                            switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
+                    case CELLULAR ->
+                            switchTrustAp.setText(getString(R.string.txt_trusted_ap_mode_unsupported, getString(R.string.txt_notification_state_body_on_cellular)));
+                    case VPN ->
+                            switchTrustAp.setText(getString(R.string.txt_trusted_ap_mode_unsupported, getString(R.string.txt_notification_state_body_on_vpn)));
+                }
+            }
+            updateRadioButtonsStates();
+        });
     }
 
     @Override
@@ -429,7 +440,6 @@ public class ActivityMain extends Activity {
 
     private void releaseResources() {
         if (broadcastReceiver != null) {
-            unregisterReceiver(broadcastReceiver);
             LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
         }
     }

@@ -5,12 +5,11 @@ import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HO
 import static android.service.quicksettings.Tile.STATE_ACTIVE;
 import static android.service.quicksettings.Tile.STATE_INACTIVE;
 import static com.rudyii.pdnss.types.Constants.APP_NAME;
-import static com.rudyii.pdnss.types.Constants.PDNS_STATE_CHANGED;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_MODE;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.types.Constants.VALUE_PRIVATE_DNS_MODE_ON_STRING;
 
-import android.content.Intent;
+import android.os.SystemClock;
 import android.service.quicksettings.Tile;
 import android.service.quicksettings.TileService;
 import android.util.Log;
@@ -57,7 +56,7 @@ public class QuickTile extends TileService {
     public void onStopListening() {
         super.onStopListening();
         updateTile();
-        sendBroadcast(new Intent(PDNS_STATE_CHANGED));
+        getAppContext().getAppState().updatePdnsState(SystemClock.currentThreadTimeMillis());
     }
 
     @Override
@@ -86,6 +85,7 @@ public class QuickTile extends TileService {
             tile.setState(STATE_INACTIVE);
         }
         tile.updateTile();
+        getAppContext().getAppState().updatePdnsState(SystemClock.currentThreadTimeMillis());
     }
 
     private PrivateDnsSwitcherApplication getAppContext() {

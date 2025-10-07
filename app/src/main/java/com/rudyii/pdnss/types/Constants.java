@@ -10,7 +10,6 @@ public class Constants {
     public static final String PDNSS_GOOGLE = "com.rudyii.pdnss.GOOGLE";
     public static final String PDNSS_ON = "com.rudyii.pdnss.ON";
     public static final String PDNSS_OFF = "com.rudyii.pdnss.OFF";
-    public static final String PDNS_STATE_CHANGED = "com.rudyii.pdnss.PDNS_STATE_CHANGED";
     public static final String QUICKBOOT_POWERON = "android.intent.action.QUICKBOOT_POWERON";
     public static final String BOOT_COMPLETED = "android.intent.action.BOOT_COMPLETED";
     public static final String SERVICE_NOTIFICATION_NAME = "SERVICE_NOTIFICATIONS";

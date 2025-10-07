@@ -4,7 +4,6 @@ package com.rudyii.pdnss.utils;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
-import static com.rudyii.pdnss.types.Constants.PDNS_STATE_CHANGED;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_MODE;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.types.Constants.VALUE_PRIVATE_DNS_MODE_GOOGLE_STRING;
@@ -19,7 +18,6 @@ import static com.rudyii.pdnss.types.PdnsModeType.ON_WHILE_CELLULAR;
 import static com.rudyii.pdnss.types.PdnsModeType.UNKNOWN;
 
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
@@ -27,9 +25,8 @@ import android.net.Network;
 import android.net.NetworkCapabilities;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.SystemClock;
 import android.provider.Settings;
-
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
@@ -65,7 +62,6 @@ public class SettingsUtils {
                 if (disableWhileVnp && pDnsStateOn) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_VPN);
-                    context.refreshQuickTile();
                     context.getNotificationsUtils().showNotification(context.getString(R.string.txt_notification_state_title,
                                     context.getString(R.string.txt_notification_state_body_disabled)),
                             context.getString(
@@ -79,7 +75,6 @@ public class SettingsUtils {
                 if (context.getSettingsUtils().itTrustedWiFiAp(apName) && trustedWiFiModeOn()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_TRUSTED_WIFI);
-                    context.refreshQuickTile();
                     context.getNotificationsUtils().showNotification(context.getString(R.string.txt_notification_state_title,
                                     context.getString(R.string.txt_notification_state_body_disabled)),
                             context.getString(
@@ -91,7 +86,6 @@ public class SettingsUtils {
                 } else if (!itTrustedWiFiAp(apName) && trustedWiFiModeOn()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     updateLastPdnsState(ON);
-                    context.refreshQuickTile();
                     context.getNotificationsUtils().showNotification(context.getString(R.string.txt_notification_state_title,
                                     context.getString(R.string.txt_notification_state_body_enabled)),
                             context.getString(
@@ -108,7 +102,6 @@ public class SettingsUtils {
                 if (enableWhileCellular && pDnsStateOff) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     updateLastPdnsState(ON_WHILE_CELLULAR);
-                    context.refreshQuickTile();
                     context.getNotificationsUtils().showNotification(context.getString(R.string.txt_notification_state_title,
                                     context.getString(R.string.txt_notification_state_body_enabled)),
                             context.getString(
@@ -123,7 +116,6 @@ public class SettingsUtils {
                     case OFF_WHILE_TRUSTED_WIFI:
                         updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                         updateLastPdnsState(ON);
-                        context.refreshQuickTile();
                         context.getNotificationsUtils().showNotification(context.getString(R.string.txt_notification_state_title,
                                         context.getString(R.string.txt_notification_state_body_enabled)),
                                 context.getString(
@@ -134,7 +126,8 @@ public class SettingsUtils {
         } else {
             context.getNotificationsUtils().showWarning(context.getString(R.string.txt_missing_permissions_warning));
         }
-        LocalBroadcastManager.getInstance(context).sendBroadcast(new Intent(PDNS_STATE_CHANGED));
+        context.refreshQuickTile();
+        context.getAppState().updatePdnsState(SystemClock.currentThreadTimeMillis());
     }
 
     public PdnsModeType getLastKnownState() {

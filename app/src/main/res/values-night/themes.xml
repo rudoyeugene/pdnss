@@ -1,8 +1,6 @@
 <resources>
-    <!-- Base application theme. -->
-    <style name="Theme.PrivateDNSSwitcher" parent="android:Theme.DeviceDefault.DayNight">
-        <!-- Customize your dark theme here. -->
+
+    <style name="Theme.PrivateDNSSwitcher" parent="@style/Theme.Material3.DayNight">
         <item name="android:windowLightStatusBar">false</item>
-        <item name="colorPrimary">@color/material_dynamic_primary90</item>
     </style>
 </resources>

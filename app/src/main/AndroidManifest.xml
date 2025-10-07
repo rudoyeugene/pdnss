@@ -50,15 +50,10 @@
             android:name=".activities.ActivityShortcuts"
             android:excludeFromRecents="true"
             android:exported="true"
-            android:launchMode="singleInstance"
-            android:theme="@android:style/Theme.NoDisplay">
+            android:launchMode="singleInstance">
             <intent-filter>
                 <action android:name="com.rudyii.pdnss.GOOGLE" />
-            </intent-filter>
-            <intent-filter>
                 <action android:name="com.rudyii.pdnss.ON" />
-            </intent-filter>
-            <intent-filter>
                 <action android:name="com.rudyii.pdnss.OFF" />
             </intent-filter>
         </activity>
