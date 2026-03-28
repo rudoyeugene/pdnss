@@ -12,16 +12,14 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.net.Network;
 import android.service.quicksettings.TileService;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import com.rudyii.pdnss.services.NetworkMonitor;
 import com.rudyii.pdnss.services.QuickTile;
 import com.rudyii.pdnss.utils.AppState;
 import com.rudyii.pdnss.utils.NotificationsUtils;
+import com.rudyii.pdnss.utils.PdnssNetworkCallback;
 import com.rudyii.pdnss.utils.PermissionsUtils;
 import com.rudyii.pdnss.utils.SecurityScoreUtil;
 import com.rudyii.pdnss.utils.SettingsUtils;
@@ -46,12 +44,7 @@ public class PrivateDnsSwitcherApplication extends Application {
         notificationsUtils = new NotificationsUtils(this);
         connectivityManager = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
         appState = new AppState();
-        networkCallback = new ConnectivityManager.NetworkCallback() {
-            @Override
-            public void onAvailable(@NonNull Network network) {
-                settingsUtils.updatePdnsSettingsOnNetworkChange(network);
-            }
-        };
+        networkCallback = new PdnssNetworkCallback(this);
 
         if (ON.equals(settingsUtils.getPDNSState())) {
             securityScoreUtil.enabled();

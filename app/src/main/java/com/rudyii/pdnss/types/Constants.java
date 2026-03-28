@@ -7,6 +7,7 @@ public class Constants {
     public static final String VALUE_PRIVATE_DNS_MODE_GOOGLE_STRING = "opportunistic";
     public static final String VALUE_PRIVATE_DNS_MODE_ON_STRING = "hostname";
     public static final String SETTINGS_PRIVATE_DNS_SPECIFIER = "private_dns_specifier";
+    public static final String SETTINGS_ACTION_DELAY_MS = "action_delay_ms";
     public static final String PDNSS_GOOGLE = "com.rudyii.pdnss.GOOGLE";
     public static final String PDNSS_ON = "com.rudyii.pdnss.ON";
     public static final String PDNSS_OFF = "com.rudyii.pdnss.OFF";

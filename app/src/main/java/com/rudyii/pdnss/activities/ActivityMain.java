@@ -4,6 +4,7 @@ import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
 import static com.rudyii.pdnss.types.Constants.APP_NAME;
+import static com.rudyii.pdnss.types.Constants.SETTINGS_ACTION_DELAY_MS;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.types.PdnsModeType.GOOGLE;
 import static com.rudyii.pdnss.types.PdnsModeType.OFF;
@@ -23,6 +24,7 @@ import android.os.PowerManager;
 import android.os.VibrationEffect;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.HapticFeedbackConstants;
 import android.view.animation.LinearInterpolator;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -38,6 +40,8 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
+import com.google.android.material.slider.Slider;
+import com.google.android.material.textview.MaterialTextView;
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.services.NetworkMonitor;
@@ -54,6 +58,8 @@ public class ActivityMain extends AppCompatActivity {
     private BroadcastReceiver broadcastReceiver;
     private TextView txtCopyrights;
     private ProgressBar score;
+    private MaterialTextView sliderValueText;
+    private Slider slider;
     private MaterialButton btnInstructions;
     private MaterialButton btnPermissions;
     private MaterialButton btnUpdatePdns;
@@ -178,6 +184,10 @@ public class ActivityMain extends AppCompatActivity {
                 animateProgressBar(safeScore);
             } catch (Exception ignored) {
             }
+        }
+        if (sliderValueText == null) {
+            sliderValueText = findViewById(R.id.sliderValueText);
+            sliderValueText.setText(String.valueOf(getAppContext().getSettingsUtils().getSharedPrefs().getInt(SETTINGS_ACTION_DELAY_MS, 0)));
         }
     }
 
@@ -329,6 +339,31 @@ public class ActivityMain extends AppCompatActivity {
                     getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_missing_permissions_warning));
                 });
             }
+        }
+        if (slider == null) {
+            slider = findViewById(R.id.delaySlider);
+            slider.setValue(getAppContext().getSettingsUtils().getSharedPrefs().getInt(SETTINGS_ACTION_DELAY_MS, 0));
+            slider.addOnChangeListener((slider, value, fromUser) -> {
+                sliderValueText.setText(String.valueOf((int) value));
+            });
+            slider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
+                @Override
+                public void onStartTrackingTouch(@NonNull Slider slider) {
+                    slider.performHapticFeedback(HapticFeedbackConstants.GESTURE_START);
+                }
+
+                @Override
+                public void onStopTrackingTouch(@NonNull Slider slider) {
+                    slider.performHapticFeedback(HapticFeedbackConstants.GESTURE_END);
+                    int finalValue = (int) slider.getValue();
+                    getAppContext().getSettingsUtils().getSharedPrefs()
+                            .edit()
+                            .putInt(SETTINGS_ACTION_DELAY_MS, finalValue)
+                            .apply();
+
+                    Log.i(APP_NAME, "Delay saved: " + finalValue + " ms");
+                }
+            });
         }
     }
 

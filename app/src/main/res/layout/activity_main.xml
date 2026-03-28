@@ -7,228 +7,233 @@
     android:fitsSystemWindows="true"
     tools:context=".activities.ActivityMain">
 
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/start_guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_begin="16dp" />
-
-    <androidx.constraintlayout.widget.Guideline
-        android:id="@+id/end_guideline"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        app:layout_constraintGuide_end="16dp" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnInstructions"
+    <ScrollView
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="4dp"
-        android:hapticFeedbackEnabled="true"
-        android:text="@string/txt_base_permissions"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toStartOf="@+id/btnPermissions"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toStartOf="@+id/start_guideline"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnPermissions"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="4dp"
-        android:hapticFeedbackEnabled="true"
-        android:text="@string/txt_trusted_wifi_mode"
-        android:textSize="12sp"
-        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
-        app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@+id/btnInstructions"
-        app:layout_constraintTop_toTopOf="@+id/btnInstructions" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnApList"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/txt_aps_list"
-        app:layout_constraintEnd_toEndOf="@+id/btnInstructions"
-        app:layout_constraintStart_toStartOf="@+id/btnInstructions"
-        app:layout_constraintTop_toBottomOf="@+id/btnInstructions" />
-
-    <com.google.android.material.button.MaterialButton
-        android:id="@+id/btnUpdatePdns"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="@string/txt_update_dns_host"
-        app:layout_constraintEnd_toEndOf="@+id/btnPermissions"
-        app:layout_constraintStart_toStartOf="@+id/btnPermissions"
-        app:layout_constraintTop_toBottomOf="@+id/btnPermissions" />
-
-    <com.google.android.material.textview.MaterialTextView
-        android:id="@+id/scoreText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:text="@string/txt_progress_stats"
-        app:layout_constraintBottom_toTopOf="@+id/score"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <ProgressBar
-        android:id="@+id/score"
-        style="@android:style/Widget.ProgressBar.Horizontal"
-        android:layout_width="0dp"
-        android:layout_height="24dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:max="100"
-        android:progress="0"
-        android:progressDrawable="@drawable/gradient_progressbar_drawable"
-        app:layout_constraintBottom_toTopOf="@+id/view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
-
-    <View
-        android:id="@+id/view"
-        android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:layout_marginBottom="16dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/switchDisableForVpn"
-        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
-        app:layout_constraintStart_toStartOf="@+id/start_guideline" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchDisableForVpn"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:hapticFeedbackEnabled="true"
-        android:text="@string/swch_disable_on_vpn"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/switchEnableForCellular"
-        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
-        app:layout_constraintStart_toStartOf="@+id/start_guideline" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchEnableForCellular"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        android:hapticFeedbackEnabled="true"
-        android:text="@string/swch_enable_on_cellular"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/dividerVpnCellular"
-        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
-        app:layout_constraintStart_toStartOf="@+id/start_guideline" />
-
-    <View
-        android:id="@+id/dividerVpnCellular"
-        android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:layout_marginBottom="16dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/switchTrustWiFiMode"
-        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
-        app:layout_constraintStart_toStartOf="@+id/start_guideline" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchTrustWiFiMode"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:hapticFeedbackEnabled="true"
-        android:text="@string/btn_trust_wifi"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/switchTrustWiFi"
-        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
-        app:layout_constraintStart_toStartOf="@+id/start_guideline" />
-
-    <com.google.android.material.materialswitch.MaterialSwitch
-        android:id="@+id/switchTrustWiFi"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:hapticFeedbackEnabled="true"
-        android:text="@string/txt_ap_name"
-        android:textSize="16sp"
-        app:layout_constraintBottom_toTopOf="@+id/dividerSlide"
-        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
-        app:layout_constraintStart_toStartOf="@+id/start_guideline" />
-
-    <View
-        android:id="@+id/dividerSlide"
-        android:layout_width="0dp"
-        android:layout_height="2dp"
-        android:layout_marginBottom="8dp"
-        android:background="?android:attr/listDivider"
-        app:layout_constraintBottom_toTopOf="@+id/selector"
-        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
-        app:layout_constraintStart_toStartOf="@+id/start_guideline" />
-
-
-    <RadioGroup
-        android:id="@+id/selector"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:fillViewport="true"
         app:layout_constraintBottom_toTopOf="@+id/dividerCopyright"
-        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
-        app:layout_constraintStart_toStartOf="@+id/start_guideline"
-        android:orientation="horizontal">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <androidx.appcompat.widget.AppCompatRadioButton
-            android:id="@+id/radioOff"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/txt_OFF" />
+            android:padding="16dp">
 
-        <Space
-            android:layout_width="32dp"
-            android:layout_height="wrap_content" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnInstructions"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:text="@string/txt_base_permissions"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toStartOf="@+id/btnPermissions"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.appcompat.widget.AppCompatRadioButton
-            android:id="@+id/radioAuto"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="@string/txt_GOOGLE" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnPermissions"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/txt_trusted_wifi_mode"
+                android:textSize="12sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_weight="1"
+                app:layout_constraintStart_toEndOf="@+id/btnInstructions"
+                app:layout_constraintTop_toTopOf="@+id/btnInstructions" />
 
-        <Space
-            android:layout_width="32dp"
-            android:layout_height="wrap_content" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnApList"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/txt_aps_list"
+                app:layout_constraintEnd_toEndOf="@+id/btnInstructions"
+                app:layout_constraintStart_toStartOf="@+id/btnInstructions"
+                app:layout_constraintTop_toBottomOf="@+id/btnInstructions" />
 
-        <androidx.appcompat.widget.AppCompatRadioButton
-            android:id="@+id/radioOn"
-            android:layout_width="match_parent"
-            android:layout_height="57dp"
-            android:text="@string/txt_ON" />
-    </RadioGroup>
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUpdatePdns"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/txt_update_dns_host"
+                app:layout_constraintEnd_toEndOf="@+id/btnPermissions"
+                app:layout_constraintStart_toStartOf="@+id/btnPermissions"
+                app:layout_constraintTop_toBottomOf="@+id/btnPermissions" />
 
-    <View
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/scoreText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="@string/txt_progress_stats"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnApList" />
+
+            <ProgressBar
+                android:id="@+id/score"
+                style="@android:style/Widget.ProgressBar.Horizontal"
+                android:layout_width="0dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="8dp"
+                android:max="100"
+                android:progress="0"
+                android:progressDrawable="@drawable/gradient_progressbar_drawable"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/scoreText" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/sliderDescription"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="@string/txt_delay_before"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                android:textColor="?android:attr/textColorSecondary"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/score" />
+
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/sliderValueText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0"
+                android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+                android:textColor="?android:attr/textColorPrimary"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="@+id/sliderDescription"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@+id/sliderDescription" />
+
+            <com.google.android.material.slider.Slider
+                android:id="@+id/delaySlider"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:stepSize="100.0"
+                android:valueFrom="0.0"
+                android:valueTo="5000.0"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sliderDescription" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/delaySlider" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchDisableForVpn"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/swch_disable_on_vpn"
+                app:layout_constraintTop_toBottomOf="@+id/view" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchEnableForCellular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/swch_enable_on_cellular"
+                app:layout_constraintTop_toBottomOf="@+id/switchDisableForVpn" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/dividerVpnCellular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/switchEnableForCellular" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchTrustWiFiMode"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="@string/btn_trust_wifi"
+                app:layout_constraintTop_toBottomOf="@+id/dividerVpnCellular" />
+
+            <com.google.android.material.materialswitch.MaterialSwitch
+                android:id="@+id/switchTrustWiFi"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/txt_ap_name"
+                app:layout_constraintTop_toBottomOf="@+id/switchTrustWiFiMode" />
+
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/dividerSlide"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                app:layout_constraintTop_toBottomOf="@+id/switchTrustWiFi" />
+
+            <RadioGroup
+                android:id="@+id/selector"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="24dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/dividerSlide">
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/radioOff"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/txt_OFF" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/radioAuto"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:text="@string/txt_GOOGLE" />
+
+                <com.google.android.material.radiobutton.MaterialRadioButton
+                    android:id="@+id/radioOn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/txt_ON" />
+            </RadioGroup>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+    <com.google.android.material.divider.MaterialDivider
         android:id="@+id/dividerCopyright"
         android:layout_width="0dp"
-        android:layout_height="1dp"
+        android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:background="?android:attr/listDivider"
         app:layout_constraintBottom_toTopOf="@+id/txtCopyrights"
-        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
-        app:layout_constraintStart_toStartOf="@+id/start_guideline" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <com.google.android.material.textview.MaterialTextView
         android:id="@+id/txtCopyrights"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
+        android:layout_marginBottom="8dp"
         android:text="@string/txt_copyrights"
         android:textAlignment="center"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="?android:attr/textColorSecondary"
         android:textSize="11sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="@+id/end_guideline"
-        app:layout_constraintStart_toStartOf="@+id/start_guideline" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

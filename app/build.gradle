@@ -10,10 +10,10 @@ android {
 
     defaultConfig {
         applicationId "com.rudyii.pdnss"
-        minSdkVersion 29
+        minSdkVersion 30
         targetSdkVersion 36
-        versionCode 217
-        versionName "2.1.7"
+        versionCode 220
+        versionName "2.2.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }

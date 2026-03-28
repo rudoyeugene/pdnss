@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <application
         android:name=".PrivateDnsSwitcherApplication"
@@ -31,8 +32,8 @@
         <activity
             android:name=".activities.ActivityMain"
             android:exported="true"
-            android:screenOrientation="locked"
-            android:launchMode="singleInstance">
+            android:configChanges="orientation|screenSize|screenLayout|density"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -50,7 +51,8 @@
             android:name=".activities.ActivityShortcuts"
             android:excludeFromRecents="true"
             android:exported="true"
-            android:launchMode="singleInstance">
+            android:configChanges="orientation|screenSize|screenLayout|density"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="com.rudyii.pdnss.GOOGLE" />
                 <action android:name="com.rudyii.pdnss.ON" />

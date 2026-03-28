@@ -95,6 +95,7 @@
     <string name="txt_aps_list">Trusted WiFi APs</string>
     <string name="txt_update_dns_host">Update DNS Host</string>
     <string name="txt_progress_stats">Total Time using Private DNS:</string>
+    <string name="txt_delay_before">Delay before switching (ms):</string>
     <string name="txt_ap_name">AP Name</string>
     <string name="txt_GOOGLE" translatable="false">GOOGLE</string>
     <string name="txt_OFF" translatable="false">OFF</string>
