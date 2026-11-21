@@ -1,3 +1,4 @@
+/gradle/gradle-daemon-jvm.properties
 *.iml
 .gradle
 .idea

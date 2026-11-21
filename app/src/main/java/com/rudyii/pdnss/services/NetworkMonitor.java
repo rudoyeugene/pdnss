@@ -48,7 +48,9 @@ public class NetworkMonitor extends Service {
                 .setSilent(true)
                 .build();
 
-        notificationManager.notify(SERVICE_NOTIFICATION_ID, notification);
+        if (notificationManager != null) {
+            notificationManager.notify(SERVICE_NOTIFICATION_ID, notification);
+        }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
             startForeground(SERVICE_NOTIFICATION_ID, notification, ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE);
@@ -60,9 +62,18 @@ public class NetworkMonitor extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (!isRunning()) {
-            getAppContext().getConnectivityManager().registerDefaultNetworkCallback(getAppContext().getNetworkCallback());
-            serviceStarted();
-            Log.i(APP_NAME, "NetworkMonitor started");
+            try {
+                getAppContext().getConnectivityManager()
+                        .registerDefaultNetworkCallback(getAppContext().getNetworkCallback());
+                serviceStarted();
+                Log.i(APP_NAME, "NetworkMonitor started");
+            } catch (IllegalArgumentException e) {
+                Log.w(APP_NAME, "NetworkCallback already registered, re-registering");
+                unregisterSafe();
+                getAppContext().getConnectivityManager()
+                        .registerDefaultNetworkCallback(getAppContext().getNetworkCallback());
+                serviceStarted();
+            }
         } else {
             Log.i(APP_NAME, "NetworkMonitor already running");
         }
@@ -70,17 +81,20 @@ public class NetworkMonitor extends Service {
         return START_STICKY;
     }
 
+    private void unregisterSafe() {
+        try {
+            getAppContext().getConnectivityManager()
+                    .unregisterNetworkCallback(getAppContext().getNetworkCallback());
+        } catch (Exception ignored) {
+        }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
-        try {
-            getAppContext().getConnectivityManager().unregisterNetworkCallback(getAppContext().getNetworkCallback());
-            Log.i(APP_NAME, "NetworkMonitor stopped");
-        } catch (Exception e) {
-            Log.w(APP_NAME, "NetworkMonitor was not running");
-        }
-
+        unregisterSafe();
         isRunning = false;
+        Log.i(APP_NAME, "NetworkMonitor stopped");
     }
 
     @Nullable

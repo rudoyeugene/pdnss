@@ -46,9 +46,13 @@ public class ActivityShortcuts extends Activity {
                         getAppContext().refreshQuickTile();
                         getAppContext().getSecurityScoreUtil().disabled();
                         break;
+                    default:
+                        finish();
+                        return;
                 }
-                getAppContext().getAppState().updatePdnsState(SystemClock.currentThreadTimeMillis());
-                getAppContext().getNotificationsUtils().showNotification(getAppContext().getString(R.string.txt_notification_state_title,
+                getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
+                getAppContext().getNotificationsUtils().showNotification(
+                        getAppContext().getString(R.string.txt_notification_state_title,
                                 resolveTitle(intent.getAction())),
                         getAppContext().getString(
                                 R.string.txt_notification_state_body_manual,
@@ -59,18 +63,15 @@ public class ActivityShortcuts extends Activity {
             getAppContext().getNotificationsUtils()
                     .showWarning(getString(R.string.txt_missing_permissions_warning));
         } finally {
-            Intent homeIntent = new Intent(Intent.ACTION_MAIN);
-            homeIntent.addCategory(Intent.CATEGORY_HOME);
-            homeIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(homeIntent);
-
             finish();
         }
     }
 
     @NonNull
     private String resolveTitle(String action) {
-        return PDNSS_OFF.equals(action) ? getAppContext().getString(R.string.txt_notification_state_body_disabled) : getAppContext().getString(R.string.txt_notification_state_body_enabled);
+        return PDNSS_OFF.equals(action)
+                ? getAppContext().getString(R.string.txt_notification_state_body_disabled)
+                : getAppContext().getString(R.string.txt_notification_state_body_enabled);
     }
 
     private boolean resolveStateBool(String action) {

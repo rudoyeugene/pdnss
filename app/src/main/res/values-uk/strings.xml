@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="txt_instructions">
+        <b>Основна функція:</b>
+        \n
+        Private DNS Switcher (PDNSS) потребує надання спеціальних дозволів через обмеження Android.\n
+        Щоб надати потрібні права, виконайте кроки нижче:\n
+        1. Увімкніть «Для розробників»\n
+        2. Увімкніть «Налагодження через USB»\n
+        3. Підключіть смартфон до ПК зі встановленим ADB\n
+        4. Дозвольте підключення ПК через ADB\n
+        5. Відкрийте оболонку / shell\n
+        6. Виконайте команду:\n
+        adb shell pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS\n
+        \n
+        <b>Додаткові функції:</b>
+        \n
+        PDNSS може керувати налаштуваннями Private DNS автоматично за довіреними точками Wi-Fi, мобільною мережею або станом VPN.\n
+        Для цього службі потрібна робота у фоні, яку обмежує режим енергозбереження Android (Doze).\n
+        Ви можете дозволити фонову роботу, вимкнувши оптимізацію батареї для PDNSS.
+    </string>
+
+    <string name="txt_location_disclosure_agreement">
+        <b>Додатку потрібен доступ до геоданих у фоновому режимі для роботи функції довірених точок Wi-Fi.</b>
+        Це вимога Android для розпізнавання довірених мереж Wi-Fi.\n
+        \n
+        <b>Надання дозволу дозволяє:</b>
+        \n
+        <b>- </b>Додавати поточну точку доступу Wi-Fi до довірених або видаляти з них за назвою. Якщо відмовити в дозволі, функція довірених точок Wi-Fi вимкнеться; повернутися до цього вікна й увімкнути її можна будь-коли.\n
+        \n
+        <u>Як використовуються ваші геодані:</u>
+        <b>- У фоні:</b>
+        Додаток використовує геодані у фоновому режимі, щоб визначати доступні мережі Wi-Fi та звіряти назви точок доступу зі списком довірених. Ці дані не використовуються для жодної іншої мети.\n
+        \n
+        <b>Додаток не використовує геодані для реклами.</b>
+    </string>
+    <string name="btn_trust_wifi">Довірені точки Wi-Fi</string>
+
+    <string name="shortcut_long_off">Вимкнути</string>
+    <string name="shortcut_long_on">Увімкнути</string>
+
+    <string name="swch_disable_on_vpn">Брати DNS із VPN</string>
+    <string name="swch_enable_on_cellular">Private DNS у мобільній мережі</string>
+
+    <string name="txt_app_name">Private DNS Switcher</string>
+    <string name="txt_battery_optimization_enabled">Батарея оптимізується (Doze). Див. Інструкцію.</string>
+    <string name="txt_click_to_remove_ap">Прибрати з довірених Wi-Fi:</string>
+    <string name="txt_connected_ap_name" formatted="true">Мережа Wi-Fi: %1$s</string>
+    <string name="txt_connected_ap_trusted" formatted="true">%1$s додано до довірених Wi-Fi</string>
+    <string name="txt_connected_ap_untrusted" formatted="true">%1$s видалено з довірених Wi-Fi</string>
+    <string name="txt_disable_battery_optimizations">Вимкнути оптимізацію батареї</string>
+    <string name="txt_dns_set_host_notification" formatted="true">Хост PDNS оновлено: %1$s</string>
+    <string name="txt_dns_state_quicktile">Private DNS</string>
+    <string name="txt_dummy_pdns_url">one.one.one.one</string>
+    <string name="txt_empty_ap_list">Список довірених Wi-Fi порожній</string>
+    <string name="txt_error_unknown_pdns_mode">Невідомий режим Private DNS: %1$d</string>
+    <string name="txt_instructions_title">Вимоги PDNSS:</string>
+    <string name="txt_missing_permissions_warning">Бракує дозволів. Див. ІНСТРУКЦІЮ</string>
+    <string name="txt_notification_service_body">Системне сповіщення служби. Можна вимкнути в налаштуваннях</string>
+    <string name="txt_notification_service_channel_name">Сповіщення служби</string>
+    <string name="txt_notification_service_title">Служба Private DNS працює</string>
+    <string name="txt_notification_state_body" formatted="true">Private DNS %1$s (%2$s)</string>
+    <string name="txt_notification_state_body_manual" formatted="true">Private DNS %1$s вручну</string>
+    <string name="txt_notification_state_body_with_ap_name" formatted="true">Private DNS %1$s у мережі %2$s (%3$s)</string>
+    <string name="txt_notification_state_body_disabled">вимкнено</string>
+    <string name="txt_notification_state_body_enabled">увімкнено</string>
+    <string name="txt_notification_state_body_on_cellular">моб. мережа</string>
+    <string name="txt_trusted_ap_mode_unsupported">Непідтримуване з’єднання: %1$s</string>
+    <string name="txt_notification_state_body_on_last_state">Private DNS увімкнено за останнім станом</string>
+    <string name="txt_notification_state_body_on_trusted_ap">довірений Wi-Fi</string>
+    <string name="txt_notification_state_body_on_untrusted_ap">недовірений Wi-Fi</string>
+    <string name="txt_notification_state_body_on_vpn">VPN</string>
+    <string name="txt_notification_state_channel_name">Зміна режиму PDNS</string>
+    <string name="txt_notification_state_title" formatted="true">Private DNS: %1$s</string>
+    <string name="txt_trusted_wifi_mode">РЕЖИМ WI-FI</string>
+    <string name="txt_base_permissions">БАЗОВІ ДОЗВОЛИ</string>
+    <string name="txt_aps_list">Список Wi-Fi</string>
+    <string name="txt_update_dns_host">Хост DNS</string>
+    <string name="txt_progress_stats">Час роботи Private DNS:</string>
+    <string name="txt_delay_before">Затримка перемикання (мс):</string>
+    <string name="txt_ap_name">Назва точки Wi-Fi</string>
+</resources>

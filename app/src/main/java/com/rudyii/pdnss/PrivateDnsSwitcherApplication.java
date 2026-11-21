@@ -1,8 +1,8 @@
 package com.rudyii.pdnss;
 
-import static com.rudyii.pdnss.types.Constants.APP_NAME;
 import static com.rudyii.pdnss.types.Constants.SERVICE_NOTIFICATION_NAME;
 import static com.rudyii.pdnss.types.Constants.STATE_NOTIFICATION_NAME;
+import static com.rudyii.pdnss.types.Constants.UNSAFE_DNS_NOTIFICATION_NAME;
 import static com.rudyii.pdnss.types.PdnsModeType.ON;
 
 import android.app.Application;
@@ -10,12 +10,9 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.service.quicksettings.TileService;
-import android.util.Log;
 
-import com.rudyii.pdnss.services.NetworkMonitor;
 import com.rudyii.pdnss.services.QuickTile;
 import com.rudyii.pdnss.utils.AppState;
 import com.rudyii.pdnss.utils.NotificationsUtils;
@@ -94,17 +91,13 @@ public class PrivateDnsSwitcherApplication extends Application {
 
     private void registerServices() {
         TileService.requestListeningState(this, new ComponentName(this, QuickTile.class));
-
-        try {
-            Intent service = new Intent(getApplicationContext(), NetworkMonitor.class);
-            getApplicationContext().startForegroundService(service);
-        } catch (Exception e) {
-            Log.w(APP_NAME, "NetworkMonitor Service will start later...");
-        }
     }
 
     private void createNotificationChannels() {
         NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        if (notificationManager == null) {
+            return;
+        }
 
         NotificationChannel serviceChannel = new NotificationChannel(SERVICE_NOTIFICATION_NAME,
                 getString(R.string.txt_notification_service_channel_name),
@@ -114,7 +107,12 @@ public class PrivateDnsSwitcherApplication extends Application {
                 getString(R.string.txt_notification_state_channel_name),
                 NotificationManager.IMPORTANCE_HIGH);
 
+        NotificationChannel unsafeDnsChannel = new NotificationChannel(UNSAFE_DNS_NOTIFICATION_NAME,
+                getString(R.string.txt_notification_state_channel_name),
+                NotificationManager.IMPORTANCE_DEFAULT);
+
         notificationManager.createNotificationChannel(serviceChannel);
         notificationManager.createNotificationChannel(stateChannel);
+        notificationManager.createNotificationChannel(unsafeDnsChannel);
     }
 }

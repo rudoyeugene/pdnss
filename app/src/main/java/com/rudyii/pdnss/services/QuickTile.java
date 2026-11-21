@@ -19,7 +19,6 @@ import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.types.PdnsModeType;
 
 public class QuickTile extends TileService {
-    private static Tile tile;
 
     @Override
     public void onCreate() {
@@ -49,6 +48,7 @@ public class QuickTile extends TileService {
     @Override
     public void onStartListening() {
         super.onStartListening();
+        getAppContext().setQuickTile(this);
         updateTile();
     }
 
@@ -56,12 +56,13 @@ public class QuickTile extends TileService {
     public void onStopListening() {
         super.onStopListening();
         updateTile();
-        getAppContext().getAppState().updatePdnsState(SystemClock.currentThreadTimeMillis());
+        getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
     }
 
     @Override
     public void onTileAdded() {
         super.onTileAdded();
+        getAppContext().setQuickTile(this);
         updateTile();
     }
 
@@ -69,23 +70,32 @@ public class QuickTile extends TileService {
     public void onTileRemoved() {
         super.onTileRemoved();
         getAppContext().setQuickTile(null);
-        tile = null;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        getAppContext().setQuickTile(null);
     }
 
     public void updateTile() {
-        String pDnsState = getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
-        tile = getQsTile();
+        Tile qsTile = getQsTile();
+        if (qsTile == null) {
+            return;
+        }
 
-        tile.setLabel(getString(R.string.txt_dns_state_quicktile));
-        tile.setSubtitle(getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
+        String pDnsState = getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
+
+        qsTile.setLabel(getString(R.string.txt_dns_state_quicktile));
+        qsTile.setSubtitle(getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
 
         if (VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(pDnsState)) {
-            tile.setState(STATE_ACTIVE);
+            qsTile.setState(STATE_ACTIVE);
         } else {
-            tile.setState(STATE_INACTIVE);
+            qsTile.setState(STATE_INACTIVE);
         }
-        tile.updateTile();
-        getAppContext().getAppState().updatePdnsState(SystemClock.currentThreadTimeMillis());
+        qsTile.updateTile();
+        getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
     }
 
     private PrivateDnsSwitcherApplication getAppContext() {

@@ -1,6 +1,5 @@
 package com.rudyii.pdnss.utils;
 
-
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
@@ -49,7 +48,11 @@ public class SettingsUtils {
         if (network == null) {
             network = connectivityManager.getActiveNetwork();
         }
-        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        NetworkCapabilities capabilities = network != null
+                ? connectivityManager.getNetworkCapabilities(network)
+                : null;
+
+        boolean stateChanged = false;
 
         if (capabilities != null) {
             boolean isVpn = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN);
@@ -57,81 +60,119 @@ public class SettingsUtils {
             boolean isCellular = capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR);
 
             if (isVpn) {
-                boolean pDnsStateOn = VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(context.getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
-                boolean disableWhileVnp = context.getSettingsUtils().getSharedPrefs().getBoolean(context.getString(R.string.settings_name_disable_while_vpn), false);
-                if (disableWhileVnp && pDnsStateOn) {
+                boolean pDnsStateOn = VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
+                boolean disableWhileVpn = getSharedPrefs().getBoolean(context.getString(R.string.settings_name_disable_while_vpn), false);
+                if (disableWhileVpn && pDnsStateOn && OFF_WHILE_VPN != getLastKnownState()) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_VPN);
-                    context.getNotificationsUtils().showNotification(context.getString(R.string.txt_notification_state_title,
+                    context.getSecurityScoreUtil().disabled();
+                    context.getNotificationsUtils().showNotification(
+                            context.getString(R.string.txt_notification_state_title,
                                     context.getString(R.string.txt_notification_state_body_disabled)),
                             context.getString(
                                     R.string.txt_notification_state_body,
                                     context.getString(R.string.txt_notification_state_body_disabled),
                                     context.getString(R.string.txt_notification_state_body_on_vpn)),
                             false);
+                    stateChanged = true;
                 }
             } else if (isWiFi && context.getPermissionsUtils().isAllNeededLocationPermissionsGranted()) {
                 String apName = getWifiApName();
-                if (context.getSettingsUtils().itTrustedWiFiAp(apName) && trustedWiFiModeOn()) {
-                    updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
-                    updateLastPdnsState(OFF_WHILE_TRUSTED_WIFI);
-                    context.getNotificationsUtils().showNotification(context.getString(R.string.txt_notification_state_title,
-                                    context.getString(R.string.txt_notification_state_body_disabled)),
-                            context.getString(
-                                    R.string.txt_notification_state_body_with_ap_name,
-                                    context.getString(R.string.txt_notification_state_body_disabled),
-                                    context.getString(R.string.txt_notification_state_body_on_trusted_ap),
-                                    apName),
-                            false);
-                } else if (!itTrustedWiFiAp(apName) && trustedWiFiModeOn()) {
-                    updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
-                    updateLastPdnsState(ON);
-                    context.getNotificationsUtils().showNotification(context.getString(R.string.txt_notification_state_title,
-                                    context.getString(R.string.txt_notification_state_body_enabled)),
-                            context.getString(
-                                    R.string.txt_notification_state_body_with_ap_name,
-                                    context.getString(R.string.txt_notification_state_body_enabled),
-                                    context.getString(R.string.txt_notification_state_body_on_untrusted_ap),
-                                    apName),
-                            true);
+                if (trustedWiFiModeOn()) {
+                    if (itTrustedWiFiAp(apName)) {
+                        boolean pDnsStateOff = VALUE_PRIVATE_DNS_MODE_OFF_STRING.equals(getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
+                        if (!pDnsStateOff || OFF_WHILE_TRUSTED_WIFI != getLastKnownState()) {
+                            updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
+                            updateLastPdnsState(OFF_WHILE_TRUSTED_WIFI);
+                            context.getSecurityScoreUtil().disabled();
+                            context.getNotificationsUtils().showNotification(
+                                    context.getString(R.string.txt_notification_state_title,
+                                            context.getString(R.string.txt_notification_state_body_disabled)),
+                                    context.getString(
+                                            R.string.txt_notification_state_body_with_ap_name,
+                                            context.getString(R.string.txt_notification_state_body_disabled),
+                                            context.getString(R.string.txt_notification_state_body_on_trusted_ap),
+                                            apName),
+                                    false);
+                            stateChanged = true;
+                        }
+                    } else {
+                        boolean pDnsStateOn = VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
+                        if (!pDnsStateOn || ON != getLastKnownState()) {
+                            updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+                            updateLastPdnsState(ON);
+                            context.getSecurityScoreUtil().enabled();
+                            context.getNotificationsUtils().showNotification(
+                                    context.getString(R.string.txt_notification_state_title,
+                                            context.getString(R.string.txt_notification_state_body_enabled)),
+                                    context.getString(
+                                            R.string.txt_notification_state_body_with_ap_name,
+                                            context.getString(R.string.txt_notification_state_body_enabled),
+                                            context.getString(R.string.txt_notification_state_body_on_untrusted_ap),
+                                            apName),
+                                    true);
+                            stateChanged = true;
+                        }
+                    }
+                } else {
+                    stateChanged = restoreIfNeededAfterAutoOff();
                 }
             } else if (isCellular) {
                 boolean pDnsStateOff = VALUE_PRIVATE_DNS_MODE_OFF_STRING.equals(getSettingsValue(SETTINGS_PRIVATE_DNS_MODE));
-                boolean enableWhileCellular = getSharedPrefs().getBoolean(context.getString(R.string.settings_name_enable_while_cellular),
-                        false);
+                boolean enableWhileCellular = getSharedPrefs().getBoolean(
+                        context.getString(R.string.settings_name_enable_while_cellular), false);
                 if (enableWhileCellular && pDnsStateOff) {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     updateLastPdnsState(ON_WHILE_CELLULAR);
-                    context.getNotificationsUtils().showNotification(context.getString(R.string.txt_notification_state_title,
+                    context.getSecurityScoreUtil().enabled();
+                    context.getNotificationsUtils().showNotification(
+                            context.getString(R.string.txt_notification_state_title,
                                     context.getString(R.string.txt_notification_state_body_enabled)),
                             context.getString(
                                     R.string.txt_notification_state_body,
                                     context.getString(R.string.txt_notification_state_body_enabled),
                                     context.getString(R.string.txt_notification_state_body_on_cellular)),
                             true);
+                    stateChanged = true;
+                } else {
+                    stateChanged = restoreIfNeededAfterAutoOff();
                 }
             } else {
-                switch (getLastKnownState()) {
-                    case OFF_WHILE_VPN:
-                    case OFF_WHILE_TRUSTED_WIFI:
-                        updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
-                        updateLastPdnsState(ON);
-                        context.getNotificationsUtils().showNotification(context.getString(R.string.txt_notification_state_title,
-                                        context.getString(R.string.txt_notification_state_body_enabled)),
-                                context.getString(
-                                        R.string.txt_notification_state_body_on_last_state),
-                                true);
-                }
+                stateChanged = restoreIfNeededAfterAutoOff();
             }
         } else {
-            context.getNotificationsUtils().showWarning(context.getString(R.string.txt_missing_permissions_warning));
+            stateChanged = restoreIfNeededAfterAutoOff();
         }
-        context.refreshQuickTile();
-        context.getAppState().updatePdnsState(SystemClock.currentThreadTimeMillis());
+
+        if (stateChanged) {
+            context.refreshQuickTile();
+            context.getAppState().updatePdnsState(SystemClock.elapsedRealtime());
+        }
+    }
+
+    private boolean restoreIfNeededAfterAutoOff() {
+        PdnsModeType lastState = getLastKnownState();
+        if (lastState == OFF_WHILE_VPN || lastState == OFF_WHILE_TRUSTED_WIFI) {
+            updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+            updateLastPdnsState(ON);
+            context.getSecurityScoreUtil().enabled();
+            context.getNotificationsUtils().showNotification(
+                    context.getString(R.string.txt_notification_state_title,
+                            context.getString(R.string.txt_notification_state_body_enabled)),
+                    context.getString(R.string.txt_notification_state_body_on_last_state),
+                    true);
+            return true;
+        }
+        return false;
     }
 
     public PdnsModeType getLastKnownState() {
-        return PdnsModeType.valueOf(getSharedPrefs().getString(context.getString(R.string.settings_name_last_pdns_state), OFF.name()));
+        String saved = getSharedPrefs().getString(context.getString(R.string.settings_name_last_pdns_state), OFF.name());
+        try {
+            return PdnsModeType.valueOf(saved);
+        } catch (IllegalArgumentException e) {
+            return OFF;
+        }
     }
 
     public void updatePdnsModeSettings(int mode) {
@@ -150,8 +191,12 @@ public class SettingsUtils {
     }
 
     public void updatePdnsUrl(String pDnsUrl) {
-        Settings.Global.putString(context.getContentResolver(), SETTINGS_PRIVATE_DNS_SPECIFIER,
-                pDnsUrl);
+        try {
+            Settings.Global.putString(context.getContentResolver(), SETTINGS_PRIVATE_DNS_SPECIFIER,
+                    pDnsUrl);
+        } catch (SecurityException e) {
+            context.getNotificationsUtils().showWarning(context.getString(R.string.txt_missing_permissions_warning));
+        }
     }
 
     public String getPrivateDnsModeAsString(int mode) {
@@ -167,9 +212,11 @@ public class SettingsUtils {
         }
     }
 
-
     public PdnsModeType getPDNSState() {
-        String pDNSState = context.getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
+        String pDNSState = getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
+        if (pDNSState == null) {
+            return UNKNOWN;
+        }
         switch (pDNSState) {
             case VALUE_PRIVATE_DNS_MODE_OFF_STRING:
                 return OFF;
@@ -193,8 +240,7 @@ public class SettingsUtils {
     }
 
     public SharedPreferences.Editor getSharedPrefsEditor() {
-        return context.getSharedPreferences(
-                context.getString(R.string.settings_name), Context.MODE_PRIVATE).edit();
+        return getSharedPrefs().edit();
     }
 
     public boolean trustedWiFiModeOn() {
@@ -205,7 +251,9 @@ public class SettingsUtils {
         ConnectionType connectionType = ConnectionType.UNKNOWN;
         ConnectivityManager connectivityManager = context.getConnectivityManager();
         Network network = connectivityManager.getActiveNetwork();
-        NetworkCapabilities capabilities = connectivityManager.getNetworkCapabilities(network);
+        NetworkCapabilities capabilities = network != null
+                ? connectivityManager.getNetworkCapabilities(network)
+                : null;
 
         if (capabilities != null) {
             if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
@@ -224,8 +272,13 @@ public class SettingsUtils {
         if (ConnectionType.WIFI.equals(getConnectionType())) {
             WifiManager mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             if (context.getPermissionsUtils().isAllNeededLocationPermissionsGranted() && mWifiManager != null) {
+                @SuppressWarnings("deprecation")
                 WifiInfo info = mWifiManager.getConnectionInfo();
-                return info.getSSID().replace("\"", "");
+                String ssid = info != null ? info.getSSID() : null;
+                if (ssid != null && !"<unknown ssid>".equals(ssid)) {
+                    return ssid.replace("\"", "");
+                }
+                return context.getString(R.string.txt_none);
             } else {
                 return "missing permissions";
             }
@@ -235,9 +288,8 @@ public class SettingsUtils {
     }
 
     public boolean itTrustedWiFiAp(String apName) {
-        if (context.getPermissionsUtils().isAllNeededLocationPermissionsGranted()) {
+        if (apName != null && context.getPermissionsUtils().isAllNeededLocationPermissionsGranted()) {
             Set<String> trustedAps = getSharedPrefs().getStringSet(context.getString(R.string.settings_name_trust_wifi_ap_set), Collections.emptySet());
-
             return trustedAps.contains(apName);
         } else {
             return false;
@@ -245,6 +297,9 @@ public class SettingsUtils {
     }
 
     public boolean trustUntrustApByName(String apName) {
+        if (apName == null) {
+            return false;
+        }
         Set<String> trustedAps = getSharedPrefs().getStringSet(context.getString(R.string.settings_name_trust_wifi_ap_set), Collections.emptySet());
         Set<String> trustedApsLocalCopy = new HashSet<>(trustedAps);
 

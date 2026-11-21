@@ -17,12 +17,15 @@ import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.os.SystemClock;
 import android.os.VibrationEffect;
 import android.provider.Settings;
+import android.text.Html;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.animation.LinearInterpolator;
@@ -58,6 +61,8 @@ public class ActivityMain extends AppCompatActivity {
     private BroadcastReceiver broadcastReceiver;
     private TextView txtCopyrights;
     private ProgressBar score;
+    private MaterialTextView scorePercentText;
+    private MaterialTextView activeDnsHostText;
     private MaterialTextView sliderValueText;
     private Slider slider;
     private MaterialButton btnInstructions;
@@ -80,20 +85,7 @@ public class ActivityMain extends AppCompatActivity {
         broadcastReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
-                if (switchTrustAp != null) {
-                    String apName = getAppContext().getSettingsUtils().getWifiApName();
-                    switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType()) && getAppContext().getSettingsUtils().trustedWiFiModeOn());
-                    switchTrustAp.setChecked(getAppContext().getSettingsUtils().itTrustedWiFiAp(apName));
-                    switch (getAppContext().getSettingsUtils().getConnectionType()) {
-                        case WIFI ->
-                                switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
-                        case CELLULAR ->
-                                switchTrustAp.setText(getString(R.string.txt_trusted_ap_mode_unsupported, getString(R.string.txt_notification_state_body_on_cellular)));
-                        case VPN ->
-                                switchTrustAp.setText(getString(R.string.txt_trusted_ap_mode_unsupported, getString(R.string.txt_notification_state_body_on_vpn)));
-                    }
-                }
-                updateRadioButtonsStates();
+                renderNetworkAndDnsState();
             }
         };
         try {
@@ -109,34 +101,79 @@ public class ActivityMain extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         initAll();
-        getAppContext().getAppState().getPdnsState().observe(this, s -> {
-            if (switchTrustAp != null) {
-                String apName = getAppContext().getSettingsUtils().getWifiApName();
-                switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType()) && getAppContext().getSettingsUtils().trustedWiFiModeOn());
-                switchTrustAp.setChecked(getAppContext().getSettingsUtils().itTrustedWiFiAp(apName));
-                switch (getAppContext().getSettingsUtils().getConnectionType()) {
-                    case WIFI ->
-                            switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
-                    case CELLULAR ->
-                            switchTrustAp.setText(getString(R.string.txt_trusted_ap_mode_unsupported, getString(R.string.txt_notification_state_body_on_cellular)));
-                    case VPN ->
-                            switchTrustAp.setText(getString(R.string.txt_trusted_ap_mode_unsupported, getString(R.string.txt_notification_state_body_on_vpn)));
-                }
-            }
-            updateRadioButtonsStates();
-        });
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        finish();
+        refreshControlsAvailability();
+        LocalBroadcastManager.getInstance(this)
+                .registerReceiver(broadcastReceiver, new IntentFilter(APP_NAME));
+        getAppContext().getAppState().getPdnsState().observe(this, s -> renderNetworkAndDnsState());
+        renderNetworkAndDnsState();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         releaseResources();
+    }
+
+    private void refreshControlsAvailability() {
+        boolean hasWriteSecure = getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted();
+        boolean hasAllLocation = getAppContext().getPermissionsUtils().isAllNeededLocationPermissionsGranted();
+        boolean ignoringBattery = isIgnoringBatteryOptimizations();
+        boolean trustModeEnabled = getAppContext().getSettingsUtils().trustedWiFiModeOn();
+        boolean isWifi = ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType());
+
+        if (btnInstructions != null) {
+            btnInstructions.setEnabled(!hasWriteSecure || !ignoringBattery);
+        }
+        if (btnPermissions != null) {
+            btnPermissions.setEnabled(!hasAllLocation);
+        }
+        if (btnApList != null) {
+            btnApList.setEnabled(hasAllLocation);
+            btnApList.setActivated(isWifi);
+        }
+        if (selector != null) {
+            selector.setEnabled(hasWriteSecure);
+        }
+        if (switchDisableForVpn != null) {
+            switchDisableForVpn.setEnabled(hasWriteSecure);
+        }
+        if (switchEnableForCellular != null) {
+            switchEnableForCellular.setEnabled(hasWriteSecure);
+        }
+        if (switchTrustWiFiMode != null) {
+            switchTrustWiFiMode.setEnabled(hasAllLocation);
+        }
+        if (switchTrustAp != null) {
+            switchTrustAp.setActivated(isWifi);
+            switchTrustAp.setEnabled(hasAllLocation && isWifi && trustModeEnabled);
+        }
+    }
+
+    private void renderNetworkAndDnsState() {
+        refreshControlsAvailability();
+
+        if (activeDnsHostText != null) {
+            String specifier = getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER);
+            String modeName = getAppContext().getSettingsUtils().getPDNSState().name();
+            activeDnsHostText.setText(modeName + " • " + specifier);
+        }
+
+        if (switchTrustAp != null) {
+            String apName = getAppContext().getSettingsUtils().getWifiApName();
+            switchTrustAp.setChecked(getAppContext().getSettingsUtils().itTrustedWiFiAp(apName));
+            switch (getAppContext().getSettingsUtils().getConnectionType()) {
+                case WIFI ->
+                        switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
+                case CELLULAR ->
+                        switchTrustAp.setText(getString(R.string.txt_trusted_ap_mode_unsupported,
+                                getString(R.string.txt_notification_state_body_on_cellular)));
+                case VPN ->
+                        switchTrustAp.setText(getString(R.string.txt_trusted_ap_mode_unsupported,
+                                getString(R.string.txt_notification_state_body_on_vpn)));
+                case UNKNOWN -> switchTrustAp.setText(getString(R.string.txt_ap_name));
+            }
+        }
+        updateRadioButtonsStates();
     }
 
     @Override
@@ -153,12 +190,13 @@ public class ActivityMain extends AppCompatActivity {
         if (BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE == requestCode) {
             handlePermissionsGranted(grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED);
         }
+        refreshControlsAvailability();
+        renderNetworkAndDnsState();
     }
 
     private void initAll() {
         activityInitializationStarted();
 
-//        initReceivers();
         initButtons();
         initTexts();
         initCheckboxes();
@@ -177,6 +215,12 @@ public class ActivityMain extends AppCompatActivity {
             } catch (Exception ignored) {
             }
         }
+        if (activeDnsHostText == null) {
+            activeDnsHostText = this.findViewById(R.id.activeDnsHostText);
+        }
+        if (scorePercentText == null) {
+            scorePercentText = this.findViewById(R.id.scorePercentText);
+        }
         if (score == null) {
             score = this.findViewById(R.id.score);
             try {
@@ -194,11 +238,9 @@ public class ActivityMain extends AppCompatActivity {
     private void initCheckboxes() {
         if (switchDisableForVpn == null) {
             switchDisableForVpn = this.findViewById(R.id.switchDisableForVpn);
-
             switchDisableForVpn.setEnabled(getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted());
-
-            switchDisableForVpn.setChecked(getAppContext().getSettingsUtils().getSharedPrefs().getBoolean(getString(R.string.settings_name_disable_while_vpn), false));
-            switchDisableForVpn = this.findViewById(R.id.switchDisableForVpn);
+            switchDisableForVpn.setChecked(getAppContext().getSettingsUtils().getSharedPrefs()
+                    .getBoolean(getString(R.string.settings_name_disable_while_vpn), false));
             switchDisableForVpn.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
                     compoundButton.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
@@ -212,11 +254,9 @@ public class ActivityMain extends AppCompatActivity {
         }
         if (switchEnableForCellular == null) {
             switchEnableForCellular = this.findViewById(R.id.switchEnableForCellular);
-
             switchEnableForCellular.setEnabled(getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted());
-
-            switchEnableForCellular.setChecked(getAppContext().getSettingsUtils().getSharedPrefs().getBoolean(getString(R.string.settings_name_enable_while_cellular), false));
-            switchEnableForCellular = this.findViewById(R.id.switchEnableForCellular);
+            switchEnableForCellular.setChecked(getAppContext().getSettingsUtils().getSharedPrefs()
+                    .getBoolean(getString(R.string.settings_name_enable_while_cellular), false));
             switchEnableForCellular.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
                     compoundButton.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
@@ -256,6 +296,7 @@ public class ActivityMain extends AppCompatActivity {
                             updateRadioButtonsStates();
                             getAppContext().refreshQuickTile();
                             getAppContext().getSecurityScoreUtil().disabled();
+                            getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
                         }
                     } else if (checkedId == R.id.radioOn) {
                         if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
@@ -264,6 +305,7 @@ public class ActivityMain extends AppCompatActivity {
                             updateRadioButtonsStates();
                             getAppContext().refreshQuickTile();
                             getAppContext().getSecurityScoreUtil().enabled();
+                            getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
                         }
                     } else {
                         if (getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
@@ -272,6 +314,7 @@ public class ActivityMain extends AppCompatActivity {
                             updateRadioButtonsStates();
                             getAppContext().refreshQuickTile();
                             getAppContext().getSecurityScoreUtil().disabled();
+                            getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
                         }
                     }
                 }
@@ -286,11 +329,11 @@ public class ActivityMain extends AppCompatActivity {
                 v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle(getString(R.string.txt_instructions_title));
-                alert.setMessage(R.string.txt_instructions);
+                alert.setMessage(Html.fromHtml(getString(R.string.txt_instructions), Html.FROM_HTML_MODE_LEGACY));
                 alert.setNegativeButton(getString(R.string.txt_cancel), (dialog, which) -> dialog.dismiss());
                 alert.setPositiveButton(getString(R.string.txt_disable_battery_optimizations), (dialog, which) -> {
                     PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                    if (!powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
+                    if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
                         startActivity(new Intent().setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
                     }
                 });
@@ -321,16 +364,15 @@ public class ActivityMain extends AppCompatActivity {
                     builder.setTitle(getString(R.string.txt_update_pdns_host));
                     builder.setView(editTxtDnsHost);
                     builder.setPositiveButton(getText(R.string.txt_save), (dialogInterface, i) -> {
-                        String dnsUrl = editTxtDnsHost.getText().toString();
+                        String dnsUrl = editTxtDnsHost.getText().toString().trim();
                         getAppContext().getSettingsUtils().updatePdnsUrl(dnsUrl);
                         getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_dns_set_host_notification, dnsUrl));
                         editTxtDnsHost.clearFocus();
                         editTxtDnsHost.setText(getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
-
+                        getAppContext().refreshQuickTile();
+                        renderNetworkAndDnsState();
                     });
-                    builder.setNegativeButton(getText(R.string.txt_cancel), (dialogInterface, i) -> {
-                        dialogInterface.cancel();
-                    });
+                    builder.setNegativeButton(getText(R.string.txt_cancel), (dialogInterface, i) -> dialogInterface.cancel());
                     builder.show();
                 });
             } else {
@@ -343,9 +385,7 @@ public class ActivityMain extends AppCompatActivity {
         if (slider == null) {
             slider = findViewById(R.id.delaySlider);
             slider.setValue(getAppContext().getSettingsUtils().getSharedPrefs().getInt(SETTINGS_ACTION_DELAY_MS, 0));
-            slider.addOnChangeListener((slider, value, fromUser) -> {
-                sliderValueText.setText(String.valueOf((int) value));
-            });
+            slider.addOnChangeListener((slider, value, fromUser) -> sliderValueText.setText(String.valueOf((int) value)));
             slider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
                 @Override
                 public void onStartTrackingTouch(@NonNull Slider slider) {
@@ -401,7 +441,9 @@ public class ActivityMain extends AppCompatActivity {
                         SharedPreferences.Editor editor = getAppContext().getSettingsUtils().getSharedPrefsEditor();
                         editor.putBoolean(getString(R.string.settings_name_trust_wifi), checked);
                         editor.apply();
-                        switchTrustAp.setEnabled(checked && ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType()));
+                        if (switchTrustAp != null) {
+                            switchTrustAp.setEnabled(checked && ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType()));
+                        }
                     }
                 });
             }
@@ -417,18 +459,20 @@ public class ActivityMain extends AppCompatActivity {
                 switchTrustAp.setChecked(getAppContext().getSettingsUtils().itTrustedWiFiAp(apName));
 
                 SharedPreferences sharedPrefForInit = getAppContext().getSettingsUtils().getSharedPrefs();
-                switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType()) && sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
+                switchTrustAp.setEnabled(ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType())
+                        && sharedPrefForInit.getBoolean(getString(R.string.settings_name_trust_wifi), false));
                 switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
                 switchTrustAp.setOnClickListener(v -> {
                     v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                     showDozeModeWarning();
 
-                    switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
-                    boolean trustResult = getAppContext().getSettingsUtils().trustUntrustApByName(apName);
-                    switchTrustAp.setChecked(trustResult);
-                    getAppContext().getNotificationsUtils().showWarning(trustResult ? getString(R.string.txt_connected_ap_trusted, apName) : getString(R.string.txt_connected_ap_untrusted, apName));
+                    String currentApName = getAppContext().getSettingsUtils().getWifiApName();
+                    boolean trustResult = getAppContext().getSettingsUtils().trustUntrustApByName(currentApName);
+                    getAppContext().getNotificationsUtils().showWarning(trustResult
+                            ? getString(R.string.txt_connected_ap_trusted, currentApName)
+                            : getString(R.string.txt_connected_ap_untrusted, currentApName));
                     getAppContext().getSettingsUtils().updatePdnsSettingsOnNetworkChange(null);
-                    updateRadioButtonsStates();
+                    renderNetworkAndDnsState();
                 });
             }
         }
@@ -455,7 +499,7 @@ public class ActivityMain extends AppCompatActivity {
                             editor.putStringSet(getString(R.string.settings_name_trust_wifi_ap_set), apsCopy);
                             editor.apply();
                             getAppContext().getSettingsUtils().updatePdnsSettingsOnNetworkChange(null);
-                            updateRadioButtonsStates();
+                            renderNetworkAndDnsState();
                         });
                         AlertDialog dialog = builder.create();
                         dialog.show();
@@ -480,12 +524,9 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private void checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
-        ) {
-            // Location permission already granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             checkBackgroundLocation();
         } else {
-            // Location permission not granted, request it
             showLocationPermissionDialog();
         }
     }
@@ -495,7 +536,7 @@ public class ActivityMain extends AppCompatActivity {
         dialogBuilder
                 .setCancelable(false)
                 .setTitle(R.string.txt_location_disclosure_agreement)
-                .setMessage(R.string.txt_location_disclosure_agreement)
+                .setMessage(Html.fromHtml(getString(R.string.txt_location_disclosure_agreement), Html.FROM_HTML_MODE_LEGACY))
                 .setPositiveButton("Grant Permissions", (dialog, which) -> requestLocationPermission())
                 .setNegativeButton("Cancel", (dialog, which) -> {
                     handlePermissionsGranted(false);
@@ -533,6 +574,9 @@ public class ActivityMain extends AppCompatActivity {
     }
 
     private void animateProgressBar(int targetProgress) {
+        if (scorePercentText != null) {
+            scorePercentText.setText(targetProgress + "%");
+        }
         ValueAnimator animator = ValueAnimator.ofInt(score.getProgress(), targetProgress);
         animator.setDuration(1500L);
         animator.setInterpolator(new LinearInterpolator());
