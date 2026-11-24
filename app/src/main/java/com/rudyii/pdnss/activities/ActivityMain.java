@@ -24,7 +24,6 @@ import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
-import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
@@ -47,7 +46,6 @@ import com.google.android.material.slider.Slider;
 import com.google.android.material.textview.MaterialTextView;
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
-import com.rudyii.pdnss.services.NetworkMonitor;
 import com.rudyii.pdnss.types.ConnectionType;
 
 import java.time.LocalDate;
@@ -88,18 +86,13 @@ public class ActivityMain extends AppCompatActivity {
                 renderNetworkAndDnsState();
             }
         };
-        try {
-            Intent service = new Intent(getApplicationContext(), NetworkMonitor.class);
-            getApplicationContext().startForegroundService(service);
-        } catch (Exception e) {
-            Log.w(APP_NAME, "NetworkMonitor Service will start later...");
-        }
     }
 
     @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onResume() {
         super.onResume();
+        getAppContext().registerNetworkCallback();
         initAll();
         refreshControlsAvailability();
         LocalBroadcastManager.getInstance(this)
@@ -117,12 +110,11 @@ public class ActivityMain extends AppCompatActivity {
     private void refreshControlsAvailability() {
         boolean hasWriteSecure = getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted();
         boolean hasAllLocation = getAppContext().getPermissionsUtils().isAllNeededLocationPermissionsGranted();
-        boolean ignoringBattery = isIgnoringBatteryOptimizations();
         boolean trustModeEnabled = getAppContext().getSettingsUtils().trustedWiFiModeOn();
         boolean isWifi = ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType());
 
         if (btnInstructions != null) {
-            btnInstructions.setEnabled(!hasWriteSecure || !ignoringBattery);
+            btnInstructions.setEnabled(!hasWriteSecure);
         }
         if (btnPermissions != null) {
             btnPermissions.setEnabled(!hasAllLocation);
@@ -244,7 +236,6 @@ public class ActivityMain extends AppCompatActivity {
             switchDisableForVpn.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
                     compoundButton.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
-                    showDozeModeWarning();
 
                     SharedPreferences.Editor editor = getAppContext().getSettingsUtils().getSharedPrefsEditor();
                     editor.putBoolean(getString(R.string.settings_name_disable_while_vpn), checked);
@@ -260,19 +251,12 @@ public class ActivityMain extends AppCompatActivity {
             switchEnableForCellular.setOnCheckedChangeListener((compoundButton, checked) -> {
                 if (!activityInitInProgress) {
                     compoundButton.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
-                    showDozeModeWarning();
 
                     SharedPreferences.Editor editor = getAppContext().getSettingsUtils().getSharedPrefsEditor();
                     editor.putBoolean(getString(R.string.settings_name_enable_while_cellular), checked);
                     editor.apply();
                 }
             });
-        }
-    }
-
-    private void showDozeModeWarning() {
-        if (!isIgnoringBatteryOptimizations()) {
-            getAppContext().getNotificationsUtils().showWarning(getString(R.string.txt_battery_optimization_enabled));
         }
     }
 
@@ -323,20 +307,14 @@ public class ActivityMain extends AppCompatActivity {
         if (btnInstructions == null) {
             btnInstructions = this.findViewById(R.id.btnInstructions);
 
-            btnInstructions.setEnabled(!getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted() || !isIgnoringBatteryOptimizations());
+            btnInstructions.setEnabled(!getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted());
 
             btnInstructions.setOnClickListener(v -> {
                 v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
                 AlertDialog.Builder alert = new AlertDialog.Builder(this);
                 alert.setTitle(getString(R.string.txt_instructions_title));
                 alert.setMessage(Html.fromHtml(getString(R.string.txt_instructions), Html.FROM_HTML_MODE_LEGACY));
-                alert.setNegativeButton(getString(R.string.txt_cancel), (dialog, which) -> dialog.dismiss());
-                alert.setPositiveButton(getString(R.string.txt_disable_battery_optimizations), (dialog, which) -> {
-                    PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
-                    if (powerManager != null && !powerManager.isIgnoringBatteryOptimizations(getPackageName())) {
-                        startActivity(new Intent().setAction(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
-                    }
-                });
+                alert.setPositiveButton(getString(R.string.txt_ok), (dialog, which) -> dialog.dismiss());
                 alert.show();
             });
         }
@@ -436,7 +414,6 @@ public class ActivityMain extends AppCompatActivity {
                 switchTrustWiFiMode.setOnCheckedChangeListener((compoundButton, checked) -> {
                     if (!activityInitInProgress) {
                         compoundButton.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
-                        showDozeModeWarning();
 
                         SharedPreferences.Editor editor = getAppContext().getSettingsUtils().getSharedPrefsEditor();
                         editor.putBoolean(getString(R.string.settings_name_trust_wifi), checked);
@@ -464,7 +441,6 @@ public class ActivityMain extends AppCompatActivity {
                 switchTrustAp.setText(getString(R.string.txt_connected_ap_name, apName));
                 switchTrustAp.setOnClickListener(v -> {
                     v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
-                    showDozeModeWarning();
 
                     String currentApName = getAppContext().getSettingsUtils().getWifiApName();
                     boolean trustResult = getAppContext().getSettingsUtils().trustUntrustApByName(currentApName);
@@ -535,7 +511,7 @@ public class ActivityMain extends AppCompatActivity {
         AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
         dialogBuilder
                 .setCancelable(false)
-                .setTitle(R.string.txt_location_disclosure_agreement)
+                .setTitle(R.string.txt_location_disclosure_title)
                 .setMessage(Html.fromHtml(getString(R.string.txt_location_disclosure_agreement), Html.FROM_HTML_MODE_LEGACY))
                 .setPositiveButton("Grant Permissions", (dialog, which) -> requestLocationPermission())
                 .setNegativeButton("Cancel", (dialog, which) -> {

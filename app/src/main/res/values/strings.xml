@@ -18,13 +18,11 @@
     <string name="swch_enable_on_cellular">Use Private DNS on cellular network</string>
 
     <string name="txt_app_name">Private DNS Switcher</string>
-    <string name="txt_battery_optimization_enabled">Android is optimizing battery for PDNSS (Doze mode). See Instructions.</string>
     <string name="txt_click_to_remove_ap">Untrust the WiFi AP:</string>
     <string name="txt_connected_ap_name" formatted="true">Supported connection - WiFi: %1$s</string>
     <string name="txt_connected_ap_trusted" formatted="true">WiFi AP named %1$s added into \'Trusted WiFi AP List\'</string>
     <string name="txt_connected_ap_untrusted" formatted="true">WiFi AP named %1$s removed from \'Trusted WiFi AP List\'</string>
     <string name="txt_copyrights" translatable="false">© %d Ukraine, Ievgen \"Eugene\" Rudyi. All rights reserved.\nPDNSS Version: %s</string>
-    <string name="txt_disable_battery_optimizations">Disable battery optimizations</string>
     <string name="txt_dns_set_host_notification" formatted="true">Updated PDNS URL to %1$s</string>
     <string name="txt_dns_state_google" translatable="false">GOOGLE</string>
     <string name="txt_dns_state_off" translatable="false">OFF</string>
@@ -33,46 +31,35 @@
     <string name="txt_dummy_pdns_url">one.one.one.one</string>
     <string name="txt_empty_ap_list">No trusted WiFi APs</string>
     <string name="txt_error_unknown_pdns_mode">Unknown private dns mode: %1$d</string>
-    <string name="txt_instructions" translatable="false">
-        <b>Main feature:</b>
-        \n
-        Private DNS Switcher also known as PDNSS requires You to grant special permissions (Android limitations)\n
-        To grant the proper permissions please follow the instructions as below:\n
-        1. Enable Developer Options\n
-        2. Enable USB debugging\n
-        2. Connect smartphone to PC with ADB installed\n
-        2. Allow PC to connect smartphone via ADB\n
-        3. Open shell\n
-        4. Run command:\n
-        adb shell pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS\n
-        \n
-        <b>Optional features:</b>
-        \n
-        PDNSS also able to control Private DNS Settings automatically using Trusted WiFi AP, Cellular Network or VPN State.\n
-        To do that PDNSS needs Service running in background that is strictly limited by Android Doze Mode.\n
-        You can allow Service to run in background by disabling battery optimization for PDNSS.
-    </string>
+    <string name="txt_instructions" translatable="false"><![CDATA[
+        <b>Main feature:</b><br>
+        Private DNS Switcher (PDNSS) requires a special Android permission to modify Private DNS settings.<br><br>
+        To grant the permission via ADB:<br>
+        1. Enable Developer Options<br>
+        2. Enable USB debugging<br>
+        3. Connect your smartphone to a PC with ADB installed<br>
+        4. Allow USB debugging from the PC on your phone<br>
+        5. Open a terminal / shell on the PC<br>
+        6. Run the command:<br>
+        <code>adb shell pm grant com.rudyii.pdnss android.permission.WRITE_SECURE_SETTINGS</code><br><br>
+        <b>Optional features:</b><br>
+        PDNSS can also switch Private DNS automatically based on Trusted Wi-Fi APs, Cellular Network, or VPN state using system network callbacks.
+    ]]></string>
     <string name="txt_instructions_title">PDNSS requirements:</string>
-    <string name="txt_location_disclosure_agreement" translatable="false">
-        <b>This App needs Your location permission in the background to enable the Trusted WiFi AP functionality.</b>
-        This is an Android requirement to detect trusted Wi-Fi networks.\n
-        \n
-        <b>Granting permission allows You to:</b>
-        \n
-        <b>- </b>Trust or untrust currently connected Wi-Fi access points based on their names. Denying permission disables the Trusted WiFi AP functionality. You can always revisit this prompt later to enable it.\n
-        \n
-        <u>Here\'s how Your location is used:</u>
-        <b>- In the background:</b>
-        This App uses Your location in the background to identify nearby Wi-Fi networks and check their AP names against Your trusted list. This functionality is not used for any other purpose.\n
-        \n
+    <string name="txt_location_disclosure_title">Location permission disclosure</string>
+    <string name="txt_location_disclosure_agreement" translatable="false"><![CDATA[
+        <b>This App needs Your location permission in the background to enable the Trusted WiFi AP functionality.</b><br>
+        This is an Android requirement to detect trusted Wi-Fi networks.<br><br>
+        <b>Granting permission allows You to:</b><br>
+        <b>- </b>Trust or untrust currently connected Wi-Fi access points based on their names. Denying permission disables the Trusted WiFi AP functionality. You can always revisit this prompt later to enable it.<br><br>
+        <u>Here\'s how Your location is used:</u><br>
+        <b>- In the background:</b><br>
+        This App uses Your location in the background to identify nearby Wi-Fi networks and check their AP names against Your trusted list. This functionality is not used for any other purpose.<br><br>
         <b>This App does not use Your location data for advertising.</b>
-    </string>
+    ]]></string>
     <string name="txt_missing_permissions" translatable="false">NO_PERMISSIONS</string>
     <string name="txt_missing_permissions_warning">Missing permissions, please see INSTRUCTIONS to resolve</string>
     <string name="txt_none" translatable="false">none</string>
-    <string name="txt_notification_service_body">It\'s a system notification to keep Service running. You can disable the Notification if you don\'t want to see it</string>
-    <string name="txt_notification_service_channel_name">Service notifications</string>
-    <string name="txt_notification_service_title">Private DNS Service is running</string>
     <string name="txt_notification_state_body" formatted="true">Private DNS is %1$s while connected to %2$s</string>
     <string name="txt_notification_state_body_manual" formatted="true">Private DNS is %1$s manually</string>
     <string name="txt_notification_state_body_with_ap_name" formatted="true">Private DNS is %1$s while connected to %2$s (%3$s)</string>

@@ -6,6 +6,7 @@ import static com.rudyii.pdnss.types.Constants.SETTINGS_ACTION_DELAY_MS;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
+import android.net.NetworkCapabilities;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.PowerManager;
@@ -23,6 +24,7 @@ public class PdnssNetworkCallback extends ConnectivityManager.NetworkCallback {
     private final Object lock = new Object();
     private Runnable pendingTask;
     private PowerManager.WakeLock currentWakeLock;
+    private int lastTransportSignature = -1;
 
     public PdnssNetworkCallback(PrivateDnsSwitcherApplication context) {
         this.context = context;
@@ -30,11 +32,24 @@ public class PdnssNetworkCallback extends ConnectivityManager.NetworkCallback {
 
     @Override
     public void onAvailable(@NonNull Network network) {
+        lastTransportSignature = -1;
         scheduleDnsEvaluation(network, "onAvailable");
     }
 
     @Override
+    public void onCapabilitiesChanged(@NonNull Network network, @NonNull NetworkCapabilities capabilities) {
+        int signature = (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_VPN) ? 1 : 0)
+                | (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) ? 2 : 0)
+                | (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) ? 4 : 0);
+        if (signature != lastTransportSignature) {
+            lastTransportSignature = signature;
+            scheduleDnsEvaluation(network, "onCapabilitiesChanged");
+        }
+    }
+
+    @Override
     public void onLost(@NonNull Network network) {
+        lastTransportSignature = -1;
         scheduleDnsEvaluation(null, "onLost");
     }
 

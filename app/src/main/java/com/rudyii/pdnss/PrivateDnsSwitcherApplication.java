@@ -1,6 +1,6 @@
 package com.rudyii.pdnss;
 
-import static com.rudyii.pdnss.types.Constants.SERVICE_NOTIFICATION_NAME;
+import static com.rudyii.pdnss.types.Constants.APP_NAME;
 import static com.rudyii.pdnss.types.Constants.STATE_NOTIFICATION_NAME;
 import static com.rudyii.pdnss.types.Constants.UNSAFE_DNS_NOTIFICATION_NAME;
 import static com.rudyii.pdnss.types.PdnsModeType.ON;
@@ -12,6 +12,7 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.service.quicksettings.TileService;
+import android.util.Log;
 
 import com.rudyii.pdnss.services.QuickTile;
 import com.rudyii.pdnss.utils.AppState;
@@ -48,7 +49,27 @@ public class PrivateDnsSwitcherApplication extends Application {
         }
 
         registerServices();
+        registerNetworkCallback();
         createNotificationChannels();
+    }
+
+    public void registerNetworkCallback() {
+        if (connectivityManager == null || networkCallback == null) {
+            return;
+        }
+        try {
+            connectivityManager.registerDefaultNetworkCallback(networkCallback);
+            Log.i(APP_NAME, "Default NetworkCallback registered");
+        } catch (IllegalArgumentException e) {
+            Log.w(APP_NAME, "NetworkCallback already registered, re-registering");
+            try {
+                connectivityManager.unregisterNetworkCallback(networkCallback);
+            } catch (Exception ignored) {
+            }
+            connectivityManager.registerDefaultNetworkCallback(networkCallback);
+        } catch (Exception e) {
+            Log.e(APP_NAME, "Failed to register NetworkCallback", e);
+        }
     }
 
     public void refreshQuickTile() {
@@ -99,10 +120,6 @@ public class PrivateDnsSwitcherApplication extends Application {
             return;
         }
 
-        NotificationChannel serviceChannel = new NotificationChannel(SERVICE_NOTIFICATION_NAME,
-                getString(R.string.txt_notification_service_channel_name),
-                NotificationManager.IMPORTANCE_DEFAULT);
-
         NotificationChannel stateChannel = new NotificationChannel(STATE_NOTIFICATION_NAME,
                 getString(R.string.txt_notification_state_channel_name),
                 NotificationManager.IMPORTANCE_HIGH);
@@ -111,7 +128,6 @@ public class PrivateDnsSwitcherApplication extends Application {
                 getString(R.string.txt_notification_state_channel_name),
                 NotificationManager.IMPORTANCE_DEFAULT);
 
-        notificationManager.createNotificationChannel(serviceChannel);
         notificationManager.createNotificationChannel(stateChannel);
         notificationManager.createNotificationChannel(unsafeDnsChannel);
     }
