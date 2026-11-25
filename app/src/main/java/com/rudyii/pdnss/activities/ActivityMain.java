@@ -4,6 +4,8 @@ import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
 import static com.rudyii.pdnss.types.Constants.APP_NAME;
+import static com.rudyii.pdnss.types.Constants.MAX_ACTION_DELAY_MS;
+import static com.rudyii.pdnss.types.Constants.MIN_ACTION_DELAY_MS;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_ACTION_DELAY_MS;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.types.PdnsModeType.GOOGLE;
@@ -47,6 +49,7 @@ import com.google.android.material.textview.MaterialTextView;
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
 import com.rudyii.pdnss.types.ConnectionType;
+import com.rudyii.pdnss.utils.PdnsPolicyScheduler;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -99,6 +102,7 @@ public class ActivityMain extends AppCompatActivity {
                 .registerReceiver(broadcastReceiver, new IntentFilter(APP_NAME));
         getAppContext().getAppState().getPdnsState().observe(this, s -> renderNetworkAndDnsState());
         renderNetworkAndDnsState();
+        getAppContext().getSettingsUtils().syncExternalStateChanges();
     }
 
     @Override
@@ -223,7 +227,8 @@ public class ActivityMain extends AppCompatActivity {
         }
         if (sliderValueText == null) {
             sliderValueText = findViewById(R.id.sliderValueText);
-            sliderValueText.setText(String.valueOf(getAppContext().getSettingsUtils().getSharedPrefs().getInt(SETTINGS_ACTION_DELAY_MS, 0)));
+            int currentDelay = PdnsPolicyScheduler.getConfiguredDelayMs(this);
+            sliderValueText.setText(String.valueOf(currentDelay));
         }
     }
 
@@ -362,18 +367,38 @@ public class ActivityMain extends AppCompatActivity {
         }
         if (slider == null) {
             slider = findViewById(R.id.delaySlider);
-            slider.setValue(getAppContext().getSettingsUtils().getSharedPrefs().getInt(SETTINGS_ACTION_DELAY_MS, 0));
-            slider.addOnChangeListener((slider, value, fromUser) -> sliderValueText.setText(String.valueOf((int) value)));
+            slider.setValueFrom(MIN_ACTION_DELAY_MS);
+            slider.setValueTo(MAX_ACTION_DELAY_MS);
+            if (slider.getStepSize() <= 0f) {
+                slider.setStepSize(1000f);
+            }
+
+            int clampedDelay = PdnsPolicyScheduler.getConfiguredDelayMs(this);
+            float step = slider.getStepSize();
+            int snappedDelay = Math.round(clampedDelay / step) * (int) step;
+            snappedDelay = PdnsPolicyScheduler.clampDelayMs(snappedDelay);
+
+            getAppContext().getSettingsUtils().getSharedPrefs()
+                    .edit()
+                    .putInt(SETTINGS_ACTION_DELAY_MS, snappedDelay)
+                    .apply();
+
+            slider.setValue(snappedDelay);
+            slider.addOnChangeListener((s, value, fromUser) -> {
+                if (sliderValueText != null) {
+                    sliderValueText.setText(String.valueOf((int) value));
+                }
+            });
             slider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
                 @Override
-                public void onStartTrackingTouch(@NonNull Slider slider) {
-                    slider.performHapticFeedback(HapticFeedbackConstants.GESTURE_START);
+                public void onStartTrackingTouch(@NonNull Slider s) {
+                    s.performHapticFeedback(HapticFeedbackConstants.GESTURE_START);
                 }
 
                 @Override
-                public void onStopTrackingTouch(@NonNull Slider slider) {
-                    slider.performHapticFeedback(HapticFeedbackConstants.GESTURE_END);
-                    int finalValue = (int) slider.getValue();
+                public void onStopTrackingTouch(@NonNull Slider s) {
+                    s.performHapticFeedback(HapticFeedbackConstants.GESTURE_END);
+                    int finalValue = PdnsPolicyScheduler.clampDelayMs((int) s.getValue());
                     getAppContext().getSettingsUtils().getSharedPrefs()
                             .edit()
                             .putInt(SETTINGS_ACTION_DELAY_MS, finalValue)

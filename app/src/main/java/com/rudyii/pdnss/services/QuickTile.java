@@ -49,6 +49,7 @@ public class QuickTile extends TileService {
     public void onStartListening() {
         super.onStartListening();
         getAppContext().setQuickTile(this);
+        getAppContext().getSettingsUtils().syncExternalStateChanges();
         updateTile();
     }
 

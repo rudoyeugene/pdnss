@@ -191,9 +191,10 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:stepSize="100.0"
-                        android:valueFrom="0.0"
-                        android:valueTo="5000.0"
+                        android:stepSize="1000"
+                        android:value="0"
+                        android:valueFrom="0"
+                        android:valueTo="10000"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/sliderDescription" />

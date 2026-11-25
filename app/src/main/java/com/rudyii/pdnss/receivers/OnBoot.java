@@ -10,6 +10,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
+import com.rudyii.pdnss.utils.PdnsPolicyScheduler;
 
 public class OnBoot extends BroadcastReceiver {
     @Override
@@ -18,14 +19,14 @@ public class OnBoot extends BroadcastReceiver {
             return;
         }
         String action = intent.getAction();
-        if (BOOT_COMPLETED.equals(action) || QUICKBOOT_POWERON.equals(action)) {
-            Log.i(APP_NAME, "Boot completed (" + action + "), evaluating Private DNS");
+        if (BOOT_COMPLETED.equals(action)
+                || QUICKBOOT_POWERON.equals(action)
+                || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
+            Log.i(APP_NAME, "Boot completed (" + action + "), scheduling Private DNS evaluation");
             Context appContext = context.getApplicationContext();
-            if (appContext instanceof PrivateDnsSwitcherApplication) {
-                ((PrivateDnsSwitcherApplication) appContext).registerNetworkCallback();
-                ((PrivateDnsSwitcherApplication) appContext)
-                        .getSettingsUtils()
-                        .updatePdnsSettingsOnNetworkChange(null);
+            if (appContext instanceof PrivateDnsSwitcherApplication app) {
+                app.registerNetworkCallback();
+                PdnsPolicyScheduler.scheduleEvaluation(app, "receiver:" + action, null, null);
             }
         }
     }

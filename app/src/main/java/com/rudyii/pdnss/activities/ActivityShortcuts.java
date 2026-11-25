@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
+import com.rudyii.pdnss.types.PdnsModeType;
 
 public class ActivityShortcuts extends Activity {
 
@@ -31,18 +32,21 @@ public class ActivityShortcuts extends Activity {
                     case PDNSS_GOOGLE:
                         getAppContext().getSettingsUtils()
                                 .updatePdnsModeSettings(PRIVATE_DNS_MODE_OPPORTUNISTIC);
+                        getAppContext().getSettingsUtils().updateLastPdnsState(PdnsModeType.GOOGLE);
                         getAppContext().refreshQuickTile();
                         getAppContext().getSecurityScoreUtil().disabled();
                         break;
                     case PDNSS_ON:
                         getAppContext().getSettingsUtils()
                                 .updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
+                        getAppContext().getSettingsUtils().updateLastPdnsState(PdnsModeType.ON);
                         getAppContext().refreshQuickTile();
                         getAppContext().getSecurityScoreUtil().enabled();
                         break;
                     case PDNSS_OFF:
                         getAppContext().getSettingsUtils()
                                 .updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
+                        getAppContext().getSettingsUtils().updateLastPdnsState(PdnsModeType.OFF);
                         getAppContext().refreshQuickTile();
                         getAppContext().getSecurityScoreUtil().disabled();
                         break;
