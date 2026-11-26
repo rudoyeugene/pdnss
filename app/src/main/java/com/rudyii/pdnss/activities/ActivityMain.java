@@ -4,9 +4,11 @@ import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OFF;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_OPPORTUNISTIC;
 import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HOSTNAME;
 import static com.rudyii.pdnss.types.Constants.APP_NAME;
-import static com.rudyii.pdnss.types.Constants.MAX_ACTION_DELAY_MS;
-import static com.rudyii.pdnss.types.Constants.MIN_ACTION_DELAY_MS;
-import static com.rudyii.pdnss.types.Constants.SETTINGS_ACTION_DELAY_MS;
+import static com.rudyii.pdnss.types.Constants.DEFAULT_ACTION_DELAY_SEC;
+import static com.rudyii.pdnss.types.Constants.MAX_ACTION_DELAY_SEC;
+import static com.rudyii.pdnss.types.Constants.MIN_ACTION_DELAY_SEC;
+import static com.rudyii.pdnss.types.Constants.SETTINGS_ACTION_DELAY_SEC;
+import static com.rudyii.pdnss.types.Constants.SETTINGS_BATTERY_OPTIMIZATION_PROMPT_SHOWN;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.types.PdnsModeType.GOOGLE;
 import static com.rudyii.pdnss.types.PdnsModeType.OFF;
@@ -14,18 +16,17 @@ import static com.rudyii.pdnss.types.PdnsModeType.ON;
 
 import android.Manifest;
 import android.animation.ValueAnimator;
-import android.annotation.SuppressLint;
 import android.app.AlertDialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.SystemClock;
 import android.os.VibrationEffect;
+import android.provider.Settings;
 import android.text.Html;
 import android.util.Log;
 import android.view.HapticFeedbackConstants;
@@ -40,7 +41,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
-import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.materialswitch.MaterialSwitch;
@@ -48,8 +48,8 @@ import com.google.android.material.slider.Slider;
 import com.google.android.material.textview.MaterialTextView;
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
+import com.rudyii.pdnss.services.PdnsMonitorService;
 import com.rudyii.pdnss.types.ConnectionType;
-import com.rudyii.pdnss.utils.PdnsPolicyScheduler;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -59,7 +59,6 @@ import java.util.Set;
 public class ActivityMain extends AppCompatActivity {
     public static final int LOCATION_PERMISSION_REQUEST_CODE = 1122;
     public static final int BACKGROUND_LOCATION_PERMISSION_REQUEST_CODE = 1133;
-    private BroadcastReceiver broadcastReceiver;
     private TextView txtCopyrights;
     private ProgressBar score;
     private MaterialTextView scorePercentText;
@@ -70,6 +69,7 @@ public class ActivityMain extends AppCompatActivity {
     private MaterialButton btnPermissions;
     private MaterialButton btnUpdatePdns;
     private MaterialButton btnApList;
+    private MaterialButton btnResetScore;
     private MaterialSwitch switchTrustAp;
     private MaterialSwitch switchDisableForVpn;
     private MaterialSwitch switchEnableForCellular;
@@ -83,34 +83,20 @@ public class ActivityMain extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setTitle(R.string.txt_app_name);
         setContentView(R.layout.activity_main);
-        broadcastReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                renderNetworkAndDnsState();
-            }
-        };
+        getAppContext().getAppState().getPdnsState().observe(this, s -> renderNetworkAndDnsState());
     }
 
-    @SuppressLint("UnspecifiedRegisterReceiverFlag")
     @Override
     protected void onResume() {
         super.onResume();
+        PdnsMonitorService.start(this);
         getAppContext().registerNetworkCallback();
+        getAppContext().getSettingsUtils().syncExternalStateChanges();
         initAll();
         refreshControlsAvailability();
-        LocalBroadcastManager.getInstance(this)
-                .registerReceiver(broadcastReceiver, new IntentFilter(APP_NAME));
-        getAppContext().getAppState().getPdnsState().observe(this, s -> renderNetworkAndDnsState());
         renderNetworkAndDnsState();
-        getAppContext().getSettingsUtils().syncExternalStateChanges();
+        checkBatteryOptimizationOnce();
     }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        releaseResources();
-    }
-
     private void refreshControlsAvailability() {
         boolean hasWriteSecure = getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted();
         boolean hasAllLocation = getAppContext().getPermissionsUtils().isAllNeededLocationPermissionsGranted();
@@ -147,6 +133,11 @@ public class ActivityMain extends AppCompatActivity {
 
     private void renderNetworkAndDnsState() {
         refreshControlsAvailability();
+
+        if (score != null) {
+            int safeScore = (int) getAppContext().getSecurityScoreUtil().getSecurityScore();
+            animateProgressBar(safeScore);
+        }
 
         if (activeDnsHostText != null) {
             String specifier = getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER);
@@ -193,12 +184,19 @@ public class ActivityMain extends AppCompatActivity {
     private void initAll() {
         activityInitializationStarted();
 
-        initButtons();
         initTexts();
+        initButtons();
         initCheckboxes();
         initSensitiveControls();
 
         activityInitializationCompleted();
+    }
+
+    private int getClampedDelaySeconds() {
+        int rawSeconds = getAppContext().getSettingsUtils()
+                .getSharedPrefs()
+                .getInt(SETTINGS_ACTION_DELAY_SEC, DEFAULT_ACTION_DELAY_SEC);
+        return Math.clamp(rawSeconds, MIN_ACTION_DELAY_SEC, MAX_ACTION_DELAY_SEC);
     }
 
     private void initTexts() {
@@ -219,6 +217,8 @@ public class ActivityMain extends AppCompatActivity {
         }
         if (score == null) {
             score = this.findViewById(R.id.score);
+        }
+        if (score != null) {
             try {
                 int safeScore = (int) getAppContext().getSecurityScoreUtil().getSecurityScore();
                 animateProgressBar(safeScore);
@@ -227,8 +227,9 @@ public class ActivityMain extends AppCompatActivity {
         }
         if (sliderValueText == null) {
             sliderValueText = findViewById(R.id.sliderValueText);
-            int currentDelay = PdnsPolicyScheduler.getConfiguredDelayMs(this);
-            sliderValueText.setText(String.valueOf(currentDelay));
+        }
+        if (sliderValueText != null) {
+            sliderValueText.setText(String.valueOf(getClampedDelaySeconds()));
         }
     }
 
@@ -245,6 +246,8 @@ public class ActivityMain extends AppCompatActivity {
                     SharedPreferences.Editor editor = getAppContext().getSettingsUtils().getSharedPrefsEditor();
                     editor.putBoolean(getString(R.string.settings_name_disable_while_vpn), checked);
                     editor.apply();
+                    getAppContext().getSettingsUtils().updatePdnsSettingsOnNetworkChange(null);
+                    renderNetworkAndDnsState();
                 }
             });
         }
@@ -260,13 +263,11 @@ public class ActivityMain extends AppCompatActivity {
                     SharedPreferences.Editor editor = getAppContext().getSettingsUtils().getSharedPrefsEditor();
                     editor.putBoolean(getString(R.string.settings_name_enable_while_cellular), checked);
                     editor.apply();
+                    getAppContext().getSettingsUtils().updatePdnsSettingsOnNetworkChange(null);
+                    renderNetworkAndDnsState();
                 }
             });
         }
-    }
-
-    private boolean isIgnoringBatteryOptimizations() {
-        return ((PowerManager) getSystemService(Context.POWER_SERVICE)).isIgnoringBatteryOptimizations(getPackageName());
     }
 
     private void initButtons() {
@@ -284,6 +285,7 @@ public class ActivityMain extends AppCompatActivity {
                             getAppContext().getSettingsUtils().updateLastPdnsState(OFF);
                             updateRadioButtonsStates();
                             getAppContext().refreshQuickTile();
+                            PdnsMonitorService.refreshNotification(this);
                             getAppContext().getSecurityScoreUtil().disabled();
                             getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
                         }
@@ -293,6 +295,7 @@ public class ActivityMain extends AppCompatActivity {
                             getAppContext().getSettingsUtils().updateLastPdnsState(ON);
                             updateRadioButtonsStates();
                             getAppContext().refreshQuickTile();
+                            PdnsMonitorService.refreshNotification(this);
                             getAppContext().getSecurityScoreUtil().enabled();
                             getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
                         }
@@ -302,6 +305,7 @@ public class ActivityMain extends AppCompatActivity {
                             getAppContext().getSettingsUtils().updateLastPdnsState(GOOGLE);
                             updateRadioButtonsStates();
                             getAppContext().refreshQuickTile();
+                            PdnsMonitorService.refreshNotification(this);
                             getAppContext().getSecurityScoreUtil().disabled();
                             getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
                         }
@@ -367,26 +371,10 @@ public class ActivityMain extends AppCompatActivity {
         }
         if (slider == null) {
             slider = findViewById(R.id.delaySlider);
-            slider.setValueFrom(MIN_ACTION_DELAY_MS);
-            slider.setValueTo(MAX_ACTION_DELAY_MS);
-            if (slider.getStepSize() <= 0f) {
-                slider.setStepSize(1000f);
-            }
-
-            int clampedDelay = PdnsPolicyScheduler.getConfiguredDelayMs(this);
-            float step = slider.getStepSize();
-            int snappedDelay = Math.round(clampedDelay / step) * (int) step;
-            snappedDelay = PdnsPolicyScheduler.clampDelayMs(snappedDelay);
-
-            getAppContext().getSettingsUtils().getSharedPrefs()
-                    .edit()
-                    .putInt(SETTINGS_ACTION_DELAY_MS, snappedDelay)
-                    .apply();
-
-            slider.setValue(snappedDelay);
+            slider.setValue(getClampedDelaySeconds());
             slider.addOnChangeListener((s, value, fromUser) -> {
                 if (sliderValueText != null) {
-                    sliderValueText.setText(String.valueOf((int) value));
+                    sliderValueText.setText(String.valueOf(Math.round(value)));
                 }
             });
             slider.addOnSliderTouchListener(new Slider.OnSliderTouchListener() {
@@ -398,14 +386,34 @@ public class ActivityMain extends AppCompatActivity {
                 @Override
                 public void onStopTrackingTouch(@NonNull Slider s) {
                     s.performHapticFeedback(HapticFeedbackConstants.GESTURE_END);
-                    int finalValue = PdnsPolicyScheduler.clampDelayMs((int) s.getValue());
+                    int delaySeconds = Math.clamp(Math.round(s.getValue()), MIN_ACTION_DELAY_SEC, MAX_ACTION_DELAY_SEC);
                     getAppContext().getSettingsUtils().getSharedPrefs()
                             .edit()
-                            .putInt(SETTINGS_ACTION_DELAY_MS, finalValue)
+                            .putInt(SETTINGS_ACTION_DELAY_SEC, delaySeconds)
                             .apply();
 
-                    Log.i(APP_NAME, "Delay saved: " + finalValue + " ms");
+                    Log.i(APP_NAME, "Delay saved: " + delaySeconds + " s");
                 }
+            });
+        }
+        if (btnResetScore == null) {
+            btnResetScore = this.findViewById(R.id.btnResetScore);
+            btnResetScore.setOnClickListener(v -> {
+                v.performHapticFeedback(VibrationEffect.EFFECT_CLICK);
+                AlertDialog dialog = new AlertDialog.Builder(this)
+                        .setTitle(R.string.txt_reset_stats_title)
+                        .setMessage(R.string.txt_reset_stats_message)
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.txt_ok, (d, which) -> {
+                            boolean isCurrentlyOn = ON.equals(getAppContext().getSettingsUtils().getPDNSState());
+                            getAppContext().getSecurityScoreUtil().reset(isCurrentlyOn);
+                            int updatedScore = (int) getAppContext().getSecurityScoreUtil().getSecurityScore();
+                            animateProgressBar(updatedScore);
+                        })
+                        .setNegativeButton(R.string.txt_cancel, (d, which) -> d.cancel())
+                        .create();
+                dialog.setCanceledOnTouchOutside(true);
+                dialog.show();
             });
         }
     }
@@ -446,6 +454,8 @@ public class ActivityMain extends AppCompatActivity {
                         if (switchTrustAp != null) {
                             switchTrustAp.setEnabled(checked && ConnectionType.WIFI.equals(getAppContext().getSettingsUtils().getConnectionType()));
                         }
+                        getAppContext().getSettingsUtils().updatePdnsSettingsOnNetworkChange(null);
+                        renderNetworkAndDnsState();
                     }
                 });
             }
@@ -518,12 +528,6 @@ public class ActivityMain extends AppCompatActivity {
         activityInitInProgress = false;
     }
 
-    private void releaseResources() {
-        if (broadcastReceiver != null) {
-            LocalBroadcastManager.getInstance(this).unregisterReceiver(broadcastReceiver);
-        }
-    }
-
     private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             checkBackgroundLocation();
@@ -574,9 +578,46 @@ public class ActivityMain extends AppCompatActivity {
         getAppContext().getSettingsUtils().getSharedPrefsEditor().putBoolean(getString(R.string.settings_location_permissions_granted), granted).apply();
     }
 
+    private void checkBatteryOptimizationOnce() {
+        SharedPreferences prefs = getAppContext().getSettingsUtils().getSharedPrefs();
+        if (prefs.getBoolean(SETTINGS_BATTERY_OPTIMIZATION_PROMPT_SHOWN, false)) {
+            return;
+        }
+
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+        if (pm != null && pm.isIgnoringBatteryOptimizations(getPackageName())) {
+            prefs.edit().putBoolean(SETTINGS_BATTERY_OPTIMIZATION_PROMPT_SHOWN, true).apply();
+            return;
+        }
+
+        prefs.edit().putBoolean(SETTINGS_BATTERY_OPTIMIZATION_PROMPT_SHOWN, true).apply();
+
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.txt_battery_optimization_title)
+                .setMessage(Html.fromHtml(getString(R.string.txt_battery_optimization_message), Html.FROM_HTML_MODE_LEGACY))
+                .setCancelable(true)
+                .setPositiveButton(R.string.txt_open_settings, (dialog, which) -> openBatteryOptimizationSettings())
+                .setNegativeButton(R.string.txt_cancel, (dialog, which) -> dialog.dismiss())
+                .show();
+    }
+
+    private void openBatteryOptimizationSettings() {
+        try {
+            startActivity(new Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS));
+        } catch (Exception e) {
+            Intent appDetailsIntent = new Intent(
+                    Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                    Uri.fromParts("package", getPackageName(), null)
+            );
+            startActivity(appDetailsIntent);
+        }
+    }
     private void animateProgressBar(int targetProgress) {
         if (scorePercentText != null) {
             scorePercentText.setText(targetProgress + "%");
+        }
+        if (score == null || score.getProgress() == targetProgress) {
+            return;
         }
         ValueAnimator animator = ValueAnimator.ofInt(score.getProgress(), targetProgress);
         animator.setDuration(1500L);

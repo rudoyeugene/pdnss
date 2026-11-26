@@ -21,7 +21,6 @@
             android:layout_height="wrap_content"
             android:padding="16dp">
 
-            <!-- Карточка действий и прав -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardActions"
                 style="@style/Widget.Material3.CardView.Outlined"
@@ -94,7 +93,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Карточка статистики и задержки -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardStatsAndDelay"
                 style="@style/Widget.Material3.CardView.Outlined"
@@ -139,13 +137,33 @@
                         style="@android:style/Widget.ProgressBar.Horizontal"
                         android:layout_width="0dp"
                         android:layout_height="12dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginEnd="8dp"
                         android:max="100"
                         android:progress="0"
                         android:progressDrawable="@drawable/gradient_progressbar_drawable"
-                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/btnResetScore"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/scoreText" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnResetScore"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="26dp"
+                        android:insetTop="0dp"
+                        android:insetBottom="0dp"
+                        android:minWidth="0dp"
+                        android:minHeight="0dp"
+                        android:paddingStart="10dp"
+                        android:paddingTop="0dp"
+                        android:paddingEnd="10dp"
+                        android:paddingBottom="0dp"
+                        android:text="@string/btn_reset_stats"
+                        android:textSize="10sp"
+                        app:layout_constraintBottom_toBottomOf="@+id/score"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="@+id/score" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/activeDnsHostText"
@@ -159,7 +177,7 @@
                         android:textColor="?android:attr/textColorSecondary"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/score" />
+                        app:layout_constraintTop_toBottomOf="@+id/btnResetScore" />
 
                     <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/sliderDescription"
@@ -191,10 +209,9 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="6dp"
-                        android:stepSize="1000"
-                        android:value="0"
+                        android:stepSize="1"
                         android:valueFrom="0"
-                        android:valueTo="10000"
+                        android:valueTo="10"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toBottomOf="@+id/sliderDescription" />
@@ -202,7 +219,6 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Карточка правил переключения и режима -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardRulesAndMode"
                 style="@style/Widget.Material3.CardView.Outlined"

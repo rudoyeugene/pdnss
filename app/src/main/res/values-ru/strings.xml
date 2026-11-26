@@ -82,9 +82,15 @@
     <string name="txt_aps_list">Доверенные точки Wi-Fi</string>
     <string name="txt_update_dns_host">Обновить хост DNS</string>
     <string name="txt_progress_stats">Общее время использования Private DNS:</string>
-    <string name="txt_delay_before">Задержка перед переключением (мс):</string>
+    <string name="txt_delay_before">Задержка перед переключением (секунд):</string>
     <string name="txt_ap_name">Имя точки доступа</string>
     <string name="txt_GOOGLE" translatable="false">GOOGLE</string>
     <string name="txt_OFF" translatable="false">OFF</string>
     <string name="txt_ON" translatable="false">ON</string>
+    <string name="btn_reset_stats">СБРОС</string>
+    <string name="txt_reset_stats_title">Сброс статистики</string>
+    <string name="txt_reset_stats_message">Вы уверены, что хотите сбросить статистику?</string>
+    <string name="txt_battery_optimization_title">Работа в фоновом режиме</string>
+    <string name="txt_battery_optimization_message">Чтобы система не останавливала мониторинг Private DNS в фоне, выберите режим <b>Без ограничений</b> для этого приложения в настройках батареи.</string>
+    <string name="txt_open_settings">Открыть настройки</string>
 </resources>

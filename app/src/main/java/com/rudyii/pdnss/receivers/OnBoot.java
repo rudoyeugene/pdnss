@@ -10,7 +10,7 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
-import com.rudyii.pdnss.utils.PdnsPolicyScheduler;
+import com.rudyii.pdnss.services.PdnsMonitorService;
 
 public class OnBoot extends BroadcastReceiver {
     @Override
@@ -22,11 +22,12 @@ public class OnBoot extends BroadcastReceiver {
         if (BOOT_COMPLETED.equals(action)
                 || QUICKBOOT_POWERON.equals(action)
                 || Intent.ACTION_MY_PACKAGE_REPLACED.equals(action)) {
-            Log.i(APP_NAME, "Boot completed (" + action + "), scheduling Private DNS evaluation");
+            Log.i(APP_NAME, "System event (" + action + "), starting monitor service and evaluating Private DNS");
             Context appContext = context.getApplicationContext();
             if (appContext instanceof PrivateDnsSwitcherApplication app) {
+                PdnsMonitorService.start(app);
                 app.registerNetworkCallback();
-                PdnsPolicyScheduler.scheduleEvaluation(app, "receiver:" + action, null, null);
+                app.getSettingsUtils().updatePdnsSettingsOnNetworkChange(null);
             }
         }
     }

@@ -40,6 +40,7 @@ public class QuickTile extends TileService {
             getAppContext().getSettingsUtils().updateLastPdnsState(PdnsModeType.ON);
             getAppContext().getSecurityScoreUtil().enabled();
         }
+        PdnsMonitorService.refreshNotification(this);
         Log.i(APP_NAME, "total enabled: " + getAppContext().getSecurityScoreUtil().getTotalEnabledTime());
         Log.i(APP_NAME, "score: " + getAppContext().getSecurityScoreUtil().getSecurityScore());
         updateTile();
@@ -49,6 +50,7 @@ public class QuickTile extends TileService {
     public void onStartListening() {
         super.onStartListening();
         getAppContext().setQuickTile(this);
+        PdnsMonitorService.start(this);
         getAppContext().getSettingsUtils().syncExternalStateChanges();
         updateTile();
     }
@@ -64,6 +66,7 @@ public class QuickTile extends TileService {
     public void onTileAdded() {
         super.onTileAdded();
         getAppContext().setQuickTile(this);
+        PdnsMonitorService.start(this);
         updateTile();
     }
 

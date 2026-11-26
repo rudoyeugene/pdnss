@@ -14,6 +14,10 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
 
     <uses-feature
         android:name="android.hardware.wifi"
@@ -29,11 +33,12 @@
         android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/Theme.PrivateDNSSwitcher"
-        tools:targetApi="31">
+        tools:targetApi="34">
+
         <activity
             android:name=".activities.ActivityMain"
-            android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|density"
+            android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -50,9 +55,9 @@
 
         <activity
             android:name=".activities.ActivityShortcuts"
+            android:configChanges="orientation|screenSize|screenLayout|density"
             android:excludeFromRecents="true"
             android:exported="true"
-            android:configChanges="orientation|screenSize|screenLayout|density"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="com.rudyii.pdnss.GOOGLE" />
@@ -60,6 +65,16 @@
                 <action android:name="com.rudyii.pdnss.OFF" />
             </intent-filter>
         </activity>
+
+        <service
+            android:name=".services.PdnsMonitorService"
+            android:enabled="true"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Monitors real-time Wi-Fi, cellular, and VPN connectivity transitions to automatically switch system Private DNS settings." />
+        </service>
 
         <service
             android:name=".services.QuickTile"
@@ -89,8 +104,6 @@
                 <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
             </intent-filter>
         </receiver>
-        <receiver
-            android:name=".receivers.NetworkChangeReceiver"
-            android:exported="false" />
+
     </application>
 </manifest>

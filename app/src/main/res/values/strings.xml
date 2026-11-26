@@ -82,9 +82,15 @@
     <string name="txt_aps_list">Trusted WiFi APs</string>
     <string name="txt_update_dns_host">Update DNS Host</string>
     <string name="txt_progress_stats">Total Time using Private DNS:</string>
-    <string name="txt_delay_before">Delay before switching (ms):</string>
+    <string name="txt_delay_before">Delay before switching (seconds):</string>
     <string name="txt_ap_name">AP Name</string>
     <string name="txt_GOOGLE" translatable="false">GOOGLE</string>
     <string name="txt_OFF" translatable="false">OFF</string>
     <string name="txt_ON" translatable="false">ON</string>
+    <string name="btn_reset_stats">RESET</string>
+    <string name="txt_reset_stats_title">Reset Statistics</string>
+    <string name="txt_reset_stats_message">Are you sure you want to reset stats?</string>
+    <string name="txt_battery_optimization_title">Background Reliability</string>
+    <string name="txt_battery_optimization_message">To prevent your device from stopping Private DNS monitoring in the background, set battery usage for this app to <b>Unrestricted</b> in system settings.</string>
+    <string name="txt_open_settings">Open Settings</string>
 </resources>

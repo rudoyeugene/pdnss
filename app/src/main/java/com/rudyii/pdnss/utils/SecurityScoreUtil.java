@@ -12,7 +12,7 @@ public class SecurityScoreUtil {
     private static final String KEY_IS_ENABLED = "score_is_enabled";
 
     private final SharedPreferences prefs;
-    private final long initTimeMillis;
+    private long initTimeMillis;
     private long startTimeMillis;
     private long totalEnabledTimeMillis;
     private boolean isEnabled;
@@ -25,14 +25,16 @@ public class SecurityScoreUtil {
         long savedInit = prefs.getLong(KEY_INIT_TIME, 0L);
         if (savedInit <= 0L) {
             this.initTimeMillis = now;
-            prefs.edit().putLong(KEY_INIT_TIME, now).apply();
+            this.startTimeMillis = 0L;
+            this.totalEnabledTimeMillis = 0L;
+            this.isEnabled = false;
+            persist();
         } else {
             this.initTimeMillis = savedInit;
+            this.startTimeMillis = prefs.getLong(KEY_START_TIME, 0L);
+            this.totalEnabledTimeMillis = prefs.getLong(KEY_TOTAL_ENABLED, 0L);
+            this.isEnabled = prefs.getBoolean(KEY_IS_ENABLED, false);
         }
-
-        this.startTimeMillis = prefs.getLong(KEY_START_TIME, 0L);
-        this.totalEnabledTimeMillis = prefs.getLong(KEY_TOTAL_ENABLED, 0L);
-        this.isEnabled = prefs.getBoolean(KEY_IS_ENABLED, false);
     }
 
     public synchronized void enabled() {
@@ -45,12 +47,23 @@ public class SecurityScoreUtil {
 
     public synchronized void disabled() {
         if (isEnabled) {
-            long elapsedTime = Math.max(0L, System.currentTimeMillis() - startTimeMillis);
+            long elapsedTime = startTimeMillis > 0L
+                    ? Math.max(0L, System.currentTimeMillis() - startTimeMillis)
+                    : 0L;
             totalEnabledTimeMillis += elapsedTime;
             startTimeMillis = 0L;
             isEnabled = false;
             persist();
         }
+    }
+
+    public synchronized void reset(boolean currentlyEnabled) {
+        long now = System.currentTimeMillis();
+        this.initTimeMillis = now;
+        this.totalEnabledTimeMillis = 0L;
+        this.isEnabled = currentlyEnabled;
+        this.startTimeMillis = currentlyEnabled ? now : 0L;
+        persist();
     }
 
     public synchronized long getTotalEnabledTime() {
@@ -72,6 +85,7 @@ public class SecurityScoreUtil {
 
     private void persist() {
         prefs.edit()
+                .putLong(KEY_INIT_TIME, initTimeMillis)
                 .putLong(KEY_START_TIME, startTimeMillis)
                 .putLong(KEY_TOTAL_ENABLED, totalEnabledTimeMillis)
                 .putBoolean(KEY_IS_ENABLED, isEnabled)

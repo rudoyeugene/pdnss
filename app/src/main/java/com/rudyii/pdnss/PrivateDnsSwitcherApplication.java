@@ -1,23 +1,19 @@
 package com.rudyii.pdnss;
 
 import static com.rudyii.pdnss.types.Constants.APP_NAME;
-import static com.rudyii.pdnss.types.Constants.STATE_NOTIFICATION_NAME;
-import static com.rudyii.pdnss.types.Constants.UNSAFE_DNS_NOTIFICATION_NAME;
+import static com.rudyii.pdnss.types.Constants.MONITOR_NOTIFICATION_NAME;
 import static com.rudyii.pdnss.types.PdnsModeType.ON;
 
 import android.app.Application;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.Intent;
 import android.net.ConnectivityManager;
-import android.net.NetworkCapabilities;
-import android.net.NetworkRequest;
 import android.service.quicksettings.TileService;
 import android.util.Log;
 
+import com.rudyii.pdnss.services.PdnsMonitorService;
 import com.rudyii.pdnss.services.QuickTile;
 import com.rudyii.pdnss.utils.AppState;
 import com.rudyii.pdnss.utils.NotificationsUtils;
@@ -29,6 +25,7 @@ import com.rudyii.pdnss.utils.SettingsUtils;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PrivateDnsSwitcherApplication extends Application {
+    private final AtomicBoolean networkCallbackRegistered = new AtomicBoolean(false);
     private QuickTile tile;
     private SettingsUtils settingsUtils;
     private PermissionsUtils permissionsUtils;
@@ -37,8 +34,7 @@ public class PrivateDnsSwitcherApplication extends Application {
     private ConnectivityManager.NetworkCallback networkCallback;
     private ConnectivityManager connectivityManager;
     private AppState appState;
-    private static final int NETWORK_PENDING_INTENT_REQUEST_CODE = 1001;
-    private final AtomicBoolean networkCallbackRegistered = new AtomicBoolean(false);
+    private volatile boolean monitorServiceRunning = false;
 
     @Override
     public void onCreate() {
@@ -54,11 +50,14 @@ public class PrivateDnsSwitcherApplication extends Application {
 
         if (ON.equals(settingsUtils.getPDNSState())) {
             securityScoreUtil.enabled();
+        } else {
+            securityScoreUtil.disabled();
         }
 
+        createNotificationChannels();
         registerServices();
         registerNetworkCallback();
-        createNotificationChannels();
+        PdnsMonitorService.start(this);
     }
 
     public void registerNetworkCallback() {
@@ -68,8 +67,7 @@ public class PrivateDnsSwitcherApplication extends Application {
         if (networkCallbackRegistered.compareAndSet(false, true)) {
             try {
                 connectivityManager.registerDefaultNetworkCallback(networkCallback);
-                registerPersistentNetworkPendingIntent();
-                Log.i(APP_NAME, "Default and persistent PendingIntent NetworkCallbacks registered");
+                Log.i(APP_NAME, "Default NetworkCallback registered");
             } catch (Exception e) {
                 networkCallbackRegistered.set(false);
                 Log.e(APP_NAME, "Failed to register NetworkCallback", e);
@@ -77,21 +75,12 @@ public class PrivateDnsSwitcherApplication extends Application {
         }
     }
 
-    private void registerPersistentNetworkPendingIntent() {
-        Intent intent = new Intent(this, com.rudyii.pdnss.receivers.NetworkChangeReceiver.class);
-        PendingIntent pendingIntent = PendingIntent.getBroadcast(
-                this,
-                NETWORK_PENDING_INTENT_REQUEST_CODE,
-                intent,
-                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
-        );
+    public boolean isMonitorServiceRunning() {
+        return monitorServiceRunning;
+    }
 
-        NetworkRequest request = new NetworkRequest.Builder()
-                .addCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-                .removeCapability(NetworkCapabilities.NET_CAPABILITY_NOT_VPN)
-                .build();
-
-        connectivityManager.registerNetworkCallback(request, pendingIntent);
+    public void setMonitorServiceRunning(boolean running) {
+        this.monitorServiceRunning = running;
     }
 
     public void refreshQuickTile() {
@@ -142,15 +131,15 @@ public class PrivateDnsSwitcherApplication extends Application {
             return;
         }
 
-        NotificationChannel stateChannel = new NotificationChannel(STATE_NOTIFICATION_NAME,
-                getString(R.string.txt_notification_state_channel_name),
-                NotificationManager.IMPORTANCE_HIGH);
+        notificationManager.deleteNotificationChannel("STATE_NOTIFICATIONS");
+        notificationManager.deleteNotificationChannel("UNSAFE_DNS_NOTIFICATIONS");
 
-        NotificationChannel unsafeDnsChannel = new NotificationChannel(UNSAFE_DNS_NOTIFICATION_NAME,
+        NotificationChannel monitorChannel = new NotificationChannel(
+                MONITOR_NOTIFICATION_NAME,
                 getString(R.string.txt_notification_state_channel_name),
-                NotificationManager.IMPORTANCE_DEFAULT);
+                NotificationManager.IMPORTANCE_MIN);
+        monitorChannel.setShowBadge(false);
 
-        notificationManager.createNotificationChannel(stateChannel);
-        notificationManager.createNotificationChannel(unsafeDnsChannel);
+        notificationManager.createNotificationChannel(monitorChannel);
     }
 }

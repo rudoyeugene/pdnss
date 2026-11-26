@@ -32,7 +32,9 @@ import androidx.annotation.Nullable;
 
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
+import com.rudyii.pdnss.services.PdnsMonitorService;
 import com.rudyii.pdnss.types.ConnectionType;
+import com.rudyii.pdnss.types.NetworkSnapshot;
 import com.rudyii.pdnss.types.PdnsModeType;
 
 import java.util.Collections;
@@ -47,10 +49,6 @@ public class SettingsUtils {
         this.context = context;
     }
 
-    public void clearCachedWifiInfo() {
-        cachedWifiSsid = null;
-    }
-
     public String getCachedWifiSsid() {
         return cachedWifiSsid;
     }
@@ -61,7 +59,11 @@ public class SettingsUtils {
         }
     }
 
-    public void updatePdnsSettingsOnNetworkChange(@Nullable com.rudyii.pdnss.types.NetworkSnapshot snapshot) {
+    public void clearCachedWifiInfo() {
+        cachedWifiSsid = null;
+    }
+
+    public void updatePdnsSettingsOnNetworkChange(@Nullable NetworkSnapshot snapshot) {
         ConnectivityManager connectivityManager = context.getConnectivityManager();
         Network targetNetwork = snapshot != null ? snapshot.network() : connectivityManager.getActiveNetwork();
         NetworkCapabilities liveCaps = targetNetwork != null
@@ -105,7 +107,8 @@ public class SettingsUtils {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                 updateLastPdnsState(OFF_WHILE_VPN);
                 context.getSecurityScoreUtil().disabled();
-                context.getNotificationsUtils().showNotification(
+                PdnsMonitorService.refreshNotification(
+                        context,
                         context.getString(R.string.txt_notification_state_title,
                                 context.getString(R.string.txt_notification_state_body_disabled)),
                         context.getString(
@@ -129,7 +132,8 @@ public class SettingsUtils {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                     updateLastPdnsState(OFF_WHILE_TRUSTED_WIFI);
                     context.getSecurityScoreUtil().disabled();
-                    context.getNotificationsUtils().showNotification(
+                    PdnsMonitorService.refreshNotification(
+                            context,
                             context.getString(R.string.txt_notification_state_title,
                                     context.getString(R.string.txt_notification_state_body_disabled)),
                             context.getString(
@@ -146,7 +150,8 @@ public class SettingsUtils {
                     updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                     updateLastPdnsState(ON);
                     context.getSecurityScoreUtil().enabled();
-                    context.getNotificationsUtils().showNotification(
+                    PdnsMonitorService.refreshNotification(
+                            context,
                             context.getString(R.string.txt_notification_state_title,
                                     context.getString(R.string.txt_notification_state_body_enabled)),
                             context.getString(
@@ -164,7 +169,8 @@ public class SettingsUtils {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                 updateLastPdnsState(ON_WHILE_CELLULAR);
                 context.getSecurityScoreUtil().enabled();
-                context.getNotificationsUtils().showNotification(
+                PdnsMonitorService.refreshNotification(
+                        context,
                         context.getString(R.string.txt_notification_state_title,
                                 context.getString(R.string.txt_notification_state_body_enabled)),
                         context.getString(
@@ -190,7 +196,8 @@ public class SettingsUtils {
             if (!VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(currentMode)) {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_PROVIDER_HOSTNAME);
                 context.getSecurityScoreUtil().enabled();
-                context.getNotificationsUtils().showNotification(
+                PdnsMonitorService.refreshNotification(
+                        context,
                         context.getString(R.string.txt_notification_state_title,
                                 context.getString(R.string.txt_notification_state_body_enabled)),
                         context.getString(R.string.txt_notification_state_body_on_last_state),
@@ -202,7 +209,8 @@ public class SettingsUtils {
             if (!VALUE_PRIVATE_DNS_MODE_OFF_STRING.equals(currentMode)) {
                 updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
                 context.getSecurityScoreUtil().disabled();
-                context.getNotificationsUtils().showNotification(
+                PdnsMonitorService.refreshNotification(
+                        context,
                         context.getString(R.string.txt_notification_state_title,
                                 context.getString(R.string.txt_notification_state_body_disabled)),
                         context.getString(R.string.txt_notification_state_body_on_last_state),
@@ -211,6 +219,29 @@ public class SettingsUtils {
             }
         }
         return false;
+    }
+
+    public void syncExternalStateChanges() {
+        PdnsModeType actual = getPDNSState();
+        PdnsModeType recorded = getLastKnownState();
+        boolean externalChangeDetected = false;
+
+        if (actual == ON) {
+            context.getSecurityScoreUtil().enabled();
+            if (recorded == OFF || recorded == GOOGLE || recorded == UNKNOWN) {
+                updateLastPdnsState(ON);
+                externalChangeDetected = true;
+            }
+        } else if (actual == OFF || actual == GOOGLE) {
+            context.getSecurityScoreUtil().disabled();
+            if (recorded == ON || recorded == ON_WHILE_CELLULAR || recorded == UNKNOWN) {
+                updateLastPdnsState(actual);
+                externalChangeDetected = true;
+            }
+        }
+        if (externalChangeDetected || !PdnsMonitorService.hasCachedNotification()) {
+            PdnsMonitorService.refreshNotification(context);
+        }
     }
 
     public PdnsModeType getLastKnownState() {
@@ -241,6 +272,7 @@ public class SettingsUtils {
         try {
             Settings.Global.putString(context.getContentResolver(), SETTINGS_PRIVATE_DNS_SPECIFIER,
                     pDnsUrl);
+            PdnsMonitorService.refreshNotification(context);
         } catch (SecurityException e) {
             context.getNotificationsUtils().showWarning(context.getString(R.string.txt_missing_permissions_warning));
         }
@@ -321,7 +353,6 @@ public class SettingsUtils {
                 return "missing permissions";
             }
 
-            // 1. Check active NetworkCapabilities TransportInfo (Android 12+ / API 34+ recommended)
             ConnectivityManager cm = context.getConnectivityManager();
             Network activeNetwork = cm != null ? cm.getActiveNetwork() : null;
             NetworkCapabilities caps = activeNetwork != null ? cm.getNetworkCapabilities(activeNetwork) : null;
@@ -333,12 +364,10 @@ public class SettingsUtils {
                 }
             }
 
-            // 2. Check cached SSID captured during onCapabilitiesChanged
             if (cachedWifiSsid != null && !cachedWifiSsid.isEmpty()) {
                 return cachedWifiSsid;
             }
 
-            // 3. Fallback to WifiManager
             WifiManager mWifiManager = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
             if (mWifiManager != null) {
                 @SuppressWarnings("deprecation")
@@ -385,22 +414,5 @@ public class SettingsUtils {
         editor.apply();
 
         return result;
-    }
-
-    public void syncExternalStateChanges() {
-        PdnsModeType actual = getPDNSState();
-        PdnsModeType recorded = getLastKnownState();
-
-        if (actual == ON) {
-            context.getSecurityScoreUtil().enabled();
-            if (recorded == OFF || recorded == GOOGLE || recorded == UNKNOWN) {
-                updateLastPdnsState(ON);
-            }
-        } else if (actual == OFF || actual == GOOGLE) {
-            context.getSecurityScoreUtil().disabled();
-            if (recorded == ON || recorded == ON_WHILE_CELLULAR || recorded == UNKNOWN) {
-                updateLastPdnsState(actual);
-            }
-        }
     }
 }

@@ -1,6 +1,5 @@
 plugins {
     alias libs.plugins.android.application
-    alias libs.plugins.jetbrains.kotlin.plugin.compose
 }
 
 android {
@@ -12,8 +11,8 @@ android {
         applicationId "com.rudyii.pdnss"
         minSdkVersion 34
         targetSdkVersion 37
-        versionCode 254
-        versionName "2.5.4"
+        versionCode 255
+        versionName "2.5.5"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -29,9 +28,6 @@ android {
         }
     }
 
-    buildFeatures {
-        compose = true
-    }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_21
         targetCompatibility = JavaVersion.VERSION_21
@@ -41,8 +37,6 @@ android {
 dependencies {
     implementation libs.androidx.appcompat
     implementation libs.material
-    implementation libs.androidx.localbroadcastmanager
-    implementation libs.androidx.work.runtime
     testImplementation libs.junit
     androidTestImplementation libs.androidx.junit
     androidTestImplementation libs.androidx.espresso.core

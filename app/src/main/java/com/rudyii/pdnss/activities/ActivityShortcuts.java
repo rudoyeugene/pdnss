@@ -16,6 +16,7 @@ import androidx.annotation.NonNull;
 
 import com.rudyii.pdnss.PrivateDnsSwitcherApplication;
 import com.rudyii.pdnss.R;
+import com.rudyii.pdnss.services.PdnsMonitorService;
 import com.rudyii.pdnss.types.PdnsModeType;
 
 public class ActivityShortcuts extends Activity {
@@ -55,7 +56,8 @@ public class ActivityShortcuts extends Activity {
                         return;
                 }
                 getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
-                getAppContext().getNotificationsUtils().showNotification(
+                PdnsMonitorService.refreshNotification(
+                        this,
                         getAppContext().getString(R.string.txt_notification_state_title,
                                 resolveTitle(intent.getAction())),
                         getAppContext().getString(
