@@ -26,7 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PrivateDnsSwitcherApplication extends Application {
     private final AtomicBoolean networkCallbackRegistered = new AtomicBoolean(false);
-    private QuickTile tile;
     private SettingsUtils settingsUtils;
     private PermissionsUtils permissionsUtils;
     private NotificationsUtils notificationsUtils;
@@ -34,6 +33,7 @@ public class PrivateDnsSwitcherApplication extends Application {
     private ConnectivityManager.NetworkCallback networkCallback;
     private ConnectivityManager connectivityManager;
     private AppState appState;
+    private volatile QuickTile tile;
     private volatile boolean monitorServiceRunning = false;
 
     @Override
@@ -84,8 +84,19 @@ public class PrivateDnsSwitcherApplication extends Application {
     }
 
     public void refreshQuickTile() {
-        if (tile != null) {
-            tile.updateTile();
+        try {
+            TileService.requestListeningState(this, new ComponentName(this, QuickTile.class));
+        } catch (Exception e) {
+            Log.w(APP_NAME, "Failed to request QuickTile listening state: " + e.getMessage());
+        }
+
+        QuickTile currentTile = tile;
+        if (currentTile != null) {
+            try {
+                currentTile.updateTile();
+            } catch (Exception e) {
+                Log.w(APP_NAME, "Failed to update active QuickTile: " + e.getMessage());
+            }
         }
     }
 

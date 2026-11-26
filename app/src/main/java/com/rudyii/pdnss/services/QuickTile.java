@@ -5,9 +5,7 @@ import static android.app.admin.DevicePolicyManager.PRIVATE_DNS_MODE_PROVIDER_HO
 import static android.service.quicksettings.Tile.STATE_ACTIVE;
 import static android.service.quicksettings.Tile.STATE_INACTIVE;
 import static com.rudyii.pdnss.types.Constants.APP_NAME;
-import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_MODE;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
-import static com.rudyii.pdnss.types.Constants.VALUE_PRIVATE_DNS_MODE_ON_STRING;
 
 import android.os.SystemClock;
 import android.service.quicksettings.Tile;
@@ -29,9 +27,14 @@ public class QuickTile extends TileService {
     @Override
     public void onClick() {
         super.onClick();
-        String pDNSState = getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
+        if (!getAppContext().getPermissionsUtils().isWriteSecureSettingsPermissionGranted()) {
+            getAppContext().getNotificationsUtils()
+                    .showWarning(getString(R.string.txt_missing_permissions_warning));
+            return;
+        }
 
-        if (VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(pDNSState)) {
+        PdnsModeType currentState = getAppContext().getSettingsUtils().getPDNSState();
+        if (currentState == PdnsModeType.ON) {
             getAppContext().getSettingsUtils().updatePdnsModeSettings(PRIVATE_DNS_MODE_OFF);
             getAppContext().getSettingsUtils().updateLastPdnsState(PdnsModeType.OFF);
             getAppContext().getSecurityScoreUtil().disabled();
@@ -40,6 +43,7 @@ public class QuickTile extends TileService {
             getAppContext().getSettingsUtils().updateLastPdnsState(PdnsModeType.ON);
             getAppContext().getSecurityScoreUtil().enabled();
         }
+
         PdnsMonitorService.refreshNotification(this);
         Log.i(APP_NAME, "total enabled: " + getAppContext().getSecurityScoreUtil().getTotalEnabledTime());
         Log.i(APP_NAME, "score: " + getAppContext().getSecurityScoreUtil().getSecurityScore());
@@ -50,36 +54,39 @@ public class QuickTile extends TileService {
     public void onStartListening() {
         super.onStartListening();
         getAppContext().setQuickTile(this);
-        PdnsMonitorService.start(this);
+        if (!getAppContext().isMonitorServiceRunning()) {
+            PdnsMonitorService.start(this);
+        }
         getAppContext().getSettingsUtils().syncExternalStateChanges();
         updateTile();
     }
 
     @Override
     public void onStopListening() {
+        getAppContext().setQuickTile(null);
         super.onStopListening();
-        updateTile();
-        getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
     }
 
     @Override
     public void onTileAdded() {
         super.onTileAdded();
         getAppContext().setQuickTile(this);
-        PdnsMonitorService.start(this);
+        if (!getAppContext().isMonitorServiceRunning()) {
+            PdnsMonitorService.start(this);
+        }
         updateTile();
     }
 
     @Override
     public void onTileRemoved() {
-        super.onTileRemoved();
         getAppContext().setQuickTile(null);
+        super.onTileRemoved();
     }
 
     @Override
     public void onDestroy() {
-        super.onDestroy();
         getAppContext().setQuickTile(null);
+        super.onDestroy();
     }
 
     public void updateTile() {
@@ -88,17 +95,14 @@ public class QuickTile extends TileService {
             return;
         }
 
-        String pDnsState = getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_MODE);
+        PdnsModeType pdnsState = getAppContext().getSettingsUtils().getPDNSState();
+        String specifier = getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER);
 
         qsTile.setLabel(getString(R.string.txt_dns_state_quicktile));
-        qsTile.setSubtitle(getAppContext().getSettingsUtils().getSettingsValue(SETTINGS_PRIVATE_DNS_SPECIFIER));
-
-        if (VALUE_PRIVATE_DNS_MODE_ON_STRING.equals(pDnsState)) {
-            qsTile.setState(STATE_ACTIVE);
-        } else {
-            qsTile.setState(STATE_INACTIVE);
-        }
+        qsTile.setSubtitle(specifier);
+        qsTile.setState(pdnsState == PdnsModeType.ON ? STATE_ACTIVE : STATE_INACTIVE);
         qsTile.updateTile();
+
         getAppContext().getAppState().updatePdnsState(SystemClock.elapsedRealtime());
     }
 

@@ -1,5 +1,5 @@
 [versions]
-agp = "9.5.2"
+agp = "9.5.3"
 appcompat = "1.8.0"
 espresso-core = "3.7.0"
 jetbrains-kotlin-plugin-compose = "2.4.21"

@@ -242,6 +242,9 @@ public class SettingsUtils {
         if (externalChangeDetected || !PdnsMonitorService.hasCachedNotification()) {
             PdnsMonitorService.refreshNotification(context);
         }
+        if (externalChangeDetected) {
+            context.refreshQuickTile();
+        }
     }
 
     public PdnsModeType getLastKnownState() {
@@ -273,6 +276,7 @@ public class SettingsUtils {
             Settings.Global.putString(context.getContentResolver(), SETTINGS_PRIVATE_DNS_SPECIFIER,
                     pDnsUrl);
             PdnsMonitorService.refreshNotification(context);
+            context.refreshQuickTile();
         } catch (SecurityException e) {
             context.getNotificationsUtils().showWarning(context.getString(R.string.txt_missing_permissions_warning));
         }

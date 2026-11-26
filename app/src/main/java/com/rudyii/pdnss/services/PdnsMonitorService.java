@@ -3,6 +3,7 @@ package com.rudyii.pdnss.services;
 import static com.rudyii.pdnss.types.Constants.APP_NAME;
 import static com.rudyii.pdnss.types.Constants.MONITOR_NOTIFICATION_ID;
 import static com.rudyii.pdnss.types.Constants.MONITOR_NOTIFICATION_NAME;
+import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_MODE;
 import static com.rudyii.pdnss.types.Constants.SETTINGS_PRIVATE_DNS_SPECIFIER;
 import static com.rudyii.pdnss.types.PdnsModeType.ON;
 
@@ -13,7 +14,13 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ServiceInfo;
+import android.database.ContentObserver;
+import android.net.Uri;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Looper;
+import android.os.SystemClock;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -30,6 +37,7 @@ public class PdnsMonitorService extends Service {
     private static volatile String lastTitle;
     private static volatile String lastBody;
     private static volatile Boolean lastEnabled;
+    private ContentObserver dnsSettingsObserver;
 
     public static void start(Context context) {
         if (context == null) {
@@ -77,6 +85,92 @@ public class PdnsMonitorService extends Service {
         } else {
             start(appContext);
         }
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        promoteToForeground();
+        registerDnsSettingsObserver();
+        if (getApplicationContext() instanceof PrivateDnsSwitcherApplication app) {
+            app.setMonitorServiceRunning(true);
+            app.registerNetworkCallback();
+        }
+        Log.i(APP_NAME, "PdnsMonitorService created");
+    }
+
+    @Override
+    public int onStartCommand(Intent intent, int flags, int startId) {
+        promoteToForeground();
+        if (getApplicationContext() instanceof PrivateDnsSwitcherApplication app) {
+            app.setMonitorServiceRunning(true);
+            app.registerNetworkCallback();
+        }
+        return START_STICKY;
+    }
+
+    @Override
+    public void onDestroy() {
+        unregisterDnsSettingsObserver();
+        if (getApplicationContext() instanceof PrivateDnsSwitcherApplication app) {
+            app.setMonitorServiceRunning(false);
+        }
+        Log.i(APP_NAME, "PdnsMonitorService destroyed");
+        super.onDestroy();
+    }
+
+    @Nullable
+    @Override
+    public IBinder onBind(Intent intent) {
+        return null;
+    }
+
+    private void registerDnsSettingsObserver() {
+        if (dnsSettingsObserver != null) {
+            return;
+        }
+        dnsSettingsObserver = new ContentObserver(new Handler(Looper.getMainLooper())) {
+            @Override
+            public void onChange(boolean selfChange, @Nullable Uri uri) {
+                if (getApplicationContext() instanceof PrivateDnsSwitcherApplication app) {
+                    app.getSettingsUtils().syncExternalStateChanges();
+                    app.refreshQuickTile();
+                    app.getAppState().updatePdnsState(SystemClock.elapsedRealtime());
+                }
+            }
+        };
+
+        try {
+            Uri modeUri = Settings.Global.getUriFor(SETTINGS_PRIVATE_DNS_MODE);
+            Uri specifierUri = Settings.Global.getUriFor(SETTINGS_PRIVATE_DNS_SPECIFIER);
+            if (modeUri != null) {
+                getContentResolver().registerContentObserver(modeUri, false, dnsSettingsObserver);
+            }
+            if (specifierUri != null) {
+                getContentResolver().registerContentObserver(specifierUri, false, dnsSettingsObserver);
+            }
+        } catch (Exception e) {
+            Log.w(APP_NAME, "Failed to register Private DNS ContentObserver: " + e.getMessage());
+        }
+    }
+
+    private void unregisterDnsSettingsObserver() {
+        if (dnsSettingsObserver != null) {
+            try {
+                getContentResolver().unregisterContentObserver(dnsSettingsObserver);
+            } catch (Exception ignored) {
+            }
+            dnsSettingsObserver = null;
+        }
+    }
+
+    private void promoteToForeground() {
+        Notification notification = buildMonitorNotification(this);
+        startForeground(
+                MONITOR_NOTIFICATION_ID,
+                notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
+        );
     }
 
     private static Notification buildMonitorNotification(Context context) {
@@ -129,50 +223,5 @@ public class PdnsMonitorService extends Service {
                 .setPriority(NotificationCompat.PRIORITY_MIN)
                 .setCategory(NotificationCompat.CATEGORY_SERVICE)
                 .build();
-    }
-
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        promoteToForeground();
-        if (getApplicationContext() instanceof PrivateDnsSwitcherApplication app) {
-            app.setMonitorServiceRunning(true);
-            app.registerNetworkCallback();
-        }
-        Log.i(APP_NAME, "PdnsMonitorService created");
-    }
-
-    @Override
-    public int onStartCommand(Intent intent, int flags, int startId) {
-        promoteToForeground();
-        if (getApplicationContext() instanceof PrivateDnsSwitcherApplication app) {
-            app.setMonitorServiceRunning(true);
-            app.registerNetworkCallback();
-        }
-        return START_STICKY;
-    }
-
-    @Override
-    public void onDestroy() {
-        if (getApplicationContext() instanceof PrivateDnsSwitcherApplication app) {
-            app.setMonitorServiceRunning(false);
-        }
-        Log.i(APP_NAME, "PdnsMonitorService destroyed");
-        super.onDestroy();
-    }
-
-    @Nullable
-    @Override
-    public IBinder onBind(Intent intent) {
-        return null;
-    }
-
-    private void promoteToForeground() {
-        Notification notification = buildMonitorNotification(this);
-        startForeground(
-                MONITOR_NOTIFICATION_ID,
-                notification,
-                ServiceInfo.FOREGROUND_SERVICE_TYPE_SPECIAL_USE
-        );
     }
 }
